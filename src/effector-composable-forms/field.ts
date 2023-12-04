@@ -1,4 +1,4 @@
-import { createEffect, createEvent, createStore, Effect, Event, sample, Store } from 'effector'
+import { createEffect, createEvent, createStore, Effect, EventCallable, sample, Store } from 'effector'
 
 interface FieldConfig<T> {
   forkOnCompose?: boolean;
@@ -21,18 +21,31 @@ export interface Field<T> {
 
   forkOnCompose: boolean;
 
-  validate: Event<void>;
-  validated: Event<void>;
+  validate: EventCallable<void>;
+  validated: EventCallable<void>;
 
-  change: Event<T>;
-  changed: Event<T>;
+  change: EventCallable<T>;
+  changed: EventCallable<T>;
 
-  setError: Event<string | null>;
+  setError: EventCallable<string | null>;
 
   fork: (config?: ForkConfig<T>) => Field<T>;
 
   validateFx: Effect<T, string | null>;
-  '@@unitShape': () => {};
+  '@@unitShape': () => ({
+    value: Store<T>;
+    error: Store<string | null>;
+    isValid: Store<boolean>;
+    hasErrors: Store<boolean>;
+
+    validate: EventCallable<void>;
+    validated: EventCallable<void>;
+
+    change: EventCallable<T>;
+    changed: EventCallable<T>;
+
+    setError: EventCallable<string | null>;
+  });
 }
 
 export function createField<T>(defaultValue: T, config?: FieldConfig<T>): Field<T> {
@@ -106,6 +119,11 @@ export function createField<T>(defaultValue: T, config?: FieldConfig<T>): Field<
 
       validate,
       validated,
+
+      change,
+      changed,
+
+      setError,
     })
   };
 

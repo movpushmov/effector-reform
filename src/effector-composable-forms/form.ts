@@ -1,21 +1,23 @@
 import { createField, Field } from './field.ts'
-import { attach, combine, createEvent, Event, sample, Store } from 'effector'
-import { createEffect } from 'effector/effector.cjs'
+import { combine, createEvent, sample, Store, createEffect, EventCallable } from 'effector'
 
 type FieldValueType<T extends MaybeField> = T extends Field<any> ? T['$value'] extends Store<infer StoreValue> ? StoreValue : any : T;
+type FieldsToValues<Fields extends Record<string, MaybeField>> = {
+  [K in keyof Fields]: { field: K, value: FieldValueType<Fields[K]> };
+}[keyof Fields];
 
 interface Form<Fields extends Record<string, MaybeField>> {
   fields: { [K in keyof Fields]: FormField<FieldValueType<Fields[K]>> };
   $values: Store<{ [K in keyof Fields]: FieldValueType<Fields[K]> }>;
   $errors: Store<{ [K in keyof Fields]: string | null }>;
-  setError: Event<{ field: keyof Fields; error: string | null }>;
-  setErrors: Event<{ [K in keyof Fields]: string | null }>;
-  setValue: Event<{ field: keyof Fields; value: any }>;
-  setValues: Event<{ [K in keyof Fields]: FieldValueType<Fields[K]> }>;
+  setError: EventCallable<{ field: keyof Fields; error: string | null }>;
+  setErrors: EventCallable<{ [K in keyof Fields]: string | null }>;
+  setValue: EventCallable<{ field: keyof Fields; value: any }>;
+  setValues: EventCallable<{ [K in keyof Fields]: FieldValueType<Fields[K]> }>;
 
-  validate: Event<void>;
-  validated: Event<void>;
-  submit: Event<void>;
+  validate: EventCallable<void>;
+  validated: EventCallable<void>;
+  submit: EventCallable<void>;
 }
 
 interface FormField<T> {
@@ -24,11 +26,11 @@ interface FormField<T> {
   $hasErrors: Store<boolean>;
   $isValid: Store<boolean>;
 
-  change: Event<T>;
-  changed: Event<T>;
-  setError: Event<string | null>;
-  validate: Event<void>;
-  validated: Event<void>;
+  change: EventCallable<T>;
+  changed: EventCallable<T>;
+  setError: EventCallable<string | null>;
+  validate: EventCallable<void>;
+  validated: EventCallable<void>;
 
   '@@unitShape': () => ({
     value: Store<T>;
@@ -36,10 +38,10 @@ interface FormField<T> {
     hasErrors: Store<boolean>;
     isValid: Store<boolean>;
 
-    change: Event<T>;
-    setError: Event<string | null>;
-    validate: Event<void>;
-    validated: Event<void>;
+    change: EventCallable<T>;
+    setError: EventCallable<string | null>;
+    validate: EventCallable<void>;
+    validated: EventCallable<void>;
   }),
 }
 
@@ -72,7 +74,7 @@ function getFormField<T>(field: Field<T>): FormField<T> {
   };
 }
 
-type MaybeField = Field<any> | string | number;
+type MaybeField = Field<any> | string | number | boolean;
 
 function isField<T>(fieldOrValue: MaybeField): fieldOrValue is Field<T> {
   return typeof fieldOrValue === 'object';
@@ -95,17 +97,27 @@ export function compose<T extends Record<string, MaybeField>>(fieldsSchema: T,):
     fields: {} as { [K in keyof T]: FormField<FieldValueType<T[K]>> },
   });
 
-  const setErrorFx = createEffect<{ field: keyof Form<T>['fields']; error: string | null }>(({ field, error }) => {
-    const trigger = createEvent();
-
-    sample({
-      clock: trigger,
-      fn: () => error,
-      target: fields[field].setError
-    });
-
-    trigger();
+  const setErrorFx = createEffect<{ field: keyof Form<T>['fields']; error: string | null }, void>(({ field, error }) => {
+    fields[field].setError(error);
   });
+
+  const setErrorsFx = createEffect<{ [K in keyof Form<T>['fields']]: string | null }, void>((fieldToError) => {
+    for (const field in fieldToError) {
+      fields[field].setError(fieldToError[field]);
+    }
+  });
+
+  const setValueFx = createEffect<FieldsToValues<T>, void>(({ field, value }) => {
+    fields[field].change(value);
+  });
+
+  const setValuesFx = createEffect<{ [K in keyof Form<T>['fields']]: FieldValueType<T[K]> }, void>((fieldsToValues) => {
+    for (const field in fieldsToValues) {
+      fields[field].change(fieldsToValues[field]);
+    }
+  });
+
+  const validateFx = createEffect(() => true);
 
   const fields = meta.fields;
   const $values = combine(meta.values) as Store<{ [K in keyof T]: FieldValueType<T[K]> }>;
@@ -114,19 +126,56 @@ export function compose<T extends Record<string, MaybeField>>(fieldsSchema: T,):
   const setError = createEvent<{ field: keyof Form<T>['fields']; error: string | null }>();
   const setErrors = createEvent<{ [K in keyof T]: string | null }>();
 
-  const setValue = createEvent<{ field: keyof Form<T>['fields']; value: any }>();
-  const setValues = createEvent<{ [K in keyof T]: FieldValueType<T[K]> }>();
+  const setValue = createEvent<FieldsToValues<T>>();
+  const setValues = createEvent<{ [K in keyof Form<T>['fields']]: FieldValueType<T[K]> }>();
 
   const validate = createEvent();
   const validated = createEvent();
 
   const submit = createEvent();
+  const submitted = createEvent();
 
   sample({
     clock: setError,
-    fn: ({ field, error }) =>,
-    target:
-  })
+    target: setErrorFx,
+  });
+
+  sample({
+    clock: setErrors,
+    target: setErrorsFx,
+  });
+
+  sample({
+    clock: setValue,
+    target: setValueFx,
+  });
+
+  sample({
+    clock: setValues,
+    target: setValuesFx,
+  });
+
+  sample({
+    clock: submit,
+    target: validate,
+  });
+
+  sample({
+    clock: validate,
+    target: validateFx,
+  });
+
+  sample({
+    clock: validateFx.done,
+    fn: ({ params }) => params,
+    target: validated,
+  });
+
+  sample({
+    clock: validated,
+    filter: Boolean,
+    target: [submitted] // add submit fn
+  });
 
   return { fields, $values, $errors, setError, setErrors, setValue, setValues, validate, validated, submit };
 }
