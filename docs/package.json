@@ -1,0 +1,40 @@
+{
+  "name": "docs",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
+  "license": "ISC",
+  "main": "lib/docs.js",
+  "dependencies": {
+    "@effector-reform/core": "file:../packages/core",
+    "@effector-reform/react": "file:../packages/react",
+    "@effector-reform/yup": "file:../packages/yup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/docs.test.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "bugs": {
+    "url": "https://github.com/movpushmov/effector-reform/issues"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.6.16",
+    "@storybook/addon-interactions": "^7.6.16",
+    "@storybook/addon-links": "^7.6.16",
+    "@storybook/addon-onboarding": "^1.0.11",
+    "@storybook/blocks": "^7.6.16",
+    "@storybook/react": "^7.6.16",
+    "@storybook/react-vite": "^7.6.16",
+    "@storybook/test": "^7.6.16",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "storybook": "^7.6.16"
+  }
+}

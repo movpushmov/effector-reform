@@ -1,0 +1,1 @@
+export { yupAdapter } from './adapter';

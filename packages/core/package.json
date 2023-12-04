@@ -1,0 +1,57 @@
+{
+  "name": "@effector-reform/core",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "private": false,
+  "version": "0.1.6",
+  "description": "Effector composable forms core",
+  "keywords": [
+    "effector",
+    "composable",
+    "form",
+    "forms",
+    "validation",
+    "effector-reform",
+    "reform",
+    "effect-react-form",
+    "effector-form"
+  ],
+  "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
+  },
+  "scripts": {
+    "build": "vite build"
+  },
+  "bugs": {
+    "url": "https://github.com/movpushmov/effector-reform/issues"
+  },
+  "peerDependencies": {
+    "effector": "^23.1.0",
+    "patronum": "^2.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "gitHead": "4a65d5f778606d814081e2c6d50199088688faad"
+}

@@ -1,0 +1,62 @@
+{
+  "name": "@effector-reform/react",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "private": false,
+  "version": "0.1.6",
+  "description": "React bindings for effector composable forms",
+  "keywords": [
+    "effector",
+    "composable",
+    "form",
+    "forms",
+    "validation",
+    "react",
+    "effector-react",
+    "react",
+    "effector-reform",
+    "reform",
+    "effect-react-form",
+    "effector-form"
+  ],
+  "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
+  "license": "MIT",
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
+  },
+  "scripts": {
+    "build": "vite build"
+  },
+  "bugs": {
+    "url": "https://github.com/movpushmov/effector-reform/issues"
+  },
+  "dependencies": {
+    "@effector-reform/core": "^0.1.6",
+    "effector": "^23.2.0",
+    "effector-react": "^23.2.0",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.56"
+  },
+  "gitHead": "4a65d5f778606d814081e2c6d50199088688faad"
+}
