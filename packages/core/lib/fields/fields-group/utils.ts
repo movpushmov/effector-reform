@@ -1,13 +1,9 @@
 import { arrayFieldSymbol, createArrayField, isArrayField } from "../array-field";
 import { createField, isPrimaryField, primaryFieldSymbol } from "../primary-field";
-import { RawFieldsGroupSchema, ReadyFieldsGroupSchema, fieldsGroupSymbol } from "./types";
+import { RawFieldsGroupSchema, ReadyFieldsGroupSchema, UserFormSchema } from "./types";
 
-export function createGroup() {
-    return { type: fieldsGroupSymbol } as ReadyFieldsGroupSchema;
-}
-
-export function prepareFieldsSchema(schema: RawFieldsGroupSchema | ReadyFieldsGroupSchema): ReadyFieldsGroupSchema {
-    const result = createGroup();
+export function prepareFieldsSchema<T extends RawFieldsGroupSchema | ReadyFieldsGroupSchema>(schema: T): UserFormSchema<T> {
+    const result: UserFormSchema<any> = {};
 
     for (const key in schema) {
         const element = schema[key];
@@ -33,26 +29,26 @@ export function prepareFieldsSchema(schema: RawFieldsGroupSchema | ReadyFieldsGr
     return result;
 }
 
-export function forkGroup(group: ReadyFieldsGroupSchema): ReadyFieldsGroupSchema {
-    const result = createGroup();
+export function forkGroup<T extends ReadyFieldsGroupSchema>(group: T): UserFormSchema<T> {
+    const result: UserFormSchema<any> = {};
 
     for (const key in group) {
         const element = group[key];
 
         switch (element.type) {
-            case fieldsGroupSymbol: {
-                result[key] = forkGroup(element);
-
-                break;
-            }
             case arrayFieldSymbol:
             case primaryFieldSymbol: {
                 result[key] = element.forkOnCompose ? element.fork() : element;
 
                 break;
             }
+            case undefined: {
+                result[key] = forkGroup(element);
+
+                break;
+            }
         }
     }
 
-    return result;
+    return result as T;
 }

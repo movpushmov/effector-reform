@@ -4,5 +4,12 @@
     "effector-react": "^23.1.0",
     "patronum": "^2.1.1",
     "react": "^18.2.0"
+  },
+  "workspaces": [
+    "./docs",
+    "./packages/*"
+  ],
+  "devDependencies": {
+    "lerna": "^8.0.2"
   }
 }

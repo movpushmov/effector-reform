@@ -16,15 +16,15 @@ export interface PrimaryFieldApi<T extends PrimaryValue> {
     errorChanged: Event<FieldError>;
 }
 
-export interface PrimaryField<T extends PrimaryValue> extends PrimaryFieldApi<T> {
-    type: typeof primaryFieldSymbol;
+export interface PrimaryField<T extends PrimaryValue = any> extends PrimaryFieldApi<T> {
+    type: PrimaryFieldType;
 
     $value: Store<T>;
     $error: Store<FieldError>;
-    
+
     forkOnCompose: boolean;
 
-    fork: () => PrimaryField<T>;
+    fork: (options?: CreatePrimaryFieldOptions) => PrimaryField<T>;
 }
 
 export interface CreatePrimaryFieldOptions {
@@ -33,3 +33,4 @@ export interface CreatePrimaryFieldOptions {
 }
 
 export const primaryFieldSymbol = Symbol('primary-field');
+export type PrimaryFieldType = typeof primaryFieldSymbol;

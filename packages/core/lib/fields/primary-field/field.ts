@@ -41,10 +41,10 @@ export function createField<T extends PrimaryValue>(defaultValue: T, overrides?:
 
         forkOnCompose: options.forkOnCompose,
 
-        fork: () => createField($value.getState())
+        fork: (options?: CreatePrimaryFieldOptions) => createField(defaultValue, { ...overrides, ...options })
     };
 }
 
-export function isPrimaryField(props: any): props is PrimaryField<PrimaryValue> {
+export function isPrimaryField(props: any): props is PrimaryField {
     return 'type' in props && props.type === primaryFieldSymbol;
 }
