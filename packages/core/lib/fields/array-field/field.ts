@@ -1,40 +1,39 @@
 import { attach, createEvent, createStore, sample } from "effector";
-import { ArrayField, InsertOrReplacePayload, MovePayload, PushPayload, RemovePayload, SwapPayload, UnshiftPayload, arrayFieldSymbol, CreateArrayFieldOptions } from "./types";
-import { AnySchema, ReadyFieldsGroupSchema, UserFormSchema, forkGroup, prepareFieldsSchema } from "../fields-group";
+import { ArrayField, InsertOrReplacePayload, MovePayload, PushPayload, RemovePayload, SwapPayload, UnshiftPayload, arrayFieldSymbol, CreateArrayFieldOptions, ArrayFieldItem } from "./types";
 import { spread } from "patronum";
 
 const defaultOptions = {
     forkOnCompose: true,
 };
 
-export function createArrayField<T extends AnySchema>(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T> {
+export function createArrayField<T extends ArrayFieldItem>(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T> {
     const options = { ...defaultOptions, ...overrides };
 
-    const $values = createStore(values.map(prepareFieldsSchema));
+    const $values = createStore(values);
 
     const push = createEvent<PushPayload<T>>();
-    const pushed = createEvent<{ params: PushPayload<T>, result: ReadyFieldsGroupSchema[] }>();
+    const pushed = createEvent<{ params: PushPayload<T>, result: T[] }>();
 
     const swap = createEvent<SwapPayload>();
-    const swapped = createEvent<{ params: SwapPayload, result: ReadyFieldsGroupSchema[] }>();
+    const swapped = createEvent<{ params: SwapPayload, result: T[] }>();
 
     const move = createEvent<MovePayload>();
-    const moved = createEvent<{ params: MovePayload, result: ReadyFieldsGroupSchema[] }>();
+    const moved = createEvent<{ params: MovePayload, result: T[] }>();
 
     const insert = createEvent<InsertOrReplacePayload<T>>();
-    const inserted = createEvent<{ params: InsertOrReplacePayload<T>, result: ReadyFieldsGroupSchema[] }>();
+    const inserted = createEvent<{ params: InsertOrReplacePayload<T>, result: T[] }>();
 
     const unshift = createEvent<UnshiftPayload<T>>();
-    const unshifted = createEvent<{ params: UnshiftPayload<T>, result: ReadyFieldsGroupSchema[] }>();
+    const unshifted = createEvent<{ params: UnshiftPayload<T>, result: T[] }>();
 
     const remove = createEvent<RemovePayload>();
-    const removed = createEvent<{ params: RemovePayload, result: ReadyFieldsGroupSchema[] }>();
+    const removed = createEvent<{ params: RemovePayload, result: T[] }>();
 
     const pop = createEvent<void>();
-    const popped = createEvent<ReadyFieldsGroupSchema[]>();
+    const popped = createEvent<T[]>();
 
     const replace = createEvent<InsertOrReplacePayload<T>>();
-    const replaced = createEvent<{ params: InsertOrReplacePayload<T>, result: ReadyFieldsGroupSchema[] }>();
+    const replaced = createEvent<{ params: InsertOrReplacePayload<T>, result: T[] }>();
 
     const clear = createEvent();
     const cleared = createEvent();
@@ -42,12 +41,12 @@ export function createArrayField<T extends AnySchema>(values: T[], overrides?: C
     const reset = createEvent();
 
     sample({ clock: clear, fn: () => [], target: [$values, cleared] });
-    sample({ clock: reset, fn: () => values.map(prepareFieldsSchema), target: $values });
+    sample({ clock: reset, fn: () => values, target: $values });
 
     const pushFx = attach({
         source: $values,
         effect: (values, payload: PushPayload<T>) =>
-            values.concat(Array.isArray(payload) ? payload.map(prepareFieldsSchema) : prepareFieldsSchema(payload)),
+            values.concat(payload),
     });
 
     const swapFx = attach({
@@ -78,7 +77,7 @@ export function createArrayField<T extends AnySchema>(values: T[], overrides?: C
         source: $values,
         effect: (values, payload: InsertOrReplacePayload<T>) => {
             const newValues = [...values];
-            const insertPayload = Array.isArray(payload.value) ? payload.value.map(prepareFieldsSchema) : [prepareFieldsSchema(payload.value)];
+            const insertPayload = Array.isArray(payload.value) ? payload.value : [payload.value];
             newValues.splice(payload.index, 0, ...insertPayload);
 
             return newValues;
@@ -89,7 +88,7 @@ export function createArrayField<T extends AnySchema>(values: T[], overrides?: C
         source: $values,
         effect: (values, payload: UnshiftPayload<T>) => {
             const newValues = [...values];
-            newValues.unshift(...Array.isArray(payload) ? payload.map(prepareFieldsSchema) : [prepareFieldsSchema(payload)]);
+            newValues.unshift(...Array.isArray(payload) ? payload : [payload]);
 
             return newValues;
         }
@@ -119,7 +118,7 @@ export function createArrayField<T extends AnySchema>(values: T[], overrides?: C
         source: $values,
         effect: (values, payload: InsertOrReplacePayload<T>) => {
             const newValues = [...values];
-            const replacePayload = Array.isArray(payload.value) ? payload.value.map(prepareFieldsSchema) : [prepareFieldsSchema(payload.value)];
+            const replacePayload = Array.isArray(payload.value) ? payload.value : [payload.value];
             newValues.splice(payload.index, 1, ...replacePayload);
 
             return newValues;

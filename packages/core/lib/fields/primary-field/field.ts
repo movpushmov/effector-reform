@@ -10,16 +10,16 @@ const defaultOptions = {
 export function createField<T extends PrimaryValue>(defaultValue: T, overrides?: CreatePrimaryFieldOptions): PrimaryField<T> {
     const options = { ...defaultOptions, ...overrides };
 
-    const $value = createStore(defaultValue);
-    const $error = createStore<FieldError>(null);
+    const $value = createStore(defaultValue, { name: '<field value>' });
+    const $error = createStore<FieldError>(null, { name: '<field error>' });
 
-    const change = createEvent<T>();
-    const changed = createEvent<T>();
+    const change = createEvent<T>('<field change>');
+    const changed = createEvent<T>('<field changed>');
 
-    const setError = createEvent<FieldError>();
-    const errorChanged = createEvent<FieldError>();
+    const setError = createEvent<FieldError>('<field setError>');
+    const errorChanged = createEvent<FieldError>('<field error changed>');
 
-    const reset = createEvent();
+    const reset = createEvent('<field reset>');
     
     sample({ clock: change, target: $value });
     sample({ clock: $value, target: changed });

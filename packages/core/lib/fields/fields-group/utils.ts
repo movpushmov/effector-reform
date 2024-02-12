@@ -50,5 +50,5 @@ export function forkGroup<T extends ReadyFieldsGroupSchema>(group: T): UserFormS
         }
     }
 
-    return result as T;
+    return result;
 }

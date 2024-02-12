@@ -1,15 +1,15 @@
 import { Store, StoreValue } from "effector";
-import { ArrayField, } from "../array-field/types";
+import { ArrayField, ArrayFieldItem } from "../array-field/types";
 import { PrimaryField, PrimaryValue } from "../primary-field/types";
 
-type ReadyFieldsSchemaFieldType = PrimaryField | ArrayField<any> | ReadyFieldsGroupSchema;
+type ReadyFieldsSchemaFieldType = PrimaryField | ArrayField<ArrayFieldItem> | ReadyFieldsGroupSchema;
 type RawFieldsSchemaFieldType = PrimaryValue | RawFieldsSchemaFieldType[] | RawFieldsGroupSchema | ReadyFieldsSchemaFieldType;
 
 export type RawFieldsGroupSchema = {
     [k in string]: RawFieldsSchemaFieldType;
 }
 
-export type ReadyFieldsGroupSchema = { [k in string]: PrimaryField | ArrayField<any> | ReadyFieldsGroupSchema };
+export type ReadyFieldsGroupSchema = { [k in string]: PrimaryField | ArrayField<ArrayFieldItem> | ReadyFieldsGroupSchema };
 
 export type AnySchema = RawFieldsGroupSchema | ReadyFieldsGroupSchema;
 
