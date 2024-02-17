@@ -1,257 +1,343 @@
-import { attach, createEvent, createStore, sample } from "effector";
-import { ArrayField, InsertOrReplacePayload, MovePayload, PushPayload, RemovePayload, SwapPayload, UnshiftPayload, arrayFieldSymbol, CreateArrayFieldOptions, ArrayFieldItem } from "./types";
-import { spread } from "patronum";
+import { attach, createEvent, createStore, sample } from 'effector';
+import {
+  ArrayField,
+  InsertOrReplacePayload,
+  MovePayload,
+  PushPayload,
+  RemovePayload,
+  SwapPayload,
+  UnshiftPayload,
+  arrayFieldSymbol,
+  CreateArrayFieldOptions,
+  ArrayFieldItem,
+} from './types';
+import { spread } from 'patronum';
+import { FieldError } from '../types';
 
 const defaultOptions = {
-    forkOnCompose: true,
+  forkOnCompose: true,
 };
 
-export function createArrayField<T extends ArrayFieldItem>(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T> {
-    const options = { ...defaultOptions, ...overrides };
+export function createArrayField<T extends ArrayFieldItem>(
+  values: T[],
+  overrides?: CreateArrayFieldOptions,
+): ArrayField<T> {
+  const options = { ...defaultOptions, ...overrides };
 
-    const $values = createStore(values);
+  const $values = createStore(values);
+  const $error = createStore<FieldError>(null);
 
-    const push = createEvent<PushPayload<T>>();
-    const pushed = createEvent<{ params: PushPayload<T>, result: T[] }>();
+  const change = createEvent<T[]>();
+  const changed = createEvent<T[]>();
 
-    const swap = createEvent<SwapPayload>();
-    const swapped = createEvent<{ params: SwapPayload, result: T[] }>();
+  const changeError = createEvent<FieldError>();
+  const errorChanged = createEvent<FieldError>();
 
-    const move = createEvent<MovePayload>();
-    const moved = createEvent<{ params: MovePayload, result: T[] }>();
+  const push = createEvent<PushPayload<T>>();
+  const pushed = createEvent<{ params: PushPayload<T>; result: T[] }>();
 
-    const insert = createEvent<InsertOrReplacePayload<T>>();
-    const inserted = createEvent<{ params: InsertOrReplacePayload<T>, result: T[] }>();
+  const swap = createEvent<SwapPayload>();
+  const swapped = createEvent<{ params: SwapPayload; result: T[] }>();
 
-    const unshift = createEvent<UnshiftPayload<T>>();
-    const unshifted = createEvent<{ params: UnshiftPayload<T>, result: T[] }>();
+  const move = createEvent<MovePayload>();
+  const moved = createEvent<{ params: MovePayload; result: T[] }>();
 
-    const remove = createEvent<RemovePayload>();
-    const removed = createEvent<{ params: RemovePayload, result: T[] }>();
+  const insert = createEvent<InsertOrReplacePayload<T>>();
+  const inserted = createEvent<{
+    params: InsertOrReplacePayload<T>;
+    result: T[];
+  }>();
 
-    const pop = createEvent<void>();
-    const popped = createEvent<T[]>();
+  const unshift = createEvent<UnshiftPayload<T>>();
+  const unshifted = createEvent<{ params: UnshiftPayload<T>; result: T[] }>();
 
-    const replace = createEvent<InsertOrReplacePayload<T>>();
-    const replaced = createEvent<{ params: InsertOrReplacePayload<T>, result: T[] }>();
+  const remove = createEvent<RemovePayload>();
+  const removed = createEvent<{ params: RemovePayload; result: T[] }>();
 
-    const clear = createEvent();
-    const cleared = createEvent();
+  const pop = createEvent<void>();
+  const popped = createEvent<T[]>();
 
-    const reset = createEvent();
+  const replace = createEvent<InsertOrReplacePayload<T>>();
+  const replaced = createEvent<{
+    params: InsertOrReplacePayload<T>;
+    result: T[];
+  }>();
 
-    sample({ clock: clear, fn: () => [], target: [$values, cleared] });
-    sample({ clock: reset, fn: () => values, target: $values });
+  const clear = createEvent();
+  const cleared = createEvent();
 
-    const pushFx = attach({
-        source: $values,
-        effect: (values, payload: PushPayload<T>) =>
-            values.concat(payload),
-    });
+  const reset = createEvent();
 
-    const swapFx = attach({
-        source: $values,
-        effect: (values, payload: SwapPayload) => {
-            const newValues = [...values];
+  sample({ clock: clear, fn: () => [], target: [$values, cleared] });
+  sample({ clock: reset, fn: () => values, target: $values });
 
-            const element = newValues[payload.indexA];
+  const pushFx = attach({
+    source: $values,
+    effect: (values, payload: PushPayload<T>) => values.concat(payload),
+  });
 
-            newValues[payload.indexA] = newValues[payload.indexB];
-            newValues[payload.indexB] = element;
+  const swapFx = attach({
+    source: $values,
+    effect: (values, payload: SwapPayload) => {
+      const newValues = [...values];
 
-            return newValues;
-        },
-    });
+      const element = newValues[payload.indexA];
 
-    const moveFx = attach({
-        source: $values,
-        effect: (values, payload: MovePayload) => {
-            const newValues = [...values];
-            newValues.splice(payload.to, 0, ...newValues.splice(payload.from, 1));
+      newValues[payload.indexA] = newValues[payload.indexB];
+      newValues[payload.indexB] = element;
 
-            return newValues;
-        },
-    });
-    
-    const insertFx = attach({
-        source: $values,
-        effect: (values, payload: InsertOrReplacePayload<T>) => {
-            const newValues = [...values];
-            const insertPayload = Array.isArray(payload.value) ? payload.value : [payload.value];
-            newValues.splice(payload.index, 0, ...insertPayload);
+      return newValues;
+    },
+  });
 
-            return newValues;
-        }
-    });
+  const moveFx = attach({
+    source: $values,
+    effect: (values, payload: MovePayload) => {
+      const newValues = [...values];
+      newValues.splice(payload.to, 0, ...newValues.splice(payload.from, 1));
 
-    const unshiftFx = attach({
-        source: $values,
-        effect: (values, payload: UnshiftPayload<T>) => {
-            const newValues = [...values];
-            newValues.unshift(...Array.isArray(payload) ? payload : [payload]);
+      return newValues;
+    },
+  });
 
-            return newValues;
-        }
-    });
+  const insertFx = attach({
+    source: $values,
+    effect: (values, payload: InsertOrReplacePayload<T>) => {
+      const newValues = [...values];
+      const insertPayload = Array.isArray(payload.value)
+        ? payload.value
+        : [payload.value];
+      newValues.splice(payload.index, 0, ...insertPayload);
 
-    const removeFx = attach({
-        source: $values,
-        effect: (values, payload: RemovePayload) => {
-            const newValues = [...values];
-            newValues.splice(payload.index, 1);
+      return newValues;
+    },
+  });
 
-            return newValues;
-        }
-    });
+  const unshiftFx = attach({
+    source: $values,
+    effect: (values, payload: UnshiftPayload<T>) => {
+      const newValues = [...values];
+      newValues.unshift(...(Array.isArray(payload) ? payload : [payload]));
 
-    const popFx = attach({
-        source: $values,
-        effect: (values) => {
-            const newValues = [...values];
-            newValues.pop();
+      return newValues;
+    },
+  });
 
-            return newValues;
-        },
-    });
+  const removeFx = attach({
+    source: $values,
+    effect: (values, payload: RemovePayload) => {
+      const newValues = [...values];
+      newValues.splice(payload.index, 1);
 
-    const replaceFx = attach({
-        source: $values,
-        effect: (values, payload: InsertOrReplacePayload<T>) => {
-            const newValues = [...values];
-            const replacePayload = Array.isArray(payload.value) ? payload.value : [payload.value];
-            newValues.splice(payload.index, 1, ...replacePayload);
+      return newValues;
+    },
+  });
 
-            return newValues;
-        }
-    })
+  const popFx = attach({
+    source: $values,
+    effect: (values) => {
+      const newValues = [...values];
+      newValues.pop();
 
-    sample({ clock: push, target: pushFx });
+      return newValues;
+    },
+  });
 
-    sample({
-        clock: pushFx.done,
-        fn: ({ params, result }) => ({ pushed: { params, result }, values: result }),
-        target: spread({
-            pushed,
-            values: $values,
-        }),
-    });
+  const replaceFx = attach({
+    source: $values,
+    effect: (values, payload: InsertOrReplacePayload<T>) => {
+      const newValues = [...values];
+      const replacePayload = Array.isArray(payload.value)
+        ? payload.value
+        : [payload.value];
+      newValues.splice(payload.index, 1, ...replacePayload);
 
-    sample({ clock: swap, target: swapFx });
+      return newValues;
+    },
+  });
 
-    sample({
-        clock: swapFx.done,
-        fn: ({ params, result }) => ({ swapped: { params, result }, values: result }),
-        target: spread({
-            swapped,
-            values: $values,
-        }),
-    });
+  sample({ clock: change, target: [$values, changed] });
 
-    sample({ clock: move, target: moveFx });
+  sample({ clock: push, target: pushFx });
 
-    sample({
-        clock: moveFx.done,
-        fn: ({ params, result }) => ({ moved: { params, result }, values: result }),
-        target: spread({
-            moved,
-            values: $values,
-        }),
-    });
+  sample({
+    clock: pushFx.done,
+    fn: ({ params, result }) => ({
+      pushed: { params, result },
+      values: result,
+    }),
+    target: spread({
+      pushed,
+      values: $values,
+    }),
+  });
 
-    sample({ clock: insert, target: insertFx });
+  sample({ clock: swap, target: swapFx });
 
-    sample({
-        clock: insertFx.done,
-        fn: ({ params, result }) => ({ inserted: { params, result }, values: result }),
-        target: spread({
-            inserted,
-            values: $values,
-        }),
-    });
+  sample({
+    clock: swapFx.done,
+    fn: ({ params, result }) => ({
+      swapped: { params, result },
+      values: result,
+    }),
+    target: spread({
+      swapped,
+      values: $values,
+    }),
+  });
 
-    sample({ clock: unshift, target: unshiftFx });
+  sample({ clock: move, target: moveFx });
 
-    sample({
-        clock: unshiftFx.done,
-        fn: ({ params, result }) => ({ unshifted: { params, result }, values: result }),
-        target: spread({
-            unshifted,
-            values: $values,
-        }),
-    });
+  sample({
+    clock: moveFx.done,
+    fn: ({ params, result }) => ({ moved: { params, result }, values: result }),
+    target: spread({
+      moved,
+      values: $values,
+    }),
+  });
 
-    sample({
-        clock: remove, 
-        target: removeFx,
-    });
+  sample({ clock: insert, target: insertFx });
 
-    sample({
-        clock: removeFx.done,
-        fn: ({ params, result }) => ({ removed: { params, result }, values: result }),
-        target: spread({
-            removed,
-            values: $values,
-        }),
-    });
+  sample({
+    clock: insertFx.done,
+    fn: ({ params, result }) => ({
+      inserted: { params, result },
+      values: result,
+    }),
+    target: spread({
+      inserted,
+      values: $values,
+    }),
+  });
 
-    sample({
-        clock: pop,
-        target: popFx,
-    });
+  sample({ clock: unshift, target: unshiftFx });
 
-    sample({
-        clock: popFx.doneData,
-        target: [popped, $values],
-    });
+  sample({
+    clock: unshiftFx.done,
+    fn: ({ params, result }) => ({
+      unshifted: { params, result },
+      values: result,
+    }),
+    target: spread({
+      unshifted,
+      values: $values,
+    }),
+  });
 
-    sample({
-        clock: replace,
-        target: replaceFx,
-    });
+  sample({
+    clock: remove,
+    target: removeFx,
+  });
 
-    sample({
-        clock: replaceFx.done,
-        fn: ({ params, result }) => ({ replaced: { params, result }, values: result }),
-        target: spread({
-            replaced,
-            values: $values,
-        }),
-    });
+  sample({
+    clock: removeFx.done,
+    fn: ({ params, result }) => ({
+      removed: { params, result },
+      values: result,
+    }),
+    target: spread({
+      removed,
+      values: $values,
+    }),
+  });
 
-    return {
-        type: arrayFieldSymbol,
+  sample({
+    clock: pop,
+    target: popFx,
+  });
 
-        $values,
+  sample({
+    clock: popFx.doneData,
+    target: [popped, $values],
+  });
 
-        push,
-        pushed,
+  sample({
+    clock: replace,
+    target: replaceFx,
+  });
 
-        swap,
-        swapped,
+  sample({
+    clock: replaceFx.done,
+    fn: ({ params, result }) => ({
+      replaced: { params, result },
+      values: result,
+    }),
+    target: spread({
+      replaced,
+      values: $values,
+    }),
+  });
 
-        move,
-        moved,
+  sample({
+    clock: changeError,
+    target: $error,
+  });
 
-        insert,
-        inserted,
+  sample({
+    clock: $error,
+    target: errorChanged,
+  });
 
-        unshift,
-        unshifted,
+  return {
+    type: arrayFieldSymbol,
 
-        remove,
-        removed,
+    $values,
+    $error,
 
-        pop,
-        popped,
+    changeError,
+    errorChanged,
 
-        replace,
-        replaced,
+    change,
+    changed,
 
-        forkOnCompose: options.forkOnCompose,
-        fork: (options?: CreateArrayFieldOptions) => createArrayField(values, { ...overrides, ...options }),
-    };
+    push,
+    pushed,
+
+    swap,
+    swapped,
+
+    move,
+    moved,
+
+    insert,
+    inserted,
+
+    unshift,
+    unshifted,
+
+    remove,
+    removed,
+
+    pop,
+    popped,
+
+    replace,
+    replaced,
+
+    forkOnCompose: options.forkOnCompose,
+    fork: (options?: CreateArrayFieldOptions) =>
+      createArrayField(values, { ...overrides, ...options }),
+
+    '@@unitShape': () => ({
+      values: $values,
+      error: $error,
+
+      change,
+      changeError,
+
+      push,
+      move,
+      swap,
+      insert,
+      unshift,
+      remove,
+      pop,
+      replace,
+    }),
+  };
 }
 
-export function isArrayField(props: any): props is ArrayField<any> {
-    return 'type' in props && props.type === arrayFieldSymbol;
+export function isArrayField(props: any): props is ArrayField<ArrayFieldItem> {
+  return 'type' in props && props.type === arrayFieldSymbol;
 }

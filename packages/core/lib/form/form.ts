@@ -1,71 +1,60 @@
-import { createEffect, createEvent, sample } from "effector";
-import { AnySchema, arrayFieldSymbol, forkGroup, prepareFieldsSchema, primaryFieldSymbol, } from "../fields";
-import { ComposeOptions, FormValues, SetErrorPayload, SetErrorsPayload, SetValuePayload, SetValuesPayload } from "./types";
-import { getField, watchSchema } from "./utils";
+import { StoreValue, createEvent, sample } from 'effector';
+import { AnySchema, forkGroup, prepareFieldsSchema } from '../fields';
+import { FormType, FormValues } from './types';
+import { watchSchema } from './utils';
 
-export function compose<T extends AnySchema>(schema: T, options?: ComposeOptions) {
-    const fields = forkGroup(prepareFieldsSchema(schema));
-    const { $errors, $values } = watchSchema(fields);
+export function compose<T extends AnySchema>(schema: T) {
+  const fields = forkGroup(prepareFieldsSchema(schema));
+  const { $errors, $values } = watchSchema(fields);
 
-    type Fields = typeof fields;
+  type Fields = typeof fields;
+  type Errors = StoreValue<typeof $errors>;
+  type Values = StoreValue<typeof $values>;
 
-    const validateFx = createEffect(() => {});
+  const changed = createEvent<FormValues<Fields>>();
+  const errorsChanged = createEvent<Errors>();
 
-    const setValue = createEvent<SetValuePayload>();
-    const setValues = createEvent<SetValuesPayload>();
+  const submit = createEvent<void>();
+  const submitted = createEvent<FormValues<Fields>>();
 
-    const setError = createEvent<SetErrorPayload>();
-    const setErrors = createEvent<SetErrorsPayload>();
+  const validate = createEvent<void>();
+  const validated = createEvent<void>();
 
-    const changed = createEvent<FormValues<Fields>>();
+  sample({
+    clock: $values,
+    target: changed,
+  });
 
-    const submit = createEvent<void>();
-    const submitted = createEvent<FormValues<Fields>>();
+  sample({
+    clock: submit,
+    target: validate,
+  });
 
-    const validate = createEvent<void>();
-    const validated = createEvent<void>();
+  sample({
+    clock: validated,
+    source: $values,
+    target: submitted,
+  });
 
-    sample({
-        clock: $values,
-        target: changed,
-    });
+  return {
+    $errors,
+    $values,
 
-    sample({
-        clock: submit,
-        target: validate,
-    });
+    fields,
 
-    sample({
-        clock: validated,
-        source: $values,
-        target: submitted,
-    });
+    changed,
+    errorsChanged,
+    submit,
+    submitted,
+    validate,
+    validated,
 
-    return {
-        $errors,
-        $values,
+    '@@unitShape': () => ({
+      errors: $errors,
+      values: $values,
 
-        fields,
-
-        setValue,
-        setValues,
-        changed,
-        setError,
-        setErrors,
-        submit,
-        submitted,
-        validate,
-        validated,
-
-        '@@unitShape': () => ({
-            fields,
-            errors: $errors,
-            values: $values,
-
-            onChange: setValue,
-            setError: setError,
-            onSubmit: submit,
-            onValidate: validate,
-        }),
-    };
+      submit: submit,
+      validate: validate,
+    }),
+  } as FormType<Fields, Values, Errors>;
 }

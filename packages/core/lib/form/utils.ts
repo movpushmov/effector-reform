@@ -1,252 +1,355 @@
-import { createEffect, createEvent, createStore, sample } from "effector";
-import { ArrayFieldItem, PrimaryValue, ReadyFieldsGroupSchema, UserFormSchema, arrayFieldSymbol, isArrayField, isPrimaryField, primaryFieldSymbol } from "../fields";
-import { AnyFieldApi, FormErrors, FormFields, FormValues, WatchSchemaResult, OnNodeHandlers } from "./types";
+import { createEffect, createEvent, createStore, sample } from 'effector';
+import {
+  ArrayFieldItem,
+  PrimaryValue,
+  ReadyFieldsGroupSchema,
+  UserFormSchema,
+  arrayFieldSymbol,
+  primaryFieldSymbol,
+} from '../fields';
+import {
+  AnyFieldApi,
+  FormErrors,
+  FormFields,
+  FormValues,
+  WatchSchemaResult,
+  OnNodeHandlers,
+} from './types';
 
-export function watchSchema<T extends ReadyFieldsGroupSchema>(formSchema: T): WatchSchemaResult<T> {
-    let values = {} as FormValues<T>;
-    let errors = {} as FormErrors;
+export function watchSchema<T extends ReadyFieldsGroupSchema>(
+  formSchema: T,
+): WatchSchemaResult<T> {
+  let values = {} as FormValues<T>;
+  let errors = {} as FormErrors<T>;
 
-    const changeValues = createEvent<FormValues<T>>('change values');
-    const changeErrors = createEvent<FormErrors>();
+  const changeValues = createEvent<FormValues<T>>('change values');
+  const changeErrors = createEvent<FormErrors<T>>();
 
-    values = walkNodes(formSchema, [], {
-        onArrayField: (node, path) => {
-            const changeValuesFx = createEffect((value: ArrayFieldItem[]) => {
-                const valuesCopy = { ...values };
+  values = getValues({ formSchema });
+  errors = getErrors({ formSchema });
 
-                const rootPath = [...path];
-                const nodeKey = rootPath.pop()!;
+  const $values = createStore(values);
+  const $errors = createStore(errors);
 
-                const valuesNode = getNode(valuesCopy, rootPath);
+  getValues({
+    formSchema,
+    handlers: {
+      onArrayField: (node, path) => {
+        const changeValuesFx = createEffect((value: ArrayFieldItem[]) => {
+          const valuesCopy = { ...$values.getState() };
 
-                if (!valuesNode) {
-                    throw new Error();
-                }
+          const rootPath = [...path];
+          const nodeKey = rootPath.pop()!;
 
-                valuesNode[nodeKey] = value;
+          const valuesNode = getObjectNode(valuesCopy, rootPath);
 
-                return valuesCopy;
-            });
+          if (!valuesNode) {
+            throw new Error();
+          }
 
-            sample({
-                clock: node.$values,
-                target: changeValuesFx,
-            });
+          valuesNode[nodeKey] = value;
 
-            sample({
-                clock: changeValuesFx.doneData,
-                target: changeValues,
-            });
-        },
-        onPrimaryField: (node, path) => {
-            const changeValueFx = createEffect((value: PrimaryValue) => {
-                const valuesCopy = { ...values };
+          return valuesCopy;
+        });
 
-                const rootPath = [...path];
-                const nodeKey = rootPath.pop()!;
+        sample({
+          clock: node.$values,
+          target: changeValuesFx,
+        });
 
-                const valueNode = getNode(valuesCopy, rootPath);
+        sample({
+          clock: changeValuesFx.doneData,
+          target: changeValues,
+        });
+      },
+      onPrimaryField: (node, path) => {
+        const changeValueFx = createEffect((value: PrimaryValue) => {
+          const valuesCopy = { ...$values.getState() };
 
-                if (!valueNode) {
-                    throw new Error();
-                }
-                valueNode[nodeKey] = value;
+          const rootPath = [...path];
+          const nodeKey = rootPath.pop()!;
 
-                return valuesCopy;
-            });
+          const valueNode = getObjectNode(valuesCopy, rootPath);
 
-            sample({
-                clock: node.$value,
-                target: changeValueFx,
-            });
+          if (!valueNode) {
+            throw new Error();
+          }
+          valueNode[nodeKey] = value;
 
-            sample({
-                clock: changeValueFx.doneData,
-                target: changeValues,
-            });
-        }
-    });
+          return valuesCopy;
+        });
 
-    errors = walkNodes(formSchema, [], {
-        onPrimaryField: (node, path) => {
-            const changeValueFx = createEffect((value: string | null) => {
-                const valuesCopy = { ...values };
+        sample({
+          clock: node.$value,
+          target: changeValueFx,
+        });
 
-                const rootPath = [...path];
-                const nodeKey = rootPath.pop()!;
+        sample({
+          clock: changeValueFx.doneData,
+          target: changeValues,
+        });
+      },
+    },
+  });
 
-                const valueNode = getNode(valuesCopy, rootPath);
+  getErrors({
+    formSchema,
+    handlers: {
+      onPrimaryField: (node, path) => {
+        const changeErrorFx = createEffect((error: string | null) => {
+          const errorsCopy = { ...$errors.getState() };
 
-                if (!valueNode) {
-                    throw new Error();
-                }
+          const rootPath = [...path];
+          const nodeKey = rootPath.pop()!;
 
-                valueNode[nodeKey] = value;
+          const errorNode = getObjectNode(errorsCopy, rootPath);
 
-                return valuesCopy;
-            });
+          if (!errorNode) {
+            throw new Error();
+          }
 
-            sample({
-                clock: node.$error,
-                target: changeValueFx,
-            });
+          errorNode[nodeKey] = error;
 
-            sample({
-                clock: changeValueFx.doneData,
-                target: changeValues,
-            });
-        }
-    });
-    
-    const $values = createStore(values);
-    const $errors = createStore(errors);
+          return errorsCopy;
+        });
 
-    sample({
-        clock: changeValues,
-        target: $values,
-    });
+        sample({
+          clock: node.$error,
+          target: changeErrorFx,
+        });
 
-    sample({
-        clock: changeErrors,
-        target: $errors,
-    });
+        sample({
+          clock: changeErrorFx.doneData,
+          target: changeErrors,
+        });
+      },
+    },
+  });
 
-    return { $values, $errors };
+  sample({
+    clock: changeValues,
+    target: $values,
+  });
+
+  sample({
+    clock: changeErrors,
+    target: $errors,
+  });
+
+  return { $values, $errors };
 }
 
-function walkNodes<T extends ReadyFieldsGroupSchema>(formSchema: T, path: string[] = [], handlers?: OnNodeHandlers): FormValues<T> {
-    const result: UserFormSchema<any> = {};
+interface WalkerProps<T extends ReadyFieldsGroupSchema> {
+  formSchema: T;
+  path?: string[];
+  handlers?: OnNodeHandlers;
+}
 
-    for (const key in formSchema) {
-        const node = formSchema[key];
+function getValues<T extends ReadyFieldsGroupSchema>({
+  formSchema,
+  handlers,
+  path = [],
+}: WalkerProps<T>): FormValues<T> {
+  const result: UserFormSchema<any> = {};
 
-        switch (node.type) {
-            case arrayFieldSymbol: {
-                result[key] = node.$values.getState();
-                handlers?.onArrayField?.(node, [...path, key]);
+  for (const key in formSchema) {
+    const node = formSchema[key];
 
-                break;
-            }
-            case primaryFieldSymbol: {
-                result[key] = node.$value.getState();
-                handlers?.onPrimaryField?.(node, [...path, key]);
+    switch (node.type) {
+      case arrayFieldSymbol: {
+        result[key] = node.$values.getState();
+        handlers?.onArrayField?.(node, [...path, key]);
 
-                break;
-            }
-            case undefined: {
-                result[key] = walkNodes(node, [...path, key]);
+        break;
+      }
+      case primaryFieldSymbol: {
+        result[key] = node.$value.getState();
+        handlers?.onPrimaryField?.(node, [...path, key]);
 
-                break;
-            }
-        }
+        break;
+      }
+      case undefined: {
+        result[key] = getValues({
+          formSchema: node,
+          path: [...path, key],
+          handlers,
+        });
+
+        break;
+      }
     }
+  }
 
-    return result;
+  return result;
 }
 
-export function getValue(path: string, node: FormFields): PrimaryValue | FormFields[] {
-    const field = getField(path.split('.'), node, path);
+function getErrors<T extends ReadyFieldsGroupSchema>({
+  formSchema,
+  handlers,
+  path = [],
+}: WalkerProps<T>): FormErrors<T> {
+  const result: UserFormSchema<any> = {};
 
-    switch (field.type) {
-        case primaryFieldSymbol: {
-            return field.$value.getState();
-        }
-        case arrayFieldSymbol: {
-            return field.$values.getState();
-        }
-        default: {
-            throw new Error(`Unknown field type. Received: ${field}`);
-        }
+  for (const key in formSchema) {
+    const node = formSchema[key];
+
+    switch (node.type) {
+      case arrayFieldSymbol: {
+        result[key] = node.$values.getState();
+        handlers?.onArrayField?.(node, [...path, key]);
+
+        break;
+      }
+      case primaryFieldSymbol: {
+        result[key] = node.$value.getState();
+        handlers?.onPrimaryField?.(node, [...path, key]);
+
+        break;
+      }
+      case undefined: {
+        result[key] = getErrors({
+          formSchema: node,
+          path: [...path, key],
+          handlers,
+        });
+
+        break;
+      }
     }
+  }
+
+  return result;
 }
 
-type Node = FormValues<any> | FormErrors | PrimaryValue | ArrayFieldItem[] | string | null | FormErrors[];
+export function getValue(
+  path: string,
+  node: FormFields,
+): PrimaryValue | FormFields[] {
+  const field = getField(path.split('.'), node, path);
+
+  switch (field.type) {
+    case primaryFieldSymbol: {
+      return field.$value.getState();
+    }
+    case arrayFieldSymbol: {
+      return field.$values.getState();
+    }
+    default: {
+      throw new Error(`Unknown field type. Received: ${field}`);
+    }
+  }
+}
+
+export type ObjectNode = FormValues<any> | FormErrors<any>;
+export type Node = ObjectNode | ArrayFieldItem[] | PrimaryValue | string | null;
 
 export function getNode<T extends Node>(node: T, path: string[]): Node {
-    if (path.length === 0) {
-        return node;
+  if (path.length === 0) {
+    return node;
+  }
+
+  if (!node) {
+    throw new Error(
+      `Node is null or undefined, but path is not empty: ${path.join(' ')}`,
+    );
+  }
+
+  if (node instanceof Date) {
+    throw new Error(`Node is Date, but path is not empty: ${path.join(' ')}`);
+  }
+
+  if (Array.isArray(node)) {
+    const key = path.pop()!;
+
+    if (!/\[\d+\]/.test(key)) {
+      throw new Error(
+        `Node is array, but next path key is not array indexer in [number] format. ${key}`,
+      );
     }
 
-    if (!node) {
-        throw new Error(`Node is null or undefined, but path is not empty: ${path.join(' ')}`);
-    }
+    const index = parseInt(key.replace('[', '').replace(']', ''));
 
-    if (node instanceof Date) {
-        throw new Error(`Node is Date, but path is not empty: ${path.join(' ')}`);
-    }
+    return getNode(node[index], path);
+  }
 
-    if (Array.isArray(node)) {
-        const key = path.pop()!;
+  if (typeof node === 'object') {
+    const key = path.pop()!;
 
-        if (!/\[\d+\]/.test(key)) {
-            throw new Error(`Node is array, but next path key is not array indexer in [number] format. ${key}`)
-        }
+    return getNode(node[key] as Node, path);
+  }
 
-        const index = parseInt(key.replace('[', '').replace(']', ''))
-
-        return getNode(node[index], path);
-    }
-
-    if (typeof node === 'object') {
-        const key = path.pop()!;
-
-        return getNode(node[key] as Node, path);
-    }
-
-    throw new Error(`Node is primary value, but path is not empty: ${path.join(' ')}`);
+  throw new Error(
+    `Node is primary value, but path is not empty: ${path.join(' ')}`,
+  );
 }
 
-export function getField(path: string[], node: FormFields, originalPath: string): AnyFieldApi {
-    const key = path.shift()!;
+export function getObjectNode<T extends Node>(
+  node: T,
+  path: string[],
+): ObjectNode | null {
+  const n = getNode(node, path);
 
-    if (!(key in node)) {
-        throw new Error(`Unknown property ${key}' in object ${node}. Original path: ${originalPath}`);
-    }
+  if (typeof n !== 'object' || n instanceof Date || Array.isArray(n)) {
+    throw new Error(`Excepted object node, received ${n}.`);
+  }
 
-    const value = node[key];
+  return n;
+}
 
-    if (!value) {
-        throw new Error(`Unknown field with name ${key} in node ${node}. Original path: ${originalPath}`);
-    }
+export function getField(
+  path: string[],
+  node: FormFields,
+  originalPath: string,
+): AnyFieldApi {
+  const key = path.shift()!;
 
-    if (typeof value === 'object' && !(value instanceof Date)) {
-        if ('type' in value) {
-            if (path.length === 0) {
-                return value as AnyFieldApi;
-            }
+  if (!(key in node)) {
+    throw new Error(
+      `Unknown property ${key}' in object ${node}. Original path: ${originalPath}`,
+    );
+  }
 
-            switch (value.type) {
-                case primaryFieldSymbol: {
-                    throw new Error(`Cannot get subproperty of primary field. Original path: ${originalPath}, steps remaining: ${path}`);
-                }
-                case arrayFieldSymbol: {
-                    const index = path.shift();
+  const value = node[key];
 
-                    if (!index || !(/^\[\d+\]$/).test(index)) {
-                        throw new Error(`Path part after array key must be in format [index]. Received: ${index}`);
-                    }
+  if (!value) {
+    throw new Error(
+      `Unknown field with name ${key} in node ${node}. Original path: ${originalPath}`,
+    );
+  }
 
-                    const parsedIndex = parseInt(index.slice(1, index.length - 1));
-                    const element = value[parsedIndex];
+  if (typeof value === 'object' && !(value instanceof Date)) {
+    if ('type' in value) {
+      if (path.length === 0) {
+        return value as AnyFieldApi;
+      }
 
-                    if (!element) {
-                        throw new Error(`Element with index ${parsedIndex} doesn't exists in array field ${JSON.stringify(value)}`)
-                    }
-
-                    return getField(path, element, originalPath);
-                }
-                default: {
-                    throw new Error(`Unknown field type. Received: ${value}`)
-                }
-            }
-        } else {
-            if (path.length === 0) {
-                throw new Error(`'No parts of path found and target is not field. Received: ${value}'`);
-            }
-
-            return getField(path, value, originalPath);
+      switch (value.type) {
+        case primaryFieldSymbol: {
+          throw new Error(
+            `Cannot get subproperty of primary field. Original path: ${originalPath}, steps remaining: ${path}`,
+          );
         }
-    }
+        case arrayFieldSymbol: {
+          throw new Error(
+            `Cannot get subproperty of array field. Original path: ${originalPath}, steps remaining: ${path}`,
+          );
+        }
+        default: {
+          throw new Error(`Unknown field type. Received: ${value}`);
+        }
+      }
+    } else {
+      if (path.length === 0) {
+        throw new Error(
+          `'No parts of path found and target is not field. Received: ${value}'`,
+        );
+      }
 
-    throw new Error(`Received primary value instead of field. Received: ${value}`);
+      return getField(path, value, originalPath);
+    }
+  }
+
+  throw new Error(
+    `Received primary value instead of field. Received: ${value}`,
+  );
 }
