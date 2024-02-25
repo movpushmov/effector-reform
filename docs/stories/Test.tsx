@@ -3,38 +3,39 @@ import {
   createArrayField,
   createField,
 } from '@effector-composable-forms/core';
-import { Form, useField, useForm } from '@effector-composable-forms/react';
-import { createEvent, sample } from 'effector';
-import { useUnit } from 'effector-react';
+import { Form, useForm } from '@effector-composable-forms/react';
+import { useEffect } from 'react';
 
 const nick = createField<string>('');
 const password = createField<string>('');
 
-const array = createArrayField<{ a?: number; b?: number }>([], {
+const array = createArrayField<{ a: number; b: number }>([], {
   forkOnCompose: false,
 });
 
-const form = compose({ nick, password, array });
+const arr = createArrayField<number>([]);
 
-const e = createEvent();
-
-sample({
-  clock: e,
-  fn: () => 'test',
-  target: [form.fields.nick.change, nick.change],
-});
+const form = compose({ nick, password, array, arr });
 
 export function Test() {
-  const props = useForm(form);
-  const field = useField(nick);
-  const e1 = useUnit(e);
+  const f = useForm(form);
 
-  console.log(props, field);
+  useEffect(() => {
+    f.setValues({
+      arr: [1, 6],
+      array: [{ a: 10, b: 20 }],
+      nick: 'test',
+      password: 'password',
+    });
+  }, []);
+
+  console.log(f.values, f.fields);
 
   return (
     <>
-      <Form model={form}></Form>
-      <button onClick={e1}>click me!</button>
+      <Form model={form}>
+        <button type="submit">click me!</button>
+      </Form>
     </>
   );
 }

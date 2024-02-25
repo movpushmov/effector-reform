@@ -1,5 +1,12 @@
-import { attach, createEvent, createStore, sample } from 'effector';
 import {
+  attach,
+  combine,
+  createEffect,
+  createEvent,
+  createStore,
+  sample,
+} from 'effector';
+import type {
   ArrayField,
   InsertOrReplacePayload,
   MovePayload,
@@ -7,60 +14,120 @@ import {
   RemovePayload,
   SwapPayload,
   UnshiftPayload,
-  arrayFieldSymbol,
   CreateArrayFieldOptions,
-  ArrayFieldItem,
+  ArrayFieldItemType,
 } from './types';
 import { spread } from 'patronum';
-import { FieldError } from '../types';
+import { FieldError, InnerArrayFieldApi } from '../types';
+import {
+  AnySchema,
+  ReadyFieldsGroupSchema,
+  UserFormSchema,
+  prepareFieldsSchema,
+} from '../fields-group';
+import { PrimaryValue, isPrimaryValue } from '../primary-field';
+import { arrayFieldSymbol } from './symbol';
+import { clearSchemaNode, filterUnused } from './utils';
 
 const defaultOptions = {
   forkOnCompose: true,
 };
 
-export function createArrayField<T extends ArrayFieldItem>(
-  values: T[],
-  overrides?: CreateArrayFieldOptions,
-): ArrayField<T> {
+export function createArrayField<
+  T extends PrimaryValue | AnySchema,
+  Value = UserFormSchema<T>,
+>(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T, Value> {
+  type Values = Value[];
+
+  function getDefaultValues() {
+    return values.map(prepareFieldsSchema) as Values;
+  }
+
+  function preparePayload<T extends ArrayFieldItemType>(
+    payload: T | T[],
+  ): Values {
+    return Array.isArray(payload)
+      ? (payload.map(prepareFieldsSchema) as Values)
+      : [prepareFieldsSchema(payload)];
+  }
+
   const options = { ...defaultOptions, ...overrides };
 
-  const $values = createStore(values);
-  const $error = createStore<FieldError>(null);
+  const clearNodesFx = createEffect(
+    ({ nodes, indexes }: ReturnType<typeof filterUnused>) => {
+      for (const node of nodes) {
+        if (isPrimaryValue(node)) {
+          break;
+        }
+
+        clearSchemaNode(node as ReadyFieldsGroupSchema | PrimaryValue);
+      }
+
+      return indexes;
+    },
+  );
+
+  const $values = createStore(getDefaultValues(), {
+    name: '<array field values>',
+  });
+
+  const $innerError = createStore<FieldError>(null, {
+    name: '<inner field error>',
+  });
+
+  const $outerError = createStore<FieldError>(null, {
+    name: '<outer field error>',
+  });
+
+  const $error = combine({
+    innerError: $innerError,
+    outerError: $outerError,
+  }).map(({ innerError, outerError }) => outerError || innerError);
+
+  const $isValid = $error.map((error) => error === null);
+  const $isDirty = createStore(false);
 
   const change = createEvent<T[]>();
-  const changed = createEvent<T[]>();
+  const changed = createEvent<Values>();
 
+  const setInnerError = createEvent<FieldError>();
   const changeError = createEvent<FieldError>();
   const errorChanged = createEvent<FieldError>();
 
   const push = createEvent<PushPayload<T>>();
-  const pushed = createEvent<{ params: PushPayload<T>; result: T[] }>();
+  const pushed = createEvent<{
+    params: PushPayload<T>;
+    result: Values;
+  }>();
 
   const swap = createEvent<SwapPayload>();
-  const swapped = createEvent<{ params: SwapPayload; result: T[] }>();
+  const swapped = createEvent<{ params: SwapPayload; result: Values }>();
 
   const move = createEvent<MovePayload>();
-  const moved = createEvent<{ params: MovePayload; result: T[] }>();
+  const moved = createEvent<{ params: MovePayload; result: Values }>();
 
   const insert = createEvent<InsertOrReplacePayload<T>>();
   const inserted = createEvent<{
     params: InsertOrReplacePayload<T>;
-    result: T[];
+    result: Values;
   }>();
 
   const unshift = createEvent<UnshiftPayload<T>>();
-  const unshifted = createEvent<{ params: UnshiftPayload<T>; result: T[] }>();
+  const unshifted = createEvent<{
+    params: UnshiftPayload<T>;
+    result: Values;
+  }>();
 
   const remove = createEvent<RemovePayload>();
-  const removed = createEvent<{ params: RemovePayload; result: T[] }>();
+  const removed = createEvent<{ params: RemovePayload; result: Values }>();
 
   const pop = createEvent<void>();
-  const popped = createEvent<T[]>();
+  const popped = createEvent<Values>();
 
   const replace = createEvent<InsertOrReplacePayload<T>>();
   const replaced = createEvent<{
     params: InsertOrReplacePayload<T>;
-    result: T[];
+    result: Values;
   }>();
 
   const clear = createEvent();
@@ -68,12 +135,28 @@ export function createArrayField<T extends ArrayFieldItem>(
 
   const reset = createEvent();
 
-  sample({ clock: clear, fn: () => [], target: [$values, cleared] });
-  sample({ clock: reset, fn: () => values, target: $values });
+  const syncFx = attach({
+    source: $values,
+    effect: async (values, newValues: Values): Promise<Values> => {
+      await clearNodesFx(filterUnused(values, newValues));
+
+      return newValues;
+    },
+  });
+
+  sample({ clock: $values, fn: () => true, target: $isDirty });
+  sample({ clock: syncFx.doneData, target: $values });
+  sample({ clock: clear, fn: () => [], target: [syncFx, cleared] });
+  sample({
+    clock: reset,
+    fn: () => getDefaultValues(),
+    target: syncFx,
+  });
 
   const pushFx = attach({
     source: $values,
-    effect: (values, payload: PushPayload<T>) => values.concat(payload),
+    effect: (values, payload: PushPayload<T>) =>
+      values.concat(preparePayload(payload)),
   });
 
   const swapFx = attach({
@@ -104,10 +187,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     source: $values,
     effect: (values, payload: InsertOrReplacePayload<T>) => {
       const newValues = [...values];
-      const insertPayload = Array.isArray(payload.value)
-        ? payload.value
-        : [payload.value];
-      newValues.splice(payload.index, 0, ...insertPayload);
+      newValues.splice(payload.index, 0, ...preparePayload(payload.value));
 
       return newValues;
     },
@@ -117,7 +197,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     source: $values,
     effect: (values, payload: UnshiftPayload<T>) => {
       const newValues = [...values];
-      newValues.unshift(...(Array.isArray(payload) ? payload : [payload]));
+      newValues.unshift(...preparePayload(payload));
 
       return newValues;
     },
@@ -125,9 +205,9 @@ export function createArrayField<T extends ArrayFieldItem>(
 
   const removeFx = attach({
     source: $values,
-    effect: (values, payload: RemovePayload) => {
+    effect: async (values, payload: RemovePayload) => {
       const newValues = [...values];
-      newValues.splice(payload.index, 1);
+      newValues.splice(payload.index, 1)[0];
 
       return newValues;
     },
@@ -147,16 +227,17 @@ export function createArrayField<T extends ArrayFieldItem>(
     source: $values,
     effect: (values, payload: InsertOrReplacePayload<T>) => {
       const newValues = [...values];
-      const replacePayload = Array.isArray(payload.value)
-        ? payload.value
-        : [payload.value];
-      newValues.splice(payload.index, 1, ...replacePayload);
+      newValues.splice(payload.index, 1, ...preparePayload(payload.value));
 
       return newValues;
     },
   });
 
-  sample({ clock: change, target: [$values, changed] });
+  sample({
+    clock: change,
+    fn: (payload) => preparePayload(payload),
+    target: [syncFx, changed],
+  });
 
   sample({ clock: push, target: pushFx });
 
@@ -168,7 +249,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     }),
     target: spread({
       pushed,
-      values: $values,
+      values: syncFx,
     }),
   });
 
@@ -182,7 +263,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     }),
     target: spread({
       swapped,
-      values: $values,
+      values: syncFx,
     }),
   });
 
@@ -193,7 +274,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     fn: ({ params, result }) => ({ moved: { params, result }, values: result }),
     target: spread({
       moved,
-      values: $values,
+      values: syncFx,
     }),
   });
 
@@ -207,7 +288,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     }),
     target: spread({
       inserted,
-      values: $values,
+      values: syncFx,
     }),
   });
 
@@ -221,7 +302,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     }),
     target: spread({
       unshifted,
-      values: $values,
+      values: syncFx,
     }),
   });
 
@@ -238,7 +319,7 @@ export function createArrayField<T extends ArrayFieldItem>(
     }),
     target: spread({
       removed,
-      values: $values,
+      values: syncFx,
     }),
   });
 
@@ -249,7 +330,7 @@ export function createArrayField<T extends ArrayFieldItem>(
 
   sample({
     clock: popFx.doneData,
-    target: [popped, $values],
+    target: [syncFx, popped],
   });
 
   sample({
@@ -265,13 +346,18 @@ export function createArrayField<T extends ArrayFieldItem>(
     }),
     target: spread({
       replaced,
-      values: $values,
+      values: syncFx,
     }),
   });
 
   sample({
     clock: changeError,
-    target: $error,
+    target: $outerError,
+  });
+
+  sample({
+    clock: setInnerError,
+    target: $innerError,
   });
 
   sample({
@@ -285,6 +371,10 @@ export function createArrayField<T extends ArrayFieldItem>(
     $values,
     $error,
 
+    $isDirty,
+    $isValid,
+
+    setInnerError,
     changeError,
     errorChanged,
 
@@ -299,6 +389,8 @@ export function createArrayField<T extends ArrayFieldItem>(
 
     move,
     moved,
+
+    cleared: clearNodesFx.doneData,
 
     insert,
     inserted,
@@ -315,7 +407,9 @@ export function createArrayField<T extends ArrayFieldItem>(
     replace,
     replaced,
 
+    reset,
     forkOnCompose: options.forkOnCompose,
+
     fork: (options?: CreateArrayFieldOptions) =>
       createArrayField(values, { ...overrides, ...options }),
 
@@ -323,9 +417,13 @@ export function createArrayField<T extends ArrayFieldItem>(
       values: $values,
       error: $error,
 
+      isDirty: $isDirty,
+      isValid: $isValid,
+
       change,
       changeError,
 
+      reset,
       push,
       move,
       swap,
@@ -335,9 +433,5 @@ export function createArrayField<T extends ArrayFieldItem>(
       pop,
       replace,
     }),
-  };
-}
-
-export function isArrayField(props: any): props is ArrayField<ArrayFieldItem> {
-  return 'type' in props && props.type === arrayFieldSymbol;
+  } as ArrayField<T, Value> & InnerArrayFieldApi;
 }

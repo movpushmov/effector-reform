@@ -1,7 +1,22 @@
 import { EventCallable, Store, Event } from 'effector';
 import { FieldError } from '../types';
+import { primaryFieldSymbol } from './symbol';
 
-export type PrimaryValue = string | number | boolean | Date;
+export type PrimaryValue =
+  | string
+  | number
+  | bigint
+  | boolean
+  | Date
+  | Blob
+  | Buffer
+  | ArrayBuffer
+  | Int8Array
+  | Int16Array
+  | Int32Array
+  | BigInt64Array
+  | File
+  | FileList;
 
 export interface PrimaryFieldForkConfig<T extends PrimaryValue>
   extends CreatePrimaryFieldOptions {
@@ -13,16 +28,21 @@ export interface PrimaryFieldApi<T extends PrimaryValue> {
   change: EventCallable<T>;
   changed: Event<T>;
 
+  reset: EventCallable<void>;
+
   changeError: EventCallable<FieldError>;
   errorChanged: Event<FieldError>;
 }
 
 export interface PrimaryField<T extends PrimaryValue = any>
   extends PrimaryFieldApi<T> {
-  type: PrimaryFieldType;
+  type: PrimaryFieldSymbolType;
 
   $value: Store<T>;
   $error: Store<FieldError>;
+
+  $isDirty: Store<boolean>;
+  $isValid: Store<boolean>;
 
   forkOnCompose: boolean;
 
@@ -31,6 +51,11 @@ export interface PrimaryField<T extends PrimaryValue = any>
   '@@unitShape': () => {
     value: Store<T>;
     error: Store<FieldError>;
+
+    isDirty: Store<boolean>;
+    isValid: Store<boolean>;
+
+    reset: EventCallable<void>;
 
     change: EventCallable<T>;
     changeError: EventCallable<FieldError>;
@@ -42,5 +67,4 @@ export interface CreatePrimaryFieldOptions {
   forkOnCompose?: boolean;
 }
 
-export const primaryFieldSymbol = Symbol('primary-field');
-export type PrimaryFieldType = typeof primaryFieldSymbol;
+export type PrimaryFieldSymbolType = typeof primaryFieldSymbol;

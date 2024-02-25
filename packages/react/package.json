@@ -32,10 +32,10 @@
   "dependencies": {
     "@effector-composable-forms/core": "file:../core",
     "effector-react": "^23.2.0",
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "effector": "^23.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.56",
-    "effector": "^23.2.0"
+    "@types/react": "^18.2.56"
   }
 }

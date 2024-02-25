@@ -1,23 +1,56 @@
 import { EventCallable, Store, StoreValue } from 'effector';
 import {
+  AnySchema,
   ArrayField,
   ArrayFieldApi,
-  ArrayFieldItem,
-  ArrayFieldType,
+  ArrayFieldSymbolType,
   FieldError,
+  PartialRecursive,
   PrimaryField,
   PrimaryFieldApi,
-  PrimaryFieldType,
+  PrimaryFieldSymbolType,
   PrimaryValue,
   ReadyFieldsGroupSchema,
   UserFormSchema,
 } from '../fields';
 
-export interface ComposeOptions {}
+export type SyncValidationFn<
+  Schema extends ReadyFieldsGroupSchema,
+  Values = FormValues<Schema>,
+  Errors extends object = FormErrors<Schema>,
+> = (values: Values) => PartialRecursive<Errors>;
+
+export type AsyncValidationFn<
+  Schema extends ReadyFieldsGroupSchema,
+  Values = FormValues<Schema>,
+  Errors extends object = FormErrors<Schema>,
+> = (values: Values) => Promise<PartialRecursive<Errors>>;
+
+type ValidationStrategy = 'blur' | 'change' | 'submit';
+
+export interface ComposeOptions<Schema extends ReadyFieldsGroupSchema> {
+  validation?: SyncValidationFn<Schema> | AsyncValidationFn<Schema>;
+  validationStrategies?: ValidationStrategy[];
+}
 
 export type OnNodeHandlers = {
-  onArrayField?: (node: ArrayField<ArrayFieldItem>, path: string[]) => void;
-  onPrimaryField?: (node: PrimaryField<PrimaryValue>, path: string[]) => void;
+  onArrayField?: (
+    node: ArrayField<ReadyFieldsGroupSchema>,
+    nodeKey: string,
+    path: string[],
+  ) => void;
+
+  onPrimaryField?: (
+    node: PrimaryField<PrimaryValue>,
+    nodeKey: string,
+    path: string[],
+  ) => void;
+
+  onGroup?: (
+    node: ReadyFieldsGroupSchema,
+    nodeKey: string,
+    path: string[],
+  ) => void;
 };
 
 export type SetValuePayload = { field: string; value: any };
@@ -26,12 +59,16 @@ export type SetValuesPayload = SetValuePayload[];
 export type SetErrorPayload = { field: string; value: string | null };
 export type SetErrorsPayload = SetErrorPayload[];
 
-export type FormValues<T extends ReadyFieldsGroupSchema | ArrayFieldItem> = {
-  [k: string]: T extends PrimaryField<any>
-    ? StoreValue<T['$value']>
-    : T extends ArrayField<ArrayFieldItem>
-      ? FormValues<StoreValue<T['$values']>[number]>
-      : FormValues<T>;
+export type FormValues<T extends ReadyFieldsGroupSchema> = {
+  [K in keyof T]: T[K] extends PrimaryField<any>
+    ? StoreValue<T[K]['$value']>
+    : T[K] extends ArrayField<any, infer D>
+      ? D extends ReadyFieldsGroupSchema
+        ? FormValues<D>[]
+        : D[]
+      : T[K] extends ReadyFieldsGroupSchema
+        ? FormValues<T[K]>
+        : never;
 };
 
 export interface WatchSchemaResult<T extends ReadyFieldsGroupSchema> {
@@ -41,27 +78,43 @@ export interface WatchSchemaResult<T extends ReadyFieldsGroupSchema> {
 
 export type AnyFieldApi =
   | (PrimaryFieldApi<PrimaryValue> & {
-      type: PrimaryFieldType;
+      type: PrimaryFieldSymbolType;
       $value: Store<PrimaryValue>;
       $error: Store<FieldError>;
+      $isDirty: Store<boolean>;
+      $isValid: Store<boolean>;
     })
-  | (ArrayFieldApi<any> & {
-      type: ArrayFieldType;
+  | (ArrayFieldApi<any, any> & {
+      type: ArrayFieldSymbolType;
       $values: Store<FormFields[]>;
       $error: Store<FieldError>;
+      $isDirty: Store<boolean>;
+      $isValid: Store<boolean>;
     });
 
 export type FormFields = {
   [k: string]: FormFields | AnyFieldApi;
 };
 
-export type FormErrors<T> = {
-  [k: string]: T extends PrimaryField<any>
-    ? StoreValue<T['$error']>
-    : T extends ArrayField<ArrayFieldItem>
-      ? FormErrors<StoreValue<T['$error']>>
-      : FormErrors<T>;
-};
+export type FormErrors<T extends ReadyFieldsGroupSchema | PrimaryValue> =
+  T extends ReadyFieldsGroupSchema
+    ? {
+        [K in keyof T]: T[K] extends PrimaryField<any>
+          ? FieldError
+          : T[K] extends PrimaryValue
+            ? FieldError
+            : T[K] extends ArrayField<any, infer Schema>
+              ? {
+                  error: FieldError;
+                  errors: Schema extends ReadyFieldsGroupSchema
+                    ? FormErrors<Schema>[]
+                    : [];
+                }
+              : T[K] extends AnySchema
+                ? FormErrors<T>
+                : FieldError;
+      }
+    : T;
 
 export type FormType<
   Fields extends UserFormSchema<any>,
@@ -69,8 +122,20 @@ export type FormType<
   Errors extends FormErrors<any>,
 > = {
   fields: Fields;
+
   $values: Store<Values>;
   $errors: Store<Errors>;
+
+  $isValid: Store<boolean>;
+  $isDirty: Store<boolean>;
+
+  $isValidationPending: Store<boolean>;
+
+  setValues: EventCallable<Values>;
+  setErrors: EventCallable<Errors>;
+
+  setPartialValues: EventCallable<PartialRecursive<Values>>;
+  setPartialErrors: EventCallable<PartialRecursive<Errors>>;
 
   changed: EventCallable<Values>;
   errorsChanged: EventCallable<Errors>;
@@ -81,11 +146,25 @@ export type FormType<
   submit: EventCallable<void>;
   submitted: EventCallable<Values>;
 
+  reset: EventCallable<void>;
+
   '@@unitShape': () => {
     values: Store<Values>;
     errors: Store<Errors>;
 
+    isValid: Store<boolean>;
+    isDirty: Store<boolean>;
+    isValidationPending: Store<boolean>;
+
     submit: EventCallable<void>;
     validate: EventCallable<void>;
+
+    reset: EventCallable<void>;
+
+    setValues: EventCallable<Values>;
+    setErrors: EventCallable<Errors>;
+
+    setPartialValues: EventCallable<PartialRecursive<Values>>;
+    setPartialErrors: EventCallable<PartialRecursive<Errors>>;
   };
 };

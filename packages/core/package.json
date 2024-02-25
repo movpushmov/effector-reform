@@ -28,8 +28,10 @@
     "url": "https://github.com/movpushmov/effector-composable-forms/issues"
   },
   "dependencies": {
+    "@types/object-path": "^0.11.4",
     "effector": "^23.1.0",
-    "typescript": "^5.3.3",
-    "patronum": "^2.2.0"
+    "object-path": "^0.11.8",
+    "patronum": "^2.2.0",
+    "typescript": "^5.3.3"
   }
 }

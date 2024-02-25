@@ -1,24 +1,22 @@
 import { Event, EventCallable, Store } from 'effector';
-import { PrimaryValue } from '../primary-field';
 import { FieldError } from '../types';
+import { AnySchema, UserFormSchema } from '../fields-group';
+import { PrimaryValue } from '../primary-field';
+import { arrayFieldSymbol } from './symbol';
 
-export const arrayFieldSymbol = Symbol('array-field');
+export type ArrayFieldItemType = AnySchema | PrimaryValue;
 
-export type ArrayFieldItem = {
-  [K: string]: PrimaryValue | ArrayFieldItem | ArrayFieldItem[];
-};
-
-export type PushPayload<T extends ArrayFieldItem> = T | T[];
-export type UnshiftPayload<T extends ArrayFieldItem> = T | T[];
+export type PushPayload<T extends ArrayFieldItemType> = T | T[];
+export type UnshiftPayload<T extends ArrayFieldItemType> = T | T[];
 export type SwapPayload = { indexA: number; indexB: number };
 export type MovePayload = { from: number; to: number };
-export type InsertOrReplacePayload<T extends ArrayFieldItem> = {
+export type InsertOrReplacePayload<T extends ArrayFieldItemType> = {
   index: number;
   value: T | T[];
 };
 export type RemovePayload = { index: number };
 
-export interface ArrayFieldApi<T extends ArrayFieldItem> {
+export interface ArrayFieldApi<T extends ArrayFieldItemType, U> {
   changeError: EventCallable<FieldError>;
   change: EventCallable<T[]>;
   push: EventCallable<PushPayload<T>>;
@@ -29,38 +27,50 @@ export interface ArrayFieldApi<T extends ArrayFieldItem> {
   remove: EventCallable<RemovePayload>;
   pop: EventCallable<void>;
   replace: EventCallable<InsertOrReplacePayload<T>>;
+  reset: EventCallable<void>;
 
-  changed: Event<T[]>;
+  changed: Event<U[]>;
   errorChanged: Event<FieldError>;
-  pushed: Event<{ params: PushPayload<T>; result: ArrayFieldItem[] }>;
-  swapped: Event<{ params: SwapPayload; result: ArrayFieldItem[] }>;
-  moved: Event<{ params: MovePayload; result: ArrayFieldItem[] }>;
+  pushed: Event<{ params: PushPayload<T>; result: U[] }>;
+  swapped: Event<{ params: SwapPayload; result: U[] }>;
+  moved: Event<{ params: MovePayload; result: U[] }>;
   inserted: Event<{
     params: InsertOrReplacePayload<T>;
-    result: ArrayFieldItem[];
+    result: U[];
   }>;
-  unshifted: Event<{ params: UnshiftPayload<T>; result: ArrayFieldItem[] }>;
-  removed: Event<{ params: RemovePayload; result: ArrayFieldItem[] }>;
-  popped: Event<ArrayFieldItem[]>;
+  unshifted: Event<{
+    params: UnshiftPayload<T>;
+    result: U[];
+  }>;
+  removed: Event<{ params: RemovePayload; result: U[] }>;
+  popped: Event<U[]>;
   replaced: Event<{
     params: InsertOrReplacePayload<T>;
-    result: ArrayFieldItem[];
+    result: U[];
   }>;
 }
 
-export interface ArrayField<T extends ArrayFieldItem> extends ArrayFieldApi<T> {
-  type: ArrayFieldType;
+export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
+  extends ArrayFieldApi<T, U> {
+  type: ArrayFieldSymbolType;
 
-  $values: Store<T[]>;
+  $values: Store<U[]>;
   $error: Store<FieldError>;
+
+  $isDirty: Store<boolean>;
+  $isValid: Store<boolean>;
 
   forkOnCompose: boolean;
   fork: (options?: CreateArrayFieldOptions) => ArrayField<T>;
 
   '@@unitShape': () => {
-    values: Store<T[]>;
+    values: Store<U[]>;
     error: Store<FieldError>;
 
+    isDirty: Store<boolean>;
+    isValid: Store<boolean>;
+
+    reset: EventCallable<void>;
     change: EventCallable<T[]>;
     changeError: EventCallable<FieldError>;
     push: EventCallable<PushPayload<T>>;
@@ -78,4 +88,4 @@ export interface CreateArrayFieldOptions {
   forkOnCompose?: boolean;
 }
 
-export type ArrayFieldType = typeof arrayFieldSymbol;
+export type ArrayFieldSymbolType = typeof arrayFieldSymbol;

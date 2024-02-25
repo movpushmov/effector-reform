@@ -4,23 +4,35 @@ import {
   isArrayField,
 } from '../array-field';
 import {
+  PrimaryValue,
   createField,
   isPrimaryField,
+  isPrimaryValue,
   primaryFieldSymbol,
 } from '../primary-field';
-import {
-  RawFieldsGroupSchema,
+import type {
+  AnySchema,
   ReadyFieldsGroupSchema,
   UserFormSchema,
 } from './types';
 
 export function prepareFieldsSchema<
-  T extends RawFieldsGroupSchema | ReadyFieldsGroupSchema,
->(schema: T): UserFormSchema<T> {
+  T extends AnySchema | PrimaryValue,
+  U = UserFormSchema<T>,
+>(schema: T): U {
   const result: UserFormSchema<any> = {};
+
+  if (isPrimaryValue(schema)) {
+    return schema as U;
+  }
 
   for (const key in schema) {
     const element = schema[key];
+
+    if (isPrimaryValue(element)) {
+      result[key] = createField(element);
+      continue;
+    }
 
     if (isPrimaryField(element) || isArrayField(element)) {
       result[key] = element;
@@ -36,8 +48,6 @@ export function prepareFieldsSchema<
       result[key] = prepareFieldsSchema(element);
       continue;
     }
-
-    result[key] = createField(element);
   }
 
   return result;

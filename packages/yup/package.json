@@ -1,11 +1,11 @@
 {
-  "name": "yup",
-  "version": "0.0.0",
+  "name": "@effector-composable-forms/yup",
+  "version": "0.1.0",
   "description": "> TODO: description",
   "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
   "homepage": "https://github.com/movpushmov/effector-composable-forms#readme",
   "license": "ISC",
-  "main": "lib/yup.js",
+  "main": "lib/index.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -17,10 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/movpushmov/effector-composable-forms.git"
   },
-  "scripts": {
-    "test": "node ./__tests__/yup.test.js"
-  },
+  "scripts": {},
   "bugs": {
     "url": "https://github.com/movpushmov/effector-composable-forms/issues"
+  },
+  "dependencies": {
+    "yup": "^1.3.3"
   }
 }

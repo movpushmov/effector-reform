@@ -9,5 +9,13 @@ interface FormProps extends React.HTMLAttributes<HTMLFormElement> {
 export const Form: FC<FormProps> = ({ model, ...props }) => {
   const { submit } = useUnit({ submit: model.submit });
 
-  return <form onSubmit={submit} {...props} />;
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        submit();
+      }}
+      {...props}
+    />
+  );
 };

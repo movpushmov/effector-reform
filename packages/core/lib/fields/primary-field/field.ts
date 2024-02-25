@@ -1,11 +1,11 @@
-import { createEvent, createStore, sample } from 'effector';
-import {
+import { combine, createEvent, createStore, sample } from 'effector';
+import type {
   CreatePrimaryFieldOptions,
   PrimaryField,
   PrimaryValue,
-  primaryFieldSymbol,
 } from './types';
-import { FieldError } from '../types';
+import { FieldError, InnerFieldApi } from '../types';
+import { primaryFieldSymbol } from './symbol';
 
 const defaultOptions = {
   error: null,
@@ -19,7 +19,22 @@ export function createField<T extends PrimaryValue>(
   const options = { ...defaultOptions, ...overrides };
 
   const $value = createStore(defaultValue, { name: '<field value>' });
-  const $error = createStore<FieldError>(null, { name: '<field error>' });
+
+  const $innerError = createStore<FieldError>(null, {
+    name: '<inner field error>',
+  });
+
+  const $outerError = createStore<FieldError>(null, {
+    name: '<outer field error>',
+  });
+
+  const $error = combine({
+    innerError: $innerError,
+    outerError: $outerError,
+  }).map(({ innerError, outerError }) => outerError || innerError);
+
+  const $isValid = $error.map((error) => error === null);
+  const $isDirty = createStore(false);
 
   const change = createEvent<T>('<field change>');
   const changed = createEvent<T>('<field changed>');
@@ -27,13 +42,28 @@ export function createField<T extends PrimaryValue>(
   const changeError = createEvent<FieldError>('<field setError>');
   const errorChanged = createEvent<FieldError>('<field error changed>');
 
+  const setInnerError = createEvent<FieldError>();
+
   const reset = createEvent('<field reset>');
 
   sample({ clock: change, target: $value });
+  sample({ clock: $value, fn: () => true, target: $isDirty });
+
   sample({ clock: $value, target: changed });
-  sample({ clock: changeError, target: $error });
+  sample({ clock: changeError, target: $outerError });
+
   sample({ clock: $error, target: errorChanged });
+  sample({ clock: setInnerError, target: $innerError });
+
   sample({ clock: reset, fn: () => defaultValue, target: $value });
+  sample({ clock: reset, fn: () => null, target: [$innerError, $outerError] });
+  sample({ clock: reset, fn: () => false, target: $isDirty });
+
+  sample({
+    clock: reset,
+    fn: () => null,
+    target: [setInnerError, changeError],
+  });
 
   return {
     type: primaryFieldSymbol,
@@ -41,11 +71,17 @@ export function createField<T extends PrimaryValue>(
     $value,
     $error,
 
+    $isValid,
+    $isDirty,
+
     change,
     changed,
 
     changeError,
     errorChanged,
+
+    reset,
+    setInnerError,
 
     forkOnCompose: options.forkOnCompose,
 
@@ -56,12 +92,12 @@ export function createField<T extends PrimaryValue>(
       value: $value,
       error: $error,
 
+      isValid: $isValid,
+      isDirty: $isDirty,
+
       changeError,
       change,
+      reset,
     }),
-  };
-}
-
-export function isPrimaryField(props: any): props is PrimaryField {
-  return 'type' in props && props.type === primaryFieldSymbol;
+  } as PrimaryField<T> & InnerFieldApi;
 }
