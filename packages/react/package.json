@@ -1,6 +1,6 @@
 {
   "name": "@effector-reform/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React bindings for effector composable forms",
   "keywords": [
     "effector",
@@ -20,17 +20,28 @@
   "homepage": "https://github.com/movpushmov/effector-reform#readme",
   "license": "MIT",
   "main": "lib/index.ts",
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "directories": {
     "lib": "lib"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "vite build"
+  },
   "bugs": {
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },

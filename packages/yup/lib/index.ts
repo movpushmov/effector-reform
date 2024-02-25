@@ -1,1 +1,1 @@
-export * from './adapter';
+export { yupAdapter } from './adapter';

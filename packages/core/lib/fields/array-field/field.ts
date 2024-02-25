@@ -39,6 +39,8 @@ export function createArrayField<
 >(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T, Value> {
   type Values = Value[];
 
+  const clearOuterErrorOnChange = Boolean(overrides?.clearOuterErrorOnChange);
+
   function getDefaultValues() {
     return values.map(prepareFieldsSchema) as Values;
   }
@@ -143,6 +145,10 @@ export function createArrayField<
       return newValues;
     },
   });
+
+  if (clearOuterErrorOnChange) {
+    sample({ clock: $values, fn: () => null, target: $outerError });
+  }
 
   sample({ clock: $values, fn: () => true, target: $isDirty });
   sample({ clock: syncFx.doneData, target: $values });

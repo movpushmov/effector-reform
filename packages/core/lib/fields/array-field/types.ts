@@ -86,6 +86,7 @@ export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
 
 export interface CreateArrayFieldOptions {
   forkOnCompose?: boolean;
+  clearOuterErrorOnChange?: boolean;
 }
 
 export type ArrayFieldSymbolType = typeof arrayFieldSymbol;

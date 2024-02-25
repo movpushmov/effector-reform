@@ -18,19 +18,20 @@ export type SyncValidationFn<
   Schema extends ReadyFieldsGroupSchema,
   Values = FormValues<Schema>,
   Errors extends object = FormErrors<Schema>,
-> = (values: Values) => PartialRecursive<Errors>;
+> = (values: Values) => PartialRecursive<Errors> | null;
 
 export type AsyncValidationFn<
   Schema extends ReadyFieldsGroupSchema,
   Values = FormValues<Schema>,
   Errors extends object = FormErrors<Schema>,
-> = (values: Values) => Promise<PartialRecursive<Errors>>;
+> = (values: Values) => Promise<PartialRecursive<Errors> | null>;
 
 type ValidationStrategy = 'blur' | 'change' | 'submit';
 
 export interface ComposeOptions<Schema extends ReadyFieldsGroupSchema> {
   validation?: SyncValidationFn<Schema> | AsyncValidationFn<Schema>;
   validationStrategies?: ValidationStrategy[];
+  clearOuterErrorsOnSubmit?: boolean;
 }
 
 export type OnNodeHandlers = {

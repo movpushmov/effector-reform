@@ -64,6 +64,7 @@ export interface PrimaryField<T extends PrimaryValue = any>
 
 export interface CreatePrimaryFieldOptions {
   error?: FieldError;
+  clearOuterErrorOnChange?: boolean;
   forkOnCompose?: boolean;
 }
 

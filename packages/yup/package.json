@@ -1,6 +1,6 @@
 {
   "name": "@effector-reform/yup",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "> TODO: description",
   "keywords": [
     "effector",
@@ -27,18 +27,29 @@
     "lib": "lib",
     "test": "__tests__"
   },
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
-    "lib"
+    "dist"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "vite build"
+  },
   "bugs": {
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@effector-reform/core": "file:../core",
     "yup": "^1.3.3"
   }

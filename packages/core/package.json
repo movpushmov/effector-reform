@@ -1,6 +1,6 @@
 {
   "name": "@effector-reform/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Effector composable forms core",
   "keywords": [
     "effector",
@@ -21,21 +21,32 @@
     "lib": "lib"
   },
   "files": [
-    "lib"
+    "dist"
   ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "vite build"
+  },
   "bugs": {
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
-  "dependencies": {
-    "@types/object-path": "^0.11.4",
+  "peerDependencies": {
     "effector": "^23.1.0",
-    "object-path": "^0.11.8",
-    "patronum": "^2.2.0",
+    "patronum": "^2.2.0"
+  },
+  "devDependencies": {
     "typescript": "^5.3.3"
   }
 }

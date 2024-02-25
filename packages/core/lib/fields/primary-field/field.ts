@@ -16,6 +16,8 @@ export function createField<T extends PrimaryValue>(
   defaultValue: T,
   overrides?: CreatePrimaryFieldOptions,
 ): PrimaryField<T> {
+  const clearOuterErrorOnChange = Boolean(overrides?.clearOuterErrorOnChange);
+
   const options = { ...defaultOptions, ...overrides };
 
   const $value = createStore(defaultValue, { name: '<field value>' });
@@ -45,6 +47,10 @@ export function createField<T extends PrimaryValue>(
   const setInnerError = createEvent<FieldError>();
 
   const reset = createEvent('<field reset>');
+
+  if (clearOuterErrorOnChange) {
+    sample({ clock: $value, fn: () => null, target: $outerError });
+  }
 
   sample({ clock: change, target: $value });
   sample({ clock: $value, fn: () => true, target: $isDirty });

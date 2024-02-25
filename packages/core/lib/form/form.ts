@@ -5,6 +5,7 @@ import {
   createEvent,
   createStore,
   sample,
+  EventCallable,
 } from 'effector';
 import {
   AnySchema,
@@ -20,7 +21,7 @@ import type {
   FormValues,
   SyncValidationFn,
 } from './types';
-import { setFormPartialValues, mapSchema } from './utils';
+import { setFormPartialValues, mapSchema, clearFormOuterErrors } from './utils';
 
 export function compose<T extends AnySchema>(
   schema: T,
@@ -30,7 +31,8 @@ export function compose<T extends AnySchema>(
     validation = (() => {}) as unknown as SyncValidationFn<
       UserFormSchema<UserFormSchema<T>>
     >,
-    validationStrategies = ['submit', 'change', 'blur'],
+    // validationStrategies = ['submit', 'change', 'blur'],
+    clearOuterErrorsOnSubmit = true,
   } = options;
 
   const fields = forkGroup(prepareFieldsSchema(schema));
@@ -41,6 +43,11 @@ export function compose<T extends AnySchema>(
   type Fields = typeof fields;
   type Errors = FormErrors<Fields>;
   type Values = FormValues<Fields>;
+
+  const clearOuterErrorsFx = attach({
+    source: $api,
+    effect: clearFormOuterErrors,
+  });
 
   const setValuesFx = attach({
     source: $api,
@@ -73,7 +80,7 @@ export function compose<T extends AnySchema>(
 
   const validateFx = createEffect(validation) as Effect<
     Values,
-    Promise<PartialRecursive<Errors>> | PartialRecursive<Errors>,
+    PartialRecursive<Errors> | null,
     Error
   >;
 
@@ -104,8 +111,20 @@ export function compose<T extends AnySchema>(
 
   sample({
     clock: submit,
-    target: [validate, clearOuterErrors],
+    target: validate,
   });
+
+  sample({
+    clock: clearOuterErrors,
+    target: clearOuterErrorsFx,
+  });
+
+  if (clearOuterErrorsOnSubmit) {
+    sample({
+      clock: submit,
+      target: clearOuterErrors,
+    });
+  }
 
   sample({
     clock: validate,
@@ -114,8 +133,23 @@ export function compose<T extends AnySchema>(
   });
 
   sample({
-    clock: validateFx.done,
+    clock: validateFx.doneData as EventCallable<any>,
+    filter: (result) => result === null,
     target: validated,
+  });
+
+  sample({
+    clock: validateFx.doneData as EventCallable<any>,
+    filter: Boolean,
+    target: setPartialErrors,
+  });
+
+  sample({
+    clock: validateFx.doneData as EventCallable<any>,
+    source: $values,
+    filter: (_, result) => result !== null,
+    fn: (values) => values,
+    target: submitted,
   });
 
   sample({
