@@ -36,9 +36,9 @@
   },
   "dependencies": {
     "@effector-reform/core": "file:../core",
+    "effector": "^23.2.0",
     "effector-react": "^23.2.0",
-    "react": "^18.2.0",
-    "effector": "^23.2.0"
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.56"
