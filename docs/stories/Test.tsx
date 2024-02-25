@@ -1,9 +1,5 @@
-import {
-  compose,
-  createArrayField,
-  createField,
-} from '@effector-composable-forms/core';
-import { Form, useForm } from '@effector-composable-forms/react';
+import { compose, createArrayField, createField } from '@effector-reform/core';
+import { Form, useForm } from '@effector-reform/react';
 import { useEffect } from 'react';
 
 const nick = createField<string>('');

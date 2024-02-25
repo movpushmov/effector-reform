@@ -3,7 +3,7 @@ import {
   arrayFieldSymbol,
   isPrimaryValue,
   primaryFieldSymbol,
-} from '@effector-composable-forms/core';
+} from '@effector-reform/core';
 import { Scope, scopeBind, EventCallable, Store } from 'effector';
 import { ReactFields } from '../types';
 

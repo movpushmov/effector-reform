@@ -13,7 +13,7 @@ import {
   RemovePayload,
   SwapPayload,
   UnshiftPayload,
-} from '@effector-composable-forms/core';
+} from '@effector-reform/core';
 import { StoreValue } from 'effector';
 
 export interface ReactPrimaryFieldApi<T extends PrimaryValue> {

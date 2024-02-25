@@ -2,7 +2,7 @@ import {
   ArrayField,
   PrimaryField,
   isPrimaryValue,
-} from '@effector-composable-forms/core';
+} from '@effector-reform/core';
 import { useProvidedScope, useUnit } from 'effector-react';
 import { useMemo } from 'react';
 import { getFields } from './utils';

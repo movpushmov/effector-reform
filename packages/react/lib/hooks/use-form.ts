@@ -4,7 +4,7 @@ import {
   FormValues,
   PartialRecursive,
   ReadyFieldsGroupSchema,
-} from '@effector-composable-forms/core';
+} from '@effector-reform/core';
 import { useProvidedScope, useUnit } from 'effector-react';
 import { useEffect, useMemo } from 'react';
 import { getFields } from './utils';

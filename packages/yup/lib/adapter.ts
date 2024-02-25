@@ -3,7 +3,7 @@ import {
   FormValues,
   PartialRecursive,
   ReadyFieldsGroupSchema,
-} from '@effector-composable-forms/core';
+} from '@effector-reform/core';
 import { AnySchema, ValidationError } from 'yup';
 
 function prepareErrors(errors: { message: string; path: string }[]) {

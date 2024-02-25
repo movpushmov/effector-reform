@@ -1,5 +1,5 @@
 {
-  "name": "@effector-composable-forms/react",
+  "name": "@effector-reform/react",
   "version": "0.1.0",
   "description": "React bindings for effector composable forms",
   "keywords": [
@@ -9,10 +9,15 @@
     "forms",
     "validation",
     "react",
-    "effector-react"
+    "effector-react",
+    "react",
+    "effector-reform",
+    "reform",
+    "effect-react-form",
+    "effector-form"
   ],
   "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
-  "homepage": "https://github.com/movpushmov/effector-composable-forms#readme",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
   "license": "MIT",
   "main": "lib/index.ts",
   "directories": {
@@ -23,14 +28,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/movpushmov/effector-composable-forms.git"
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
   "scripts": {},
   "bugs": {
-    "url": "https://github.com/movpushmov/effector-composable-forms/issues"
+    "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-composable-forms/core": "file:../core",
+    "@effector-reform/core": "file:../core",
     "effector-react": "^23.2.0",
     "react": "^18.2.0",
     "effector": "^23.2.0"

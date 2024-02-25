@@ -1,4 +1,4 @@
-import { FormType } from '@effector-composable-forms/core';
+import { FormType } from '@effector-reform/core';
 import { useUnit } from 'effector-react';
 import React, { FC } from 'react';
 

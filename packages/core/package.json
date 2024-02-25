@@ -1,5 +1,5 @@
 {
-  "name": "@effector-composable-forms/core",
+  "name": "@effector-reform/core",
   "version": "0.1.0",
   "description": "Effector composable forms core",
   "keywords": [
@@ -7,10 +7,14 @@
     "composable",
     "form",
     "forms",
-    "validation"
+    "validation",
+    "effector-reform",
+    "reform",
+    "effect-react-form",
+    "effector-form"
   ],
   "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
-  "homepage": "https://github.com/movpushmov/effector-composable-forms#readme",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
   "license": "MIT",
   "main": "lib/index.ts",
   "directories": {
@@ -21,11 +25,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/movpushmov/effector-composable-forms.git"
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
   "scripts": {},
   "bugs": {
-    "url": "https://github.com/movpushmov/effector-composable-forms/issues"
+    "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
     "@types/object-path": "^0.11.4",
