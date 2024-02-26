@@ -46,12 +46,13 @@
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-reform/core": "file:../core",
+    "@effector-reform/core": "^0.1.2",
     "effector": "^23.2.0",
     "effector-react": "^23.2.0",
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.56"
-  }
+  },
+  "gitHead": "7d74892d08f0c92b808b6f25c55156c066ce678d"
 }
