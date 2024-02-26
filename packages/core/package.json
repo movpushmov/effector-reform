@@ -1,5 +1,9 @@
 {
   "name": "@effector-reform/core",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "private": false,
   "version": "0.1.4",
   "description": "Effector composable forms core",

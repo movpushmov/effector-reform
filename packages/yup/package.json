@@ -1,5 +1,9 @@
 {
   "name": "@effector-reform/yup",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "private": false,
   "version": "0.1.4",
   "description": "> TODO: description",
