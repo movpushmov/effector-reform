@@ -27,7 +27,6 @@
   "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
   "homepage": "https://github.com/movpushmov/effector-reform#readme",
   "license": "ISC",
-  "main": "lib/index.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
