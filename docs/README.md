@@ -1,11 +1,25 @@
-# `docs`
+# ☄️ effector-reform
 
-> TODO: description
+Make & use forms without headache
 
-## Usage
+## Installation
+
+> You can use any package manager
+
+#### Core
 
 ```
-const docs = require('docs');
+npm i @effector-reform/core
+```
 
-// TODO: DEMONSTRATE API
+#### React
+
+```
+npm i @effector-reform/react
+```
+
+#### Yup validation schema adapter
+
+```
+npm i @effector-reform/yup
 ```
