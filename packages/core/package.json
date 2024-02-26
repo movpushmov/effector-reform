@@ -1,5 +1,6 @@
 {
   "name": "@effector-reform/core",
+  "private": false,
   "version": "0.1.3",
   "description": "Effector composable forms core",
   "keywords": [
@@ -49,5 +50,5 @@
   "devDependencies": {
     "typescript": "^5.3.3"
   },
-  "gitHead": "7d74892d08f0c92b808b6f25c55156c066ce678d"
+  "gitHead": "5d45efe8ddf6b911fe00d8e4b42414e524e5d6d3"
 }
