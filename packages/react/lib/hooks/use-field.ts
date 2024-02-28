@@ -6,8 +6,8 @@ import {
 import { useProvidedScope, useUnit } from 'effector-react';
 import { useMemo } from 'react';
 import { getFields } from './utils';
-import { ReactFields } from '../types';
-import { StoreValue } from 'effector';
+import type { ReactFields } from '../types';
+import type { StoreValue } from 'effector';
 
 export function useField<T extends PrimaryField<any>>(field: T) {
   return useUnit(field);

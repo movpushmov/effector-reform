@@ -1,40 +1,48 @@
 {
   "name": "docs",
   "version": "0.0.0",
-  "description": "> TODO: description",
-  "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
-  "homepage": "https://github.com/movpushmov/effector-reform#readme",
-  "license": "ISC",
-  "main": "lib/docs.js",
-  "dependencies": {
-    "@effector-reform/core": "file:../packages/core",
-    "@effector-reform/react": "file:../packages/react",
-    "@effector-reform/yup": "file:../packages/yup"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/movpushmov/effector-reform.git"
-  },
+  "private": true,
   "scripts": {
-    "test": "node ./__tests__/docs.test.js",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "typecheck": "tsc"
   },
-  "bugs": {
-    "url": "https://github.com/movpushmov/effector-reform/issues"
+  "dependencies": {
+    "@docusaurus/core": "3.1.1",
+    "@docusaurus/preset-classic": "3.1.1",
+    "@effector-reform/core": "^0.1.6",
+    "@mdx-js/react": "^3.0.0",
+    "clsx": "^2.0.0",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "^7.6.16",
-    "@storybook/addon-interactions": "^7.6.16",
-    "@storybook/addon-links": "^7.6.16",
-    "@storybook/addon-onboarding": "^1.0.11",
-    "@storybook/blocks": "^7.6.16",
-    "@storybook/react": "^7.6.16",
-    "@storybook/react-vite": "^7.6.16",
-    "@storybook/test": "^7.6.16",
-    "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "storybook": "^7.6.16"
+    "@docusaurus/module-type-aliases": "3.1.1",
+    "@docusaurus/tsconfig": "3.1.1",
+    "@docusaurus/types": "3.1.1",
+    "typescript": "~5.2.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 5 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0"
   }
 }

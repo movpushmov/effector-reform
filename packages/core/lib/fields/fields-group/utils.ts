@@ -45,7 +45,7 @@ export function prepareFieldsSchema<
     }
 
     if (typeof element === 'object' && !(element instanceof Date)) {
-      result[key] = prepareFieldsSchema(element);
+      result[key] = prepareFieldsSchema(element as ReadyFieldsGroupSchema);
       continue;
     }
   }

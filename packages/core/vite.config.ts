@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
+import babel from 'vite-plugin-babel';
 
 export default defineConfig({
   build: {
     lib: {
-      // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, 'lib/index.ts'),
       name: 'EffectorReformCore',
       fileName: 'index',
@@ -23,6 +23,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    babel(),
     dts({
       outDir: resolve(__dirname, 'dist'),
       entryRoot: resolve(__dirname, 'lib'),

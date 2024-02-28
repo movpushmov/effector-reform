@@ -1,0 +1,31 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    [
+      "effector/babel-plugin",
+      {
+        "factories": [
+          "array-field",
+          "primary-field",
+          "lib/form/form",
+          "lib",
+          "lib/form",
+          "lib/fields",
+          "lib/fields/array-field/field",
+          "lib/fields/primary-field/field"
+        ],
+        "addNames": true
+      }
+    ]
+  ]
+}

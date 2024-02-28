@@ -6,7 +6,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   build: {
     lib: {
-      // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, 'lib/index.ts'),
       name: 'EffectorReformReact',
       fileName: 'index',
@@ -37,6 +36,12 @@ export default defineConfig({
       insertTypesEntry: true,
       rollupTypes: true,
     }),
-    react(),
+    react({
+      babel: {
+        plugins: ['effector/babel-plugin'],
+        babelrc: true,
+        configFile: true,
+      },
+    }),
   ],
 });

@@ -2,12 +2,11 @@ import { EventCallable, Store, Event } from 'effector';
 import { FieldError } from '../types';
 import { primaryFieldSymbol } from './symbol';
 
+export type PrimaryJsonValue = string | number | boolean | Date;
+
 export type PrimaryValue =
-  | string
-  | number
   | bigint
-  | boolean
-  | Date
+  | PrimaryJsonValue
   | Blob
   | Buffer
   | ArrayBuffer

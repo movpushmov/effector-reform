@@ -49,14 +49,18 @@
   "bugs": {
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@effector-reform/core": "^0.1.6",
     "effector": "^23.2.0",
     "effector-react": "^23.2.0",
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.56"
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.2.56",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
   },
   "gitHead": "4a65d5f778606d814081e2c6d50199088688faad"
 }
