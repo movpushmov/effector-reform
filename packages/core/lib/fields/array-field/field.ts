@@ -116,7 +116,7 @@ export function createArrayField<
 
             return {
               values: payload.$values.getState(),
-              erros: payload.$errors.getState(),
+              errors: payload.$errors.getState(),
             };
           })
           .filter(Boolean) as Json[];

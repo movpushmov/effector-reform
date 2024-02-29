@@ -17,7 +17,7 @@ describe('Array field ssr api', () => {
 
       expect(values).toMatchObject({
         '2n8fgy|eci76e': [
-          { values: { a: 5, b: 10 }, erros: { a: null, b: null } },
+          { values: { a: 5, b: 10 }, errors: { a: null, b: null } },
         ],
         '2n8fgy|-c9edul': true,
       });
