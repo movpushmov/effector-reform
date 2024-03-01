@@ -60,7 +60,7 @@ export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
   $isDirty: Store<boolean>;
   $isValid: Store<boolean>;
 
-  forkOnCompose: boolean;
+  forkOnCreateForm: boolean;
   fork: (options?: CreateArrayFieldOptions) => ArrayField<T>;
 
   '@@unitShape': () => {
@@ -85,7 +85,7 @@ export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
 }
 
 export interface CreateArrayFieldOptions {
-  forkOnCompose?: boolean;
+  forkOnCreateForm?: boolean;
   clearOuterErrorOnChange?: boolean;
 }
 

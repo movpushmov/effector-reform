@@ -3,6 +3,7 @@ import type {
   FormValues,
   PartialRecursive,
   ReadyFieldsGroupSchema,
+  AsyncValidationFn,
 } from '@effector-reform/core';
 import type { AnySchema, ValidationError } from 'yup';
 
@@ -47,14 +48,12 @@ function prepareErrors(errors: { message: string; path: string }[]) {
   return result;
 }
 
-export function yupAdapter<
-  FormSchema extends ReadyFieldsGroupSchema,
-  Values = FormValues<FormSchema>,
-  Errors extends object = FormErrors<FormSchema>,
->(
+export function yupAdapter<FormSchema extends ReadyFieldsGroupSchema>(
   schema: AnySchema,
-): (values: Values) => Promise<PartialRecursive<Errors> | null> {
-  return async (values: Values) => {
+): AsyncValidationFn<FormSchema> {
+  return async (
+    values: FormValues<FormSchema>,
+  ): Promise<PartialRecursive<FormErrors<FormSchema>> | null> => {
     try {
       await schema.validate(values, { strict: true, abortEarly: false });
 

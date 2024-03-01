@@ -15,7 +15,7 @@ import {
   prepareFieldsSchema,
 } from '../fields';
 import type {
-  ComposeOptions,
+  CreateFormOptions,
   FormErrors,
   FormType,
   FormValues,
@@ -23,9 +23,9 @@ import type {
 } from './types';
 import { setFormPartialValues, mapSchema, clearFormOuterErrors } from './utils';
 
-export function compose<T extends AnySchema>(
+export function createForm<T extends AnySchema>(
   schema: T,
-  options: ComposeOptions<UserFormSchema<T>> = {},
+  options: CreateFormOptions<UserFormSchema<T>> = {},
 ) {
   const {
     validation = (() => {}) as unknown as SyncValidationFn<

@@ -9,7 +9,7 @@ import { primaryFieldSymbol } from './symbol';
 
 const defaultOptions = {
   error: null,
-  forkOnCompose: true,
+  forkOnCreateForm: true,
 };
 
 export function createField<T extends PrimaryValue>(
@@ -89,7 +89,7 @@ export function createField<T extends PrimaryValue>(
     reset,
     setInnerError,
 
-    forkOnCompose: options.forkOnCompose,
+    forkOnCreateForm: options.forkOnCreateForm,
 
     fork: (options?: CreatePrimaryFieldOptions) =>
       createField(defaultValue, { ...overrides, ...options }),

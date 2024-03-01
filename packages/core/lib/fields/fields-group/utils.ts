@@ -64,7 +64,7 @@ export function forkGroup<T extends ReadyFieldsGroupSchema>(
     switch (element.type) {
       case arrayFieldSymbol:
       case primaryFieldSymbol: {
-        result[key] = element.forkOnCompose ? element.fork() : element;
+        result[key] = element.forkOnCreateForm ? element.fork() : element;
 
         break;
       }

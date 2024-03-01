@@ -33,7 +33,7 @@ import { mapSchema, setFormPartialErrors } from '../../form/utils';
 import { isPrimaryJsonValue } from '../primary-field/utils';
 
 const defaultOptions = {
-  forkOnCompose: true,
+  forkOnCreateForm: true,
 };
 
 export function createArrayField<
@@ -465,7 +465,7 @@ export function createArrayField<
     replaced,
 
     reset,
-    forkOnCompose: options.forkOnCompose,
+    forkOnCreateForm: options.forkOnCreateForm,
 
     fork: (options?: CreateArrayFieldOptions) =>
       createArrayField(values, { ...overrides, ...options }),

@@ -28,7 +28,7 @@ export type AsyncValidationFn<
 
 type ValidationStrategy = 'blur' | 'change' | 'submit';
 
-export interface ComposeOptions<Schema extends ReadyFieldsGroupSchema> {
+export interface CreateFormOptions<Schema extends ReadyFieldsGroupSchema> {
   validation?: SyncValidationFn<Schema> | AsyncValidationFn<Schema>;
   validationStrategies?: ValidationStrategy[];
   clearOuterErrorsOnSubmit?: boolean;

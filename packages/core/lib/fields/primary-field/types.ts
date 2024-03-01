@@ -17,12 +17,6 @@ export type PrimaryValue =
   | File
   | FileList;
 
-export interface PrimaryFieldForkConfig<T extends PrimaryValue>
-  extends CreatePrimaryFieldOptions {
-  value?: T;
-  error?: FieldError;
-}
-
 export interface PrimaryFieldApi<T extends PrimaryValue> {
   change: EventCallable<T>;
   changed: Event<T>;
@@ -43,7 +37,7 @@ export interface PrimaryField<T extends PrimaryValue = any>
   $isDirty: Store<boolean>;
   $isValid: Store<boolean>;
 
-  forkOnCompose: boolean;
+  forkOnCreateForm: boolean;
 
   fork: (options?: CreatePrimaryFieldOptions) => PrimaryField<T>;
 
@@ -64,7 +58,7 @@ export interface PrimaryField<T extends PrimaryValue = any>
 export interface CreatePrimaryFieldOptions {
   error?: FieldError;
   clearOuterErrorOnChange?: boolean;
-  forkOnCompose?: boolean;
+  forkOnCreateForm?: boolean;
 }
 
 export type PrimaryFieldSymbolType = typeof primaryFieldSymbol;
