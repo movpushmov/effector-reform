@@ -37,9 +37,16 @@ export function createField<T extends PrimaryValue>(
 
   const $isValid = $error.map((error) => error === null);
   const $isDirty = createStore(false);
+  const $isFocused = createStore(false);
 
   const change = createEvent<T>('<field change>');
   const changed = createEvent<T>('<field changed>');
+
+  const blur = createEvent();
+  const blurred = createEvent();
+
+  const focus = createEvent();
+  const focused = createEvent();
 
   const changeError = createEvent<FieldError>('<field setError>');
   const errorChanged = createEvent<FieldError>('<field error changed>');
@@ -51,6 +58,12 @@ export function createField<T extends PrimaryValue>(
   if (clearOuterErrorOnChange) {
     sample({ clock: $value, fn: () => null, target: $outerError });
   }
+
+  sample({ clock: blur, fn: () => false, target: $isFocused });
+  sample({ clock: focus, fn: () => true, target: $isFocused });
+
+  sample({ clock: $isFocused, filter: (focused) => focused, target: focused });
+  sample({ clock: $isFocused, filter: (focused) => !focused, target: blurred });
 
   sample({ clock: change, target: $value });
   sample({ clock: $value, fn: () => true, target: $isDirty });
@@ -79,6 +92,13 @@ export function createField<T extends PrimaryValue>(
 
     $isValid,
     $isDirty,
+    $isFocused,
+
+    blur,
+    blurred,
+
+    focus,
+    focused,
 
     change,
     changed,
@@ -100,6 +120,13 @@ export function createField<T extends PrimaryValue>(
 
       isValid: $isValid,
       isDirty: $isDirty,
+      isFocused: $isFocused,
+
+      blur,
+      blurred,
+
+      focus,
+      focused,
 
       changeError,
       change,

@@ -19,13 +19,18 @@ import {
 import { FormErrors, FormValues } from '../types';
 import { FormApi, Node } from './types';
 
+type FieldInteractionEventPayload = { fieldPath: string };
+
 function getMeta(
   node: ReadyFieldsGroupSchema,
   schemaUpdated: EventCallable<void>,
+  focused: EventCallable<FieldInteractionEventPayload>,
+  blurred: EventCallable<FieldInteractionEventPayload>,
 ) {
   const values: Node = {};
   const errors: Node = {};
   const api: FormApi = {};
+
   let isValid = true;
 
   function mapValues(
@@ -41,12 +46,26 @@ function getMeta(
           const field = subNode as PrimaryField<any> & InnerFieldApi;
           resultNode[key] = field.$value.getState();
 
+          const apiKey = [...path, key].join('.');
+
           sample({
             clock: [field.$value, field.$error],
             target: schemaUpdated,
           });
 
-          api[[...path, key].join('.')] = {
+          sample({
+            clock: field.focused,
+            fn: () => ({ fieldPath: apiKey }),
+            target: focused,
+          });
+
+          sample({
+            clock: field.blurred,
+            fn: () => ({ fieldPath: apiKey }),
+            target: blurred,
+          });
+
+          api[apiKey] = {
             reset: field.reset,
 
             clearInnerError: field.setInnerError.prepend(() => null),
@@ -63,6 +82,7 @@ function getMeta(
         case arrayFieldSymbol: {
           const field = subNode as ArrayField<any> & InnerArrayFieldApi;
           const fieldValues = field.$values.getState();
+          const apiKey = [...path, key].join('.');
 
           resultNode[key] = [];
 
@@ -85,7 +105,7 @@ function getMeta(
             target: schemaUpdated,
           });
 
-          api[[...path, key].join('.')] = {
+          api[apiKey] = {
             reset: field.reset,
 
             clearInnerError: field.setInnerError.prepend(() => null),
@@ -175,17 +195,19 @@ function getMeta(
   mapValues(node, values);
   mapErrors(node, errors);
 
-  return { values, errors, api, isValid };
+  return { values, errors, api, isValid, focused, blurred };
 }
 
 export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
   const schemaUpdated = createEvent();
+  const blurred = createEvent<FieldInteractionEventPayload>();
+  const focused = createEvent<FieldInteractionEventPayload>();
 
   const getMetaFx = createEffect(() => {
-    return getMeta(node, schemaUpdated);
+    return getMeta(node, schemaUpdated, focused, blurred);
   });
 
-  const $meta = createStore(getMeta(node, schemaUpdated));
+  const $meta = createStore(getMeta(node, schemaUpdated, focused, blurred));
 
   const $values: Store<FormValues<T>> = $meta.map(({ values }) => values);
   const $errors: Store<FormErrors<T>> = $meta.map(({ errors }) => errors);
@@ -203,5 +225,5 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
     target: $meta,
   });
 
-  return { $values, $errors, $api, $isValid };
+  return { $values, $errors, $api, $isValid, focused, blurred };
 }

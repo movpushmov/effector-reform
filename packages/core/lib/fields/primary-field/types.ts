@@ -36,6 +36,13 @@ export interface PrimaryField<T extends PrimaryValue = any>
 
   $isDirty: Store<boolean>;
   $isValid: Store<boolean>;
+  $isFocused: Store<boolean>;
+
+  blur: EventCallable<void>;
+  blurred: Event<void>;
+
+  focus: EventCallable<void>;
+  focused: Event<void>;
 
   forkOnCreateForm: boolean;
 
@@ -47,7 +54,10 @@ export interface PrimaryField<T extends PrimaryValue = any>
 
     isDirty: Store<boolean>;
     isValid: Store<boolean>;
+    isFocused: Store<boolean>;
 
+    blur: EventCallable<void>;
+    focus: EventCallable<void>;
     reset: EventCallable<void>;
 
     change: EventCallable<T>;
