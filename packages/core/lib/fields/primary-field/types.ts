@@ -21,6 +21,8 @@ export interface PrimaryFieldApi<T extends PrimaryValue> {
   change: EventCallable<T>;
   changed: Event<T>;
 
+  blur: EventCallable<void>;
+  focus: EventCallable<void>;
   reset: EventCallable<void>;
 
   changeError: EventCallable<FieldError>;
