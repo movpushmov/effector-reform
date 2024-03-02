@@ -47,7 +47,7 @@
   "bugs": {
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
-  "peerDependencies": {
+  "dependencies": {
     "effector": "^23.1.0",
     "patronum": "^2.2.0"
   },
@@ -57,5 +57,5 @@
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
   },
-  "gitHead": "96c33edd91c319ab012c21f3518fc9596ae11e53"
+  "gitHead": "8f8b0f3700f1306db8f95f7aa5744356f8960d66"
 }
