@@ -54,7 +54,7 @@
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-reform/core": "0.2.1",
+    "@effector-reform/core": "0.2.3",
     "yup": "^1.3.3"
   },
   "gitHead": "8f8b0f3700f1306db8f95f7aa5744356f8960d66"
