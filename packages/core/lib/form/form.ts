@@ -143,8 +143,6 @@ export function createForm<T extends AnySchema>(
 
   sample({
     clock: $values,
-    source: $isDirty,
-    filter: Boolean,
     fn: () => true,
     target: $isDirty,
   });
