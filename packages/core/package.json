@@ -5,7 +5,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "private": false,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Effector composable forms core",
   "keywords": [
     "effector",
@@ -57,5 +57,5 @@
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
   },
-  "gitHead": "4a65d5f778606d814081e2c6d50199088688faad"
+  "gitHead": "0eb98b615a860672667834b78b88be901ab433e1"
 }
