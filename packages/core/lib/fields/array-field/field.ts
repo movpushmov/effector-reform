@@ -1,4 +1,5 @@
 import {
+  Json,
   attach,
   combine,
   createEffect,
@@ -28,9 +29,11 @@ import {
 import { PrimaryValue, isPrimaryValue } from '../primary-field';
 import { arrayFieldSymbol } from './symbol';
 import { clearSchemaNode, filterUnused } from './utils';
+import { mapSchema, setFormPartialErrors } from '../../form/utils';
+import { isPrimaryJsonValue } from '../primary-field/utils';
 
 const defaultOptions = {
-  forkOnCompose: true,
+  forkOnCreateForm: true,
 };
 
 export function createArrayField<
@@ -71,6 +74,54 @@ export function createArrayField<
 
   const $values = createStore(getDefaultValues(), {
     name: '<array field values>',
+    serialize: {
+      read(json) {
+        if (!json) {
+          throw new Error();
+        }
+
+        if (!Array.isArray(json)) {
+          throw new Error();
+        }
+
+        return json.map((schema: any) => {
+          const values = prepareFieldsSchema(schema.values);
+          const errors = schema.errors;
+
+          const prepared = prepareFieldsSchema(values);
+          const api = mapSchema(prepared).$api.getState();
+
+          setFormPartialErrors(errors, api, 'outer');
+
+          return prepared;
+        });
+      },
+
+      write(state) {
+        const readySchemas = state.map((value) =>
+          isPrimaryJsonValue(value)
+            ? value
+            : mapSchema(value as ReadyFieldsGroupSchema),
+        );
+
+        return readySchemas
+          .map((payload) => {
+            if (isPrimaryJsonValue(payload)) {
+              return payload;
+            }
+
+            if (isPrimaryValue(payload)) {
+              return null;
+            }
+
+            return {
+              values: payload.$values.getState(),
+              errors: payload.$errors.getState(),
+            };
+          })
+          .filter(Boolean) as Json[];
+      },
+    },
   });
 
   const $innerError = createStore<FieldError>(null, {
@@ -414,7 +465,7 @@ export function createArrayField<
     replaced,
 
     reset,
-    forkOnCompose: options.forkOnCompose,
+    forkOnCreateForm: options.forkOnCreateForm,
 
     fork: (options?: CreateArrayFieldOptions) =>
       createArrayField(values, { ...overrides, ...options }),

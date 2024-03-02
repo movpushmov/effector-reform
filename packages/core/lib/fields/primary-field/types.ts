@@ -2,12 +2,11 @@ import { EventCallable, Store, Event } from 'effector';
 import { FieldError } from '../types';
 import { primaryFieldSymbol } from './symbol';
 
+export type PrimaryJsonValue = string | number | boolean | Date;
+
 export type PrimaryValue =
-  | string
-  | number
   | bigint
-  | boolean
-  | Date
+  | PrimaryJsonValue
   | Blob
   | Buffer
   | ArrayBuffer
@@ -18,16 +17,12 @@ export type PrimaryValue =
   | File
   | FileList;
 
-export interface PrimaryFieldForkConfig<T extends PrimaryValue>
-  extends CreatePrimaryFieldOptions {
-  value?: T;
-  error?: FieldError;
-}
-
 export interface PrimaryFieldApi<T extends PrimaryValue> {
   change: EventCallable<T>;
   changed: Event<T>;
 
+  blur: EventCallable<void>;
+  focus: EventCallable<void>;
   reset: EventCallable<void>;
 
   changeError: EventCallable<FieldError>;
@@ -43,8 +38,15 @@ export interface PrimaryField<T extends PrimaryValue = any>
 
   $isDirty: Store<boolean>;
   $isValid: Store<boolean>;
+  $isFocused: Store<boolean>;
 
-  forkOnCompose: boolean;
+  blur: EventCallable<void>;
+  blurred: Event<void>;
+
+  focus: EventCallable<void>;
+  focused: Event<void>;
+
+  forkOnCreateForm: boolean;
 
   fork: (options?: CreatePrimaryFieldOptions) => PrimaryField<T>;
 
@@ -54,7 +56,10 @@ export interface PrimaryField<T extends PrimaryValue = any>
 
     isDirty: Store<boolean>;
     isValid: Store<boolean>;
+    isFocused: Store<boolean>;
 
+    blur: EventCallable<void>;
+    focus: EventCallable<void>;
     reset: EventCallable<void>;
 
     change: EventCallable<T>;
@@ -65,7 +70,7 @@ export interface PrimaryField<T extends PrimaryValue = any>
 export interface CreatePrimaryFieldOptions {
   error?: FieldError;
   clearOuterErrorOnChange?: boolean;
-  forkOnCompose?: boolean;
+  forkOnCreateForm?: boolean;
 }
 
 export type PrimaryFieldSymbolType = typeof primaryFieldSymbol;

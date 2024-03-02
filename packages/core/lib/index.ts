@@ -1,4 +1,4 @@
-export { compose } from './form';
+export { createForm } from './form';
 export {
   createArrayField,
   createField,

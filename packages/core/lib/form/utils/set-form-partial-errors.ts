@@ -4,7 +4,7 @@ import type { FormApi, Node } from './types';
 
 export function setFormPartialErrors<
   T extends PartialRecursive<FormErrors<ReadyFieldsGroupSchema>>,
->(values: T, formApi: FormApi, mode: 'inner' | 'outer') {
+>(errors: T, formApi: FormApi, mode: 'inner' | 'outer') {
   function iterate(node: Node, path: string[] = []) {
     for (const key in node) {
       const subNode = node[key];
@@ -42,5 +42,5 @@ export function setFormPartialErrors<
     }
   }
 
-  iterate(values);
+  iterate(errors);
 }

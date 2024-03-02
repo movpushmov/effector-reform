@@ -15,7 +15,7 @@ import {
   prepareFieldsSchema,
 } from '../fields';
 import type {
-  ComposeOptions,
+  CreateFormOptions,
   FormErrors,
   FormType,
   FormValues,
@@ -23,20 +23,21 @@ import type {
 } from './types';
 import { setFormPartialValues, mapSchema, clearFormOuterErrors } from './utils';
 
-export function compose<T extends AnySchema>(
+export function createForm<T extends AnySchema>(
   schema: T,
-  options: ComposeOptions<UserFormSchema<T>> = {},
+  options: CreateFormOptions<UserFormSchema<T>> = {},
 ) {
   const {
     validation = (() => {}) as unknown as SyncValidationFn<
       UserFormSchema<UserFormSchema<T>>
     >,
-    // validationStrategies = ['submit', 'change', 'blur'],
+    validationStrategies = ['submit', 'change', 'blur', 'focus'],
     clearOuterErrorsOnSubmit = true,
   } = options;
 
   const fields = forkGroup(prepareFieldsSchema(schema));
-  const { $errors, $values, $isValid, $api } = mapSchema(fields);
+  const { $errors, $values, $isValid, $api, focused, blurred } =
+    mapSchema(fields);
 
   const $isDirty = createStore(false);
 
@@ -86,10 +87,49 @@ export function compose<T extends AnySchema>(
 
   const $isValidationPending = validateFx.pending;
 
-  sample({
-    clock: $values,
-    target: changed,
-  });
+  const uniqueValidationStrategies = [...new Set(validationStrategies)];
+  for (const strategy of uniqueValidationStrategies) {
+    switch (strategy) {
+      case 'submit': {
+        sample({
+          clock: submitted,
+          target: validate,
+        });
+
+        break;
+      }
+      case 'focus': {
+        sample({
+          clock: focused,
+          target: validate,
+        });
+
+        break;
+      }
+      case 'blur': {
+        sample({
+          clock: blurred,
+          target: validate,
+        });
+
+        break;
+      }
+      case 'change': {
+        sample({
+          clock: changed,
+          target: validate,
+        });
+
+        break;
+      }
+    }
+  }
+
+  if (validationStrategies)
+    sample({
+      clock: $values,
+      target: changed,
+    });
 
   sample({
     clock: [setValues, setPartialValues],
@@ -142,14 +182,6 @@ export function compose<T extends AnySchema>(
     clock: validateFx.doneData as EventCallable<any>,
     filter: Boolean,
     target: setPartialErrors,
-  });
-
-  sample({
-    clock: validateFx.doneData as EventCallable<any>,
-    source: $values,
-    filter: (_, result) => result !== null,
-    fn: (values) => values,
-    target: submitted,
   });
 
   sample({

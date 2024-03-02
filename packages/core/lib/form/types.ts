@@ -26,9 +26,9 @@ export type AsyncValidationFn<
   Errors extends object = FormErrors<Schema>,
 > = (values: Values) => Promise<PartialRecursive<Errors> | null>;
 
-type ValidationStrategy = 'blur' | 'change' | 'submit';
+type ValidationStrategy = 'blur' | 'focus' | 'change' | 'submit';
 
-export interface ComposeOptions<Schema extends ReadyFieldsGroupSchema> {
+export interface CreateFormOptions<Schema extends ReadyFieldsGroupSchema> {
   validation?: SyncValidationFn<Schema> | AsyncValidationFn<Schema>;
   validationStrategies?: ValidationStrategy[];
   clearOuterErrorsOnSubmit?: boolean;

@@ -1,5 +1,13 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "version": "0.1.6",
-  "packages": ["./docs", "packages/*"]
+  "packages": ["./docs", "packages/*"],
+  "conventionalCommits": true,
+  "command": {
+    "publish": {
+      "allowBranch": "main",
+      "ignoreChanges": ["**/test/**"],
+      "message": "chore: publish"
+    }
+  }
 }

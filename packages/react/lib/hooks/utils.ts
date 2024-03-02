@@ -56,6 +56,8 @@ export function getFields<T extends FormFields>(
           isValid: getStoreValue(field.$isValid),
           change: bindEvent(field.change),
           changeError: bindEvent(field.changeError),
+          focus: bindEvent(field.focus),
+          blur: bindEvent(field.blur),
         };
 
         break;
