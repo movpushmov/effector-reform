@@ -50,7 +50,7 @@
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-reform/core": "0.2.3",
+    "@effector-reform/core": "^0.2.3",
     "effector": "^23.2.0",
     "effector-react": "^23.2.0",
     "react": "^18.2.0"
@@ -62,5 +62,5 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2"
   },
-  "gitHead": "8f8b0f3700f1306db8f95f7aa5744356f8960d66"
+  "gitHead": "d35b5e5d94287cc6ba5b6568ef9e67c3a51312cc"
 }
