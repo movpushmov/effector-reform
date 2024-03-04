@@ -5,7 +5,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "private": false,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "> TODO: description",
   "keywords": [
     "effector",
@@ -54,7 +54,7 @@
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-reform/core": "^0.3.0",
+    "@effector-reform/core": "^0.3.1",
     "yup": "^1.3.3"
   },
   "gitHead": "d35b5e5d94287cc6ba5b6568ef9e67c3a51312cc"
