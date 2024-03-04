@@ -1,11 +1,34 @@
-# `core`
+# ☄️ effector-reform/core
 
-> TODO: description
+Forms without a headache
 
-## Usage
+> [!WARNING]  
+> effector-reform is in active development.
+> Highly not recommended to use this
+> library in production.
+
+## Installation
+
+> [!NOTE]
+> You can use any package manager
+
+#### Core
 
 ```
-const core = require('core');
+npm i @effector-reform/core
+```
 
-// TODO: DEMONSTRATE API
+and then follow this [instructions](https://effector.dev/en/api/effector/babel-plugin/#factories)
+(add `@effector-reform/core` in factories list)
+
+#### React
+
+```
+npm i @effector-reform/react
+```
+
+#### Yup validation schema adapter
+
+```
+npm i @effector-reform/yup
 ```
