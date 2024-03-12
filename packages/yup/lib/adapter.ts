@@ -3,49 +3,13 @@ import type {
   FormValues,
   PartialRecursive,
   ReadyFieldsGroupSchema,
+  ErrorsSchemaPayload,
   AsyncValidationFn,
 } from '@effector-reform/core';
 import type { AnySchema, ValidationError } from 'yup';
 
-function prepareErrors(errors: { message: string; path: string }[]) {
-  const result = {};
-
-  function createSubObjects(node: any, path: string[], message: string) {
-    const key = path.shift();
-
-    if (!key) {
-      return;
-    }
-
-    if (path.length === 0) {
-      node[key] = message;
-      return;
-    }
-
-    if (/\w+\[\d+\]/.test(key)) {
-      const parsed = key.split('[');
-
-      const subKey = parsed[0];
-      const index = parseInt(parsed[1].replace(']', ''));
-
-      node[subKey] = [];
-
-      for (let i = 0; i < index + 1; i++) {
-        node[subKey].push({});
-      }
-
-      return createSubObjects(node[subKey][index], [...path], message);
-    }
-
-    node[key] = {};
-    return createSubObjects(node[key], [...path], message);
-  }
-
-  for (const error of errors) {
-    createSubObjects(result, error.path.split('.'), error.message);
-  }
-
-  return result;
+function preparePath(path: string) {
+  return path.replace(/\[/g, '.').replace(/]/g, '');
 }
 
 export function yupAdapter<FormSchema extends ReadyFieldsGroupSchema>(
@@ -59,13 +23,13 @@ export function yupAdapter<FormSchema extends ReadyFieldsGroupSchema>(
 
       return null;
     } catch (e) {
-      const error = e as ValidationError;
-      const errors = error.inner.map((err) => ({
-        message: err.message,
-        path: err.path!,
-      }));
+      const errors = e as ValidationError;
 
-      return prepareErrors(errors);
+      return errors.inner.reduce((acc: ErrorsSchemaPayload, error) => {
+        acc[preparePath(error.path!)] = error.message;
+
+        return acc;
+      }, {});
     }
   };
 }

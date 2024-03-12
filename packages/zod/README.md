@@ -1,4 +1,4 @@
-# ☄️ effector-reform/core
+# ☄️ effector-reform/zod
 
 Forms without a headache
 

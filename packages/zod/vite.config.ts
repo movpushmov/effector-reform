@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/index.ts'),
-      name: 'EffectorReformYup',
+      name: 'EffectorReformZod',
       fileName: 'index',
       formats: ['es', 'cjs'],
     },

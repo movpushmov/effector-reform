@@ -1,10 +1,11 @@
 import {
   EventCallable,
   Store,
-  createEffect,
   createEvent,
   createStore,
   sample,
+  createEffect,
+  clearNode,
 } from 'effector';
 import {
   ArrayField,
@@ -15,6 +16,7 @@ import {
   arrayFieldSymbol,
   isPrimaryValue,
   primaryFieldSymbol,
+  FieldError,
 } from '../../fields';
 import { FormErrors, FormValues } from '../types';
 import { FormApi, Node } from './types';
@@ -33,9 +35,10 @@ function getMeta(
 
   let isValid = true;
 
-  function mapValues(
+  function map(
     currentNode: ReadyFieldsGroupSchema,
-    resultNode: Node,
+    resultValuesNode: Node,
+    resultErrorsNode: Node,
     path: string[] = [],
   ) {
     for (const key in currentNode) {
@@ -44,12 +47,43 @@ function getMeta(
       switch (subNode.type) {
         case primaryFieldSymbol: {
           const field = subNode as PrimaryField<any> & InnerFieldApi;
-          resultNode[key] = field.$value.getState();
+
+          resultValuesNode[key] = field.$value.getState();
+          resultErrorsNode[key] = field.$error.getState();
 
           const apiKey = [...path, key].join('.');
 
+          const changeValueFx = createEffect((value: any) => {
+            resultValuesNode[key] = value;
+          });
+
+          const changeErrorFx = createEffect((error: FieldError) => {
+            resultErrorsNode[key] = error;
+          });
+
           sample({
-            clock: [field.$value, field.$error],
+            clock: field.$error,
+            target: changeErrorFx,
+          });
+
+          sample({
+            clock: changeErrorFx.doneData,
+            fn: () => ({ fieldPath: apiKey, type: 'error' }),
+            target: schemaUpdated,
+          });
+
+          if (resultErrorsNode[key]) {
+            isValid = false;
+          }
+
+          sample({
+            clock: field.$value,
+            target: changeValueFx,
+          });
+
+          sample({
+            clock: changeValueFx.doneData,
+            fn: () => ({ fieldPath: apiKey }),
             target: schemaUpdated,
           });
 
@@ -61,12 +95,20 @@ function getMeta(
 
           sample({
             clock: field.blurred,
-            fn: () => ({ fieldPath: apiKey }),
+            fn: () => ({ fieldPath: apiKey, type: 'value' }),
             target: blurred,
           });
 
           api[apiKey] = {
             reset: field.reset,
+
+            clearForErrors: () => {
+              clearNode(changeErrorFx);
+            },
+
+            clear: () => {
+              clearNode(changeValueFx);
+            },
 
             clearInnerError: field.setInnerError.prepend(() => null),
             clearOuterError: field.changeError.prepend(() => null),
@@ -84,29 +126,97 @@ function getMeta(
           const fieldValues = field.$values.getState();
           const apiKey = [...path, key].join('.');
 
-          resultNode[key] = [];
+          resultValuesNode[key] = [];
+          resultErrorsNode[key] = {
+            error: null,
+            errors: [],
+          };
 
           fieldValues.map((item, index) => {
             if (!isPrimaryValue(item)) {
-              resultNode[key].push({});
+              resultValuesNode[key].push({});
+              resultErrorsNode[key].errors.push({});
 
-              mapValues(item, resultNode[key][index], [
-                ...path,
-                key,
-                index.toString(),
-              ]);
+              map(
+                item,
+                resultValuesNode[key][index],
+                resultErrorsNode[key].errors[index],
+                [...path, key, index.toString()],
+              );
             } else {
-              resultNode[key].push(item);
+              resultValuesNode[key].push(item);
             }
           });
 
+          const changeValuesFx = createEffect((values: any[]) => {
+            api[apiKey].clear();
+
+            resultValuesNode[key] = [];
+            resultErrorsNode[key] = {
+              error: null,
+              errors: [],
+            };
+
+            values.forEach((item, index) => {
+              if (!isPrimaryValue(item)) {
+                resultValuesNode[key].push({});
+                resultErrorsNode[key].errors.push({});
+
+                map(
+                  item,
+                  resultValuesNode[key][index],
+                  resultErrorsNode[key].errors[index],
+                  [...path, key, index.toString()],
+                );
+              } else {
+                resultValuesNode[key].push(item);
+              }
+            });
+          });
+
+          const changeErrorFx = createEffect((error: FieldError) => {
+            resultErrorsNode[key].error = error;
+          });
+
           sample({
-            clock: [field.$values, field.$error],
+            clock: field.$values,
+            target: changeValuesFx,
+          });
+
+          sample({
+            clock: field.$error,
+            target: changeErrorFx,
+          });
+
+          sample({
+            clock: changeValuesFx.doneData,
+            fn: () => ({ fieldPath: apiKey, type: 'value' }),
+            target: schemaUpdated,
+          });
+
+          sample({
+            clock: changeErrorFx.doneData,
+            fn: () => ({ fieldPath: apiKey, type: 'error' }),
             target: schemaUpdated,
           });
 
           api[apiKey] = {
             reset: field.reset,
+            clearForErrors: () => {},
+
+            clear: (fullClear) => {
+              const keys = Object.keys(api)
+                .filter((key) => key.startsWith(apiKey))
+                .filter((key) => key !== apiKey);
+
+              for (const subApiKey of keys) {
+                api[subApiKey].clear(true);
+              }
+
+              if (fullClear) {
+                clearNode(changeValuesFx);
+              }
+            },
 
             clearInnerError: field.setInnerError.prepend(() => null),
             clearOuterError: field.changeError.prepend(() => null),
@@ -120,71 +230,15 @@ function getMeta(
           break;
         }
         default: {
-          resultNode[key] = {};
+          resultValuesNode[key] = {};
+          resultErrorsNode[key] = {};
 
-          mapValues(subNode as ReadyFieldsGroupSchema, resultNode[key], [
-            ...path,
-            key,
-          ]);
-
-          break;
-        }
-      }
-    }
-  }
-
-  function mapErrors(
-    currentNode: ReadyFieldsGroupSchema,
-    resultNode: Node,
-    path: string[] = [],
-  ) {
-    for (const key in currentNode) {
-      const subNode = currentNode[key];
-
-      switch (subNode.type) {
-        case primaryFieldSymbol: {
-          resultNode[key] = subNode.$error.getState();
-
-          if (resultNode[key]) {
-            isValid = false;
-          }
-
-          break;
-        }
-        case arrayFieldSymbol: {
-          const field = subNode as ArrayField<any> & InnerArrayFieldApi;
-          const fieldValues = field.$values.getState();
-
-          resultNode[key] = {
-            error: field.$error.getState(),
-            errors: [],
-          };
-
-          if (resultNode[key].error) {
-            isValid = false;
-          }
-
-          fieldValues.map((item, index) => {
-            if (!isPrimaryValue(item)) {
-              resultNode[key].errors.push({});
-
-              mapErrors(item, resultNode[key].errors[index], [
-                ...path,
-                key,
-                index.toString(),
-              ]);
-            }
-          });
-
-          break;
-        }
-        default: {
-          resultNode[key] = {};
-
-          mapErrors(subNode as ReadyFieldsGroupSchema, resultNode[key], [
-            ...path,
-            key,
-          ]);
+          map(
+            subNode as ReadyFieldsGroupSchema,
+            resultValuesNode[key],
+            resultErrorsNode[key],
+            [...path, key],
+          );
 
           break;
         }
@@ -192,8 +246,7 @@ function getMeta(
     }
   }
 
-  mapValues(node, values);
-  mapErrors(node, errors);
+  map(node, values, errors);
 
   return { values, errors, api, isValid, focused, blurred };
 }
@@ -202,10 +255,6 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
   const schemaUpdated = createEvent();
   const blurred = createEvent<FieldInteractionEventPayload>();
   const focused = createEvent<FieldInteractionEventPayload>();
-
-  const getMetaFx = createEffect(() => {
-    return getMeta(node, schemaUpdated, focused, blurred);
-  });
 
   const $meta = createStore(getMeta(node, schemaUpdated, focused, blurred));
 
@@ -217,11 +266,8 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
 
   sample({
     clock: schemaUpdated,
-    target: getMetaFx,
-  });
-
-  sample({
-    clock: getMetaFx.doneData,
+    source: $meta,
+    fn: (meta) => ({ ...meta }),
     target: $meta,
   });
 

@@ -16,12 +16,18 @@ import {
 } from '../fields';
 import type {
   CreateFormOptions,
+  ErrorsSchemaPayload,
   FormErrors,
   FormType,
   FormValues,
   SyncValidationFn,
 } from './types';
-import { setFormPartialValues, mapSchema, clearFormOuterErrors } from './utils';
+import {
+  setFormPartialValues,
+  mapSchema,
+  clearFormOuterErrors,
+  setFormPartialErrors,
+} from './utils';
 
 export function createForm<T extends AnySchema>(
   schema: T,
@@ -57,27 +63,31 @@ export function createForm<T extends AnySchema>(
 
   const setErrorsFx = attach({
     source: $api,
-    effect: (api, values: any) => setFormPartialValues(values, api),
+    effect: (api, errors: any) => setFormPartialErrors(errors, api, 'inner'),
   });
 
-  const setValues = createEvent<Values>();
-  const setPartialValues = createEvent<PartialRecursive<Values>>();
+  const setValues = createEvent<Values>('<form set values>');
+  const setPartialValues = createEvent<PartialRecursive<Values>>(
+    '<form set partial values>',
+  );
 
-  const setErrors = createEvent<Errors>();
-  const setPartialErrors = createEvent<PartialRecursive<Errors>>();
+  const setErrors = createEvent<ErrorsSchemaPayload>('<form set errors>');
 
-  const clearOuterErrors = createEvent();
+  const clearOuterErrors = createEvent('<form clear outer errors>');
 
-  const changed = createEvent<FormValues<Fields>>();
-  const errorsChanged = createEvent<Errors>();
+  const changed = createEvent<FormValues<Fields>>('<form changed>');
+  const errorsChanged = createEvent<Errors>('<form errors changed>');
 
-  const submit = createEvent<void>();
-  const submitted = createEvent<FormValues<Fields>>();
+  const submit = createEvent<void>('<form submit>');
+  const submitted = createEvent<FormValues<Fields>>('<form submitted>');
 
-  const validate = createEvent<void>();
-  const validated = createEvent<void>();
+  const validate = createEvent<void>('<form validate>');
+  const validated = createEvent<void>('<form validated>');
+  const validatedAndSubmitted = createEvent<void>(
+    '<form validated and submitted>',
+  );
 
-  const reset = createEvent();
+  const reset = createEvent('<form reset>');
 
   const validateFx = createEffect(validation) as Effect<
     Values,
@@ -125,11 +135,10 @@ export function createForm<T extends AnySchema>(
     }
   }
 
-  if (validationStrategies)
-    sample({
-      clock: $values,
-      target: changed,
-    });
+  sample({
+    clock: $values,
+    target: changed,
+  });
 
   sample({
     clock: [setValues, setPartialValues],
@@ -137,7 +146,7 @@ export function createForm<T extends AnySchema>(
   });
 
   sample({
-    clock: [setErrors, setPartialErrors],
+    clock: setErrors,
     target: setErrorsFx,
   });
 
@@ -149,7 +158,8 @@ export function createForm<T extends AnySchema>(
 
   sample({
     clock: submit,
-    target: validate,
+    source: $values,
+    target: submitted,
   });
 
   sample({
@@ -179,13 +189,13 @@ export function createForm<T extends AnySchema>(
   sample({
     clock: validateFx.doneData as EventCallable<any>,
     filter: Boolean,
-    target: setPartialErrors,
+    target: setErrors,
   });
 
   sample({
     clock: validated,
     source: $values,
-    target: submitted,
+    target: validatedAndSubmitted,
   });
 
   return {
@@ -208,12 +218,12 @@ export function createForm<T extends AnySchema>(
 
     validate,
     validated,
+    validatedAndSubmitted,
 
     setValues,
     setErrors,
 
     setPartialValues,
-    setPartialErrors,
 
     '@@unitShape': () => ({
       errors: $errors,
@@ -231,7 +241,6 @@ export function createForm<T extends AnySchema>(
       setErrors,
 
       setPartialValues,
-      setPartialErrors,
     }),
   } as FormType<Fields, Values, Errors>;
 }

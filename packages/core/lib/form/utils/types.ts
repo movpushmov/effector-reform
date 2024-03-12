@@ -4,6 +4,8 @@ export type Node = any;
 
 export type PathApi = {
   reset: () => void;
+  clear: (fullClear?: boolean) => void;
+  clearForErrors: () => void;
 
   clearInnerError: () => void;
   clearOuterError: () => void;

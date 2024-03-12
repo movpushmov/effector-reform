@@ -190,7 +190,10 @@ export function createArrayField<
 
   const syncFx = attach({
     source: $values,
-    effect: async (values, newValues: Values): Promise<Values> => {
+    effect: async (
+      values,
+      { newValues }: { newValues: Values; type: string },
+    ): Promise<Values> => {
       await clearNodesFx(filterUnused(values, newValues));
 
       return newValues;
@@ -203,10 +206,16 @@ export function createArrayField<
 
   sample({ clock: $values, fn: () => true, target: $isDirty });
   sample({ clock: syncFx.doneData, target: $values });
-  sample({ clock: clear, fn: () => [], target: [syncFx, cleared] });
+
+  sample({
+    clock: clear,
+    fn: () => ({ newValues: [], type: 'clear' }),
+    target: [syncFx, cleared],
+  });
+
   sample({
     clock: reset,
-    fn: () => getDefaultValues(),
+    fn: () => ({ newValues: getDefaultValues(), type: 'reset' }),
     target: syncFx,
   });
 
@@ -292,7 +301,7 @@ export function createArrayField<
 
   sample({
     clock: change,
-    fn: (payload) => preparePayload(payload),
+    fn: (payload) => ({ newValues: preparePayload(payload), type: 'change' }),
     target: [syncFx, changed],
   });
 
@@ -302,7 +311,7 @@ export function createArrayField<
     clock: pushFx.done,
     fn: ({ params, result }) => ({
       pushed: { params, result },
-      values: result,
+      values: { newValues: result, type: 'push' },
     }),
     target: spread({
       pushed,
@@ -316,7 +325,7 @@ export function createArrayField<
     clock: swapFx.done,
     fn: ({ params, result }) => ({
       swapped: { params, result },
-      values: result,
+      values: { newValues: result, type: 'swap' },
     }),
     target: spread({
       swapped,
@@ -328,7 +337,10 @@ export function createArrayField<
 
   sample({
     clock: moveFx.done,
-    fn: ({ params, result }) => ({ moved: { params, result }, values: result }),
+    fn: ({ params, result }) => ({
+      moved: { params, result },
+      values: { newValues: result, type: 'move' },
+    }),
     target: spread({
       moved,
       values: syncFx,
@@ -341,7 +353,7 @@ export function createArrayField<
     clock: insertFx.done,
     fn: ({ params, result }) => ({
       inserted: { params, result },
-      values: result,
+      values: { newValues: result, type: 'insert' },
     }),
     target: spread({
       inserted,
@@ -355,7 +367,7 @@ export function createArrayField<
     clock: unshiftFx.done,
     fn: ({ params, result }) => ({
       unshifted: { params, result },
-      values: result,
+      values: { newValues: result, type: 'unshift' },
     }),
     target: spread({
       unshifted,
@@ -372,7 +384,7 @@ export function createArrayField<
     clock: removeFx.done,
     fn: ({ params, result }) => ({
       removed: { params, result },
-      values: result,
+      values: { newValues: result, type: 'remove' },
     }),
     target: spread({
       removed,
@@ -387,6 +399,7 @@ export function createArrayField<
 
   sample({
     clock: popFx.doneData,
+    fn: (values) => ({ newValues: values, type: 'pop' }),
     target: [syncFx, popped],
   });
 
@@ -399,7 +412,7 @@ export function createArrayField<
     clock: replaceFx.done,
     fn: ({ params, result }) => ({
       replaced: { params, result },
-      values: result,
+      values: { newValues: result, type: 'replace' },
     }),
     target: spread({
       replaced,

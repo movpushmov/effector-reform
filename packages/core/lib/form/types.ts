@@ -1,4 +1,4 @@
-import { EventCallable, Store, StoreValue } from 'effector';
+import { EventCallable, Event, Store, StoreValue } from 'effector';
 import {
   AnySchema,
   ArrayField,
@@ -14,17 +14,17 @@ import {
   UserFormSchema,
 } from '../fields';
 
+export type ErrorsSchemaPayload = Record<string, FieldError>;
+
 export type SyncValidationFn<
   Schema extends ReadyFieldsGroupSchema,
   Values = FormValues<Schema>,
-  Errors extends object = FormErrors<Schema>,
-> = (values: Values) => PartialRecursive<Errors> | null;
+> = (values: Values) => ErrorsSchemaPayload | null;
 
 export type AsyncValidationFn<
   Schema extends ReadyFieldsGroupSchema,
   Values = FormValues<Schema>,
-  Errors extends object = FormErrors<Schema>,
-> = (values: Values) => Promise<PartialRecursive<Errors> | null>;
+> = (values: Values) => Promise<ErrorsSchemaPayload | null>;
 
 type ValidationStrategy = 'blur' | 'focus' | 'change' | 'submit';
 
@@ -54,12 +54,6 @@ export type OnNodeHandlers = {
   ) => void;
 };
 
-export type SetValuePayload = { field: string; value: any };
-export type SetValuesPayload = SetValuePayload[];
-
-export type SetErrorPayload = { field: string; value: string | null };
-export type SetErrorsPayload = SetErrorPayload[];
-
 export type FormValues<T extends ReadyFieldsGroupSchema> = {
   [K in keyof T]: T[K] extends PrimaryField<any>
     ? StoreValue<T[K]['$value']>
@@ -71,11 +65,6 @@ export type FormValues<T extends ReadyFieldsGroupSchema> = {
         ? FormValues<T[K]>
         : never;
 };
-
-export interface WatchSchemaResult<T extends ReadyFieldsGroupSchema> {
-  $values: Store<FormValues<T>>;
-  $errors: Store<FormErrors<T>>;
-}
 
 export type AnyFieldApi =
   | (PrimaryFieldApi<PrimaryValue> & {
@@ -133,19 +122,19 @@ export type FormType<
   $isValidationPending: Store<boolean>;
 
   setValues: EventCallable<Values>;
-  setErrors: EventCallable<Errors>;
-
   setPartialValues: EventCallable<PartialRecursive<Values>>;
-  setPartialErrors: EventCallable<PartialRecursive<Errors>>;
+
+  setErrors: EventCallable<ErrorsSchemaPayload>;
 
   changed: EventCallable<Values>;
-  errorsChanged: EventCallable<Errors>;
+  errorsChanged: Event<Errors>;
 
   validate: EventCallable<void>;
-  validated: EventCallable<void>;
+  validated: Event<void>;
+  validatedAndSubmitted: Event<void>;
 
   submit: EventCallable<void>;
-  submitted: EventCallable<Values>;
+  submitted: Event<Values>;
 
   reset: EventCallable<void>;
 
@@ -163,9 +152,8 @@ export type FormType<
     reset: EventCallable<void>;
 
     setValues: EventCallable<Values>;
-    setErrors: EventCallable<Errors>;
+    setErrors: EventCallable<ErrorsSchemaPayload>;
 
     setPartialValues: EventCallable<PartialRecursive<Values>>;
-    setPartialErrors: EventCallable<PartialRecursive<Errors>>;
   };
 };
