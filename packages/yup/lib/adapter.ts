@@ -1,7 +1,5 @@
 import type {
-  FormErrors,
   FormValues,
-  PartialRecursive,
   ReadyFieldsGroupSchema,
   ErrorsSchemaPayload,
   AsyncValidationFn,
@@ -17,11 +15,11 @@ export function yupAdapter<FormSchema extends ReadyFieldsGroupSchema>(
 ): AsyncValidationFn<FormSchema> {
   return async (
     values: FormValues<FormSchema>,
-  ): Promise<PartialRecursive<FormErrors<FormSchema>> | null> => {
+  ): Promise<ErrorsSchemaPayload> => {
     try {
       await schema.validate(values, { strict: true, abortEarly: false });
 
-      return null;
+      return {};
     } catch (e) {
       const errors = e as ValidationError;
 

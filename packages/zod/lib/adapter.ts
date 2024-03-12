@@ -1,7 +1,5 @@
 import type {
-  FormErrors,
   FormValues,
-  PartialRecursive,
   ReadyFieldsGroupSchema,
   AsyncValidationFn,
   ErrorsSchemaPayload,
@@ -13,11 +11,11 @@ export function zodAdapter<FormSchema extends ReadyFieldsGroupSchema>(
 ): AsyncValidationFn<FormSchema> {
   return async (
     values: FormValues<FormSchema>,
-  ): Promise<PartialRecursive<FormErrors<FormSchema>> | null> => {
+  ): Promise<ErrorsSchemaPayload> => {
     try {
       await schema.parseAsync(values);
 
-      return null;
+      return {};
     } catch (e) {
       const { errors } = e as ZodError;
 
