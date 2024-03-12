@@ -1,6 +1,6 @@
 {
   "name": "@effector-reform/zod",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Zod schema adapter for effector-reform forms",
   "publishConfig": {
     "access": "public",

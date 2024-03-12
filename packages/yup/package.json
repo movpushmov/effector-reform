@@ -5,7 +5,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "private": false,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Yup schema adapter for effector-reform forms",
   "keywords": [
     "effector",
