@@ -5,7 +5,11 @@ import {
   primaryFieldSymbol,
 } from '@effector-reform/core';
 import { Scope, scopeBind, EventCallable, Store } from 'effector';
-import { ReactFields } from '../types';
+import {
+  ReactArrayFieldApi,
+  ReactFields,
+  ReactPrimaryFieldApi,
+} from '../types';
 
 export function getFields<T extends FormFields>(
   fields: T,
@@ -44,21 +48,28 @@ export function getFields<T extends FormFields>(
           remove: bindEvent(field.remove),
           pop: bindEvent(field.pop),
           replace: bindEvent(field.replace),
-        };
+        } as ReactArrayFieldApi<any>;
 
         break;
       }
       case primaryFieldSymbol: {
+        const change = bindEvent(field.change);
+        const focus = bindEvent(field.focus);
+        const blur = bindEvent(field.blur);
+
         node[fieldName] = {
           value: getStoreValue(field.$value),
           error: getStoreValue(field.$error),
           isDirty: getStoreValue(field.$isDirty),
           isValid: getStoreValue(field.$isValid),
-          change: bindEvent(field.change),
           changeError: bindEvent(field.changeError),
-          focus: bindEvent(field.focus),
-          blur: bindEvent(field.blur),
-        };
+          change,
+          focus,
+          blur,
+          onChange: (event) => change(event.target.value),
+          onFocus: () => focus(),
+          onBlur: () => blur(),
+        } as ReactPrimaryFieldApi<any>;
 
         break;
       }

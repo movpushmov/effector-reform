@@ -1,6 +1,5 @@
 import {
   EventCallable,
-  Store,
   createEvent,
   createStore,
   sample,
@@ -18,10 +17,14 @@ import {
   primaryFieldSymbol,
   FieldError,
 } from '../../fields';
-import { FormErrors, FormValues } from '../types';
 import { FormApi, Node } from './types';
+import { FormErrors, FormValues } from '../types';
 
 type FieldInteractionEventPayload = { fieldPath: string };
+export type BatchInfo = {
+  fields: string[];
+  type: 'values' | 'errors';
+};
 
 function getMeta(
   node: ReadyFieldsGroupSchema,
@@ -252,29 +255,39 @@ function getMeta(
 }
 
 export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
-  const schemaUpdated = createEvent<FieldInteractionEventPayload>();
-  const blurred = createEvent<FieldInteractionEventPayload>();
-  const focused = createEvent<FieldInteractionEventPayload>();
+  const schemaUpdated =
+    createEvent<FieldInteractionEventPayload>('<schema updated>');
 
-  const $meta = createStore(getMeta(node, schemaUpdated, focused, blurred));
+  const blurred = createEvent<FieldInteractionEventPayload>('<blurred>');
+  const focused = createEvent<FieldInteractionEventPayload>('<focused>');
+
+  const $meta = createStore(getMeta(node, schemaUpdated, focused, blurred), {
+    name: 'meta',
+  });
+
   const { values, errors } = $meta.getState();
 
-  const $fieldsToBatch = createStore<string[]>([]);
-  const $innerValues: Store<FormValues<T>> = $meta.map(({ values }) => values);
-  const $innerErrors: Store<FormErrors<T>> = $meta.map(({ errors }) => errors);
+  const $batchInfo = createStore<BatchInfo | null>(null, {
+    name: '<batch info>',
+  });
+
   const $isValid = $meta.map(({ isValid }) => isValid);
 
-  const $values = createStore(values);
-  const $errors = createStore(errors);
+  const $values = createStore<FormValues<T>>(values, { name: '<values>' });
+  const $errors = createStore<FormErrors<T>>(errors, { name: '<errors>' });
 
   const $api = $meta.map(({ api }) => api);
 
-  const startBatch = createEvent<string[]>();
-  const syncValues = createEvent();
+  const startBatch = createEvent<BatchInfo>('<start batch>');
+
+  const endBatch = createEvent('<end batch>');
+
+  const syncValues = createEvent('<sync values>');
+  const syncErrors = createEvent('<sync errors>');
 
   sample({
     clock: startBatch,
-    target: $fieldsToBatch,
+    target: $batchInfo,
   });
 
   sample({
@@ -286,29 +299,59 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
 
   sample({
     clock: schemaUpdated,
-    source: $fieldsToBatch,
-    fn: (fields, { fieldPath }) => fields.filter((f) => f !== fieldPath),
-    target: $fieldsToBatch,
+    source: $batchInfo,
+    filter: Boolean,
+    fn: ({ fields, type }, { fieldPath }) => ({
+      fields: fields.filter((f) => f !== fieldPath),
+      type,
+    }),
+    target: $batchInfo,
   });
 
   sample({
-    clock: $fieldsToBatch,
-    filter: (fields) => fields.length === 0,
+    clock: $meta,
+    source: $batchInfo,
+    filter: (info) => !info,
+    target: [syncValues, syncErrors],
+  });
+
+  sample({
+    clock: $batchInfo,
+    filter: (info) =>
+      !!info && info.fields.length === 0 && info.type === 'values',
     target: syncValues,
   });
 
   sample({
-    clock: syncValues,
-    source: $innerValues,
-    fn: (innerValues) => innerValues,
-    target: $values,
+    clock: $batchInfo,
+    filter: (info) =>
+      !!info && info.fields.length === 0 && info.type === 'errors',
+    target: syncErrors,
   });
 
   sample({
     clock: syncValues,
-    source: $innerErrors,
-    fn: (innerErrors) => innerErrors,
+    source: $meta,
+    fn: ({ values }) => ({ ...values }),
+    target: $values,
+  });
+
+  sample({
+    clock: syncErrors,
+    source: $meta,
+    fn: ({ errors }) => ({ ...errors }),
     target: $errors,
+  });
+
+  sample({
+    clock: [syncValues, syncErrors],
+    target: endBatch,
+  });
+
+  sample({
+    clock: endBatch,
+    fn: () => null,
+    target: $batchInfo,
   });
 
   return { $values, $errors, $api, $isValid, focused, blurred, startBatch };

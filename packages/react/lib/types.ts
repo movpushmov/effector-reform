@@ -15,6 +15,7 @@ import {
   UnshiftPayload,
 } from '@effector-reform/core';
 import { StoreValue } from 'effector';
+import { ChangeEvent } from 'react';
 
 export interface ReactPrimaryFieldApi<T extends PrimaryValue> {
   value: T;
@@ -24,7 +25,11 @@ export interface ReactPrimaryFieldApi<T extends PrimaryValue> {
   isDirty: boolean;
 
   change: (newValue: T) => void;
-  errorChange: (newError: FieldError) => void;
+  changeError: (newError: FieldError) => void;
+
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onFocus: () => void;
+  onBlur: () => void;
 }
 
 export interface ReactArrayFieldApi<

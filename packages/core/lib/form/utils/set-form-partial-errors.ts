@@ -1,14 +1,15 @@
 import type { ErrorsSchemaPayload } from '../types';
 import type { FormApi } from './types';
 import { EventCallable } from 'effector';
+import { BatchInfo } from './map-schema';
 
 export function setFormPartialErrors(
   errors: ErrorsSchemaPayload,
   formApi: FormApi,
-  startBatch: EventCallable<string[]>,
+  startBatch: EventCallable<BatchInfo>,
   mode: 'inner' | 'outer',
 ) {
-  startBatch(Object.keys(errors));
+  startBatch({ fields: Object.keys(errors), type: 'errors' });
 
   for (const apiKey in errors) {
     const fieldApi = formApi[apiKey];

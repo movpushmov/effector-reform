@@ -1,11 +1,12 @@
 import { isPrimaryValue } from '../../fields';
 import type { FormApi, Node } from './types';
 import { EventCallable } from 'effector';
+import { BatchInfo } from './map-schema';
 
 export function setFormPartialValues<Values>(
   values: Values,
   formApi: FormApi,
-  startBatch: EventCallable<string[]>,
+  startBatch: EventCallable<BatchInfo>,
 ) {
   const iteratedValues: Record<
     string,
@@ -40,7 +41,7 @@ export function setFormPartialValues<Values>(
 
   iterate(values);
 
-  startBatch(Object.keys(iteratedValues));
+  startBatch({ fields: Object.keys(iteratedValues), type: 'values' });
 
   for (const apiKey in iteratedValues) {
     iteratedValues[apiKey].event(iteratedValues[apiKey].value);
