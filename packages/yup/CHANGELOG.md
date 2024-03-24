@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/movpushmov/effector-reform/compare/v0.5.1...v0.5.2) (2024-03-24)
+
+### Bug Fixes
+
+- forkGroup typings ([b1be4c7](https://github.com/movpushmov/effector-reform/commit/b1be4c79d741adec9f88ca86a6522ebe4f97d2fa))
+
 ## [0.5.1](https://github.com/movpushmov/effector-reform/compare/v0.5.0...v0.5.1) (2024-03-24)
 
 ### Bug Fixes
