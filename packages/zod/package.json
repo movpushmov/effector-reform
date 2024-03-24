@@ -1,6 +1,6 @@
 {
   "name": "@effector-reform/zod",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Zod schema adapter for effector-reform forms",
   "publishConfig": {
     "access": "public",
@@ -54,7 +54,7 @@
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-reform/core": "^0.4.0",
+    "@effector-reform/core": "^0.5.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
