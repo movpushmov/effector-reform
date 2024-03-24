@@ -19,7 +19,6 @@ describe('Array field ssr api', () => {
         '2n8fgy|eci76e': [
           { values: { a: 5, b: 10 }, errors: { a: null, b: null } },
         ],
-        '2n8fgy|-c9edul': true,
       });
     }
 

@@ -1,4 +1,5 @@
 import {
+  ErrorsSchemaPayload,
   FormErrors,
   FormType,
   FormValues,
@@ -30,9 +31,8 @@ type ReactForm<
   validate: () => void;
   reset: () => void;
   setValues: (payload: Values) => void;
-  setErrors: (payload: Errors) => void;
+  setErrors: (payload: ErrorsSchemaPayload) => void;
   setPartialValues: (payload: PartialRecursive<Values>) => void;
-  setPartialErrors: (payload: PartialRecursive<Errors>) => void;
 };
 
 type AnyForm = FormType<any, any, any>;

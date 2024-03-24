@@ -31,7 +31,7 @@ import {
 
 export function createForm<T extends AnySchema>(
   schema: T,
-  options: CreateFormOptions<UserFormSchema<T>> = {},
+  options: CreateFormOptions<T> = {},
 ) {
   const {
     validation = (() => {}) as unknown as SyncValidationFn<
@@ -42,7 +42,7 @@ export function createForm<T extends AnySchema>(
   } = options;
 
   const fields = forkGroup(prepareFieldsSchema(schema));
-  const { $errors, $values, $isValid, $api, focused, blurred } =
+  const { $errors, $values, $isValid, $api, focused, blurred, startBatch } =
     mapSchema(fields);
 
   const $isDirty = createStore(false);
@@ -58,12 +58,13 @@ export function createForm<T extends AnySchema>(
 
   const setValuesFx = attach({
     source: $api,
-    effect: (api, values: any) => setFormPartialValues(values, api),
+    effect: (api, values: any) => setFormPartialValues(values, api, startBatch),
   });
 
   const setErrorsFx = attach({
     source: $api,
-    effect: (api, errors: any) => setFormPartialErrors(errors, api, 'inner'),
+    effect: (api, errors: any) =>
+      setFormPartialErrors(errors, api, startBatch, 'inner'),
   });
 
   const setValues = createEvent<Values>('<form set values>');

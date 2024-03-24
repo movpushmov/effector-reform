@@ -28,7 +28,10 @@ export type AsyncValidationFn<
 
 type ValidationStrategy = 'blur' | 'focus' | 'change' | 'submit';
 
-export interface CreateFormOptions<Schema extends ReadyFieldsGroupSchema> {
+export interface CreateFormOptions<
+  RawSchema extends AnySchema,
+  Schema extends ReadyFieldsGroupSchema = UserFormSchema<RawSchema>,
+> {
   validation?: SyncValidationFn<Schema> | AsyncValidationFn<Schema>;
   validationStrategies?: ValidationStrategy[];
   clearOuterErrorsOnSubmit?: boolean;

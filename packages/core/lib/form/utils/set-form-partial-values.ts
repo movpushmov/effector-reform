@@ -1,7 +1,17 @@
 import { isPrimaryValue } from '../../fields';
 import type { FormApi, Node } from './types';
+import { EventCallable } from 'effector';
 
-export function setFormPartialValues<Values>(values: Values, formApi: FormApi) {
+export function setFormPartialValues<Values>(
+  values: Values,
+  formApi: FormApi,
+  startBatch: EventCallable<string[]>,
+) {
+  const iteratedValues: Record<
+    string,
+    { event: (value: any) => void; value: any }
+  > = {};
+
   function iterate(node: Node, path: string[] = []) {
     for (const key in node) {
       const subNode = node[key];
@@ -15,7 +25,10 @@ export function setFormPartialValues<Values>(values: Values, formApi: FormApi) {
           continue;
         }
 
-        fieldApi.setValue(subNode);
+        iteratedValues[apiKey] = {
+          event: fieldApi.setValue,
+          value: subNode,
+        };
         continue;
       }
 
@@ -26,4 +39,10 @@ export function setFormPartialValues<Values>(values: Values, formApi: FormApi) {
   }
 
   iterate(values);
+
+  startBatch(Object.keys(iteratedValues));
+
+  for (const apiKey in iteratedValues) {
+    iteratedValues[apiKey].event(iteratedValues[apiKey].value);
+  }
 }

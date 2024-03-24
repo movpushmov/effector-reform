@@ -89,9 +89,10 @@ export function createArrayField<
           const errors = schema.errors;
 
           const prepared = prepareFieldsSchema(values);
-          const api = mapSchema(prepared).$api.getState();
+          const { $api, startBatch } = mapSchema(prepared);
+          const api = $api.getState();
 
-          setFormPartialErrors(errors, api, 'outer');
+          setFormPartialErrors(errors, api, startBatch, 'outer');
 
           return prepared;
         });

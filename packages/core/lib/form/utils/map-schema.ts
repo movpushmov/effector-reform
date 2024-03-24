@@ -25,7 +25,7 @@ type FieldInteractionEventPayload = { fieldPath: string };
 
 function getMeta(
   node: ReadyFieldsGroupSchema,
-  schemaUpdated: EventCallable<void>,
+  schemaUpdated: EventCallable<FieldInteractionEventPayload>,
   focused: EventCallable<FieldInteractionEventPayload>,
   blurred: EventCallable<FieldInteractionEventPayload>,
 ) {
@@ -252,17 +252,30 @@ function getMeta(
 }
 
 export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
-  const schemaUpdated = createEvent();
+  const schemaUpdated = createEvent<FieldInteractionEventPayload>();
   const blurred = createEvent<FieldInteractionEventPayload>();
   const focused = createEvent<FieldInteractionEventPayload>();
 
   const $meta = createStore(getMeta(node, schemaUpdated, focused, blurred));
+  const { values, errors } = $meta.getState();
 
-  const $values: Store<FormValues<T>> = $meta.map(({ values }) => values);
-  const $errors: Store<FormErrors<T>> = $meta.map(({ errors }) => errors);
+  const $fieldsToBatch = createStore<string[]>([]);
+  const $innerValues: Store<FormValues<T>> = $meta.map(({ values }) => values);
+  const $innerErrors: Store<FormErrors<T>> = $meta.map(({ errors }) => errors);
   const $isValid = $meta.map(({ isValid }) => isValid);
 
+  const $values = createStore(values);
+  const $errors = createStore(errors);
+
   const $api = $meta.map(({ api }) => api);
+
+  const startBatch = createEvent<string[]>();
+  const syncValues = createEvent();
+
+  sample({
+    clock: startBatch,
+    target: $fieldsToBatch,
+  });
 
   sample({
     clock: schemaUpdated,
@@ -271,5 +284,32 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
     target: $meta,
   });
 
-  return { $values, $errors, $api, $isValid, focused, blurred };
+  sample({
+    clock: schemaUpdated,
+    source: $fieldsToBatch,
+    fn: (fields, { fieldPath }) => fields.filter((f) => f !== fieldPath),
+    target: $fieldsToBatch,
+  });
+
+  sample({
+    clock: $fieldsToBatch,
+    filter: (fields) => fields.length === 0,
+    target: syncValues,
+  });
+
+  sample({
+    clock: syncValues,
+    source: $innerValues,
+    fn: (innerValues) => innerValues,
+    target: $values,
+  });
+
+  sample({
+    clock: syncValues,
+    source: $innerErrors,
+    fn: (innerErrors) => innerErrors,
+    target: $errors,
+  });
+
+  return { $values, $errors, $api, $isValid, focused, blurred, startBatch };
 }

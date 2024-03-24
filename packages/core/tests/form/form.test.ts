@@ -1,5 +1,5 @@
-import { describe, expect, test } from '@jest/globals';
-import { allSettled, fork } from 'effector';
+import { describe, jest, expect, test } from '@jest/globals';
+import { allSettled, createEffect, fork, sample } from 'effector';
 import { createForm } from '../../lib';
 
 describe('Form tests', () => {
@@ -56,6 +56,58 @@ describe('Form tests', () => {
         errors: [],
       },
     });
+  });
+
+  test('errors batch test', async () => {
+    const scope = fork();
+    const form = createForm({ a: '', b: '', c: '', d: '', e: '' });
+
+    const mockedFn = jest.fn();
+    const errorsChangedFx = createEffect(mockedFn);
+
+    sample({
+      clock: form.$errors,
+      target: errorsChangedFx,
+    });
+
+    await allSettled(form.setErrors, {
+      scope,
+      params: {
+        a: 'error 1',
+        b: 'error 2',
+        c: 'error 3',
+        d: 'error 4',
+        e: 'error 5',
+      },
+    });
+
+    expect(mockedFn).toBeCalledTimes(1);
+  });
+
+  test('values batch test', async () => {
+    const scope = fork();
+    const form = createForm({ a: '', b: '', c: '', d: '', e: '' });
+
+    const mockedFn = jest.fn();
+    const valuesChangedFx = createEffect(mockedFn);
+
+    sample({
+      clock: form.$values,
+      target: valuesChangedFx,
+    });
+
+    await allSettled(form.setValues, {
+      scope,
+      params: {
+        a: 'value 1',
+        b: 'value 2',
+        c: 'value 3',
+        d: 'value 4',
+        e: 'value 5',
+      },
+    });
+
+    expect(mockedFn).toBeCalledTimes(1);
   });
 
   test.todo('Change primary fields errors');
