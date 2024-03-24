@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/movpushmov/effector-reform/compare/v0.5.0...v0.5.1) (2024-03-24)
+
+### Bug Fixes
+
+- react bindings & core change batching ([95f8757](https://github.com/movpushmov/effector-reform/commit/95f875762a00dd7c3b1f21e503eafa563c53ae94))
+
 # [0.5.0](https://github.com/movpushmov/effector-reform/compare/v0.4.1...v0.5.0) (2024-03-24)
 
 **Note:** Version bump only for package @effector-reform/zod
