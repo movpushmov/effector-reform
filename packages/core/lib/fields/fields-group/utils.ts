@@ -53,9 +53,7 @@ export function prepareFieldsSchema<
   return result;
 }
 
-export function forkGroup<T extends ReadyFieldsGroupSchema>(
-  group: T,
-): UserFormSchema<T> {
+export function forkGroup<T extends ReadyFieldsGroupSchema>(group: T): T {
   const result: UserFormSchema<any> = {};
 
   for (const key in group) {
