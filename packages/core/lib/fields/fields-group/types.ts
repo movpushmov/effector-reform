@@ -1,6 +1,6 @@
 import { StoreValue } from 'effector';
-import { ArrayField } from '../array-field/types';
-import { PrimaryField, PrimaryValue } from '../primary-field/types';
+import { ArrayField } from '../array-field';
+import { PrimaryField, PrimaryValue } from '../primary-field';
 
 type ReadyFieldsSchemaFieldType =
   | PrimaryField

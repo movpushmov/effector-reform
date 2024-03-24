@@ -8,12 +8,7 @@ export type PrimaryValue =
   | bigint
   | PrimaryJsonValue
   | Blob
-  | Buffer
   | ArrayBuffer
-  | Int8Array
-  | Int16Array
-  | Int32Array
-  | BigInt64Array
   | File
   | FileList;
 
