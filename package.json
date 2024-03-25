@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "lerna run build",
-    "publish": "npm run build && lerna publish",
+    "publish": "npm run build && lerna run test && lerna publish",
     "publish:canary": "npm run build && lerna publish --canary --preid dev --npm-tag next --no-git-tag-version"
   },
   "husky": {
@@ -26,7 +26,6 @@
     "@babel/core": "^7.24.3",
     "@babel/preset-env": "^7.24.3",
     "@babel/preset-typescript": "^7.24.1",
-    "@vitejs/plugin-react": "^4.2.1",
     "babel-jest": "^29.7.0",
     "vite": "^5.2.6",
     "vite-plugin-babel": "^1.2.0",

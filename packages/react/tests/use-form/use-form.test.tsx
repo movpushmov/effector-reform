@@ -13,10 +13,10 @@ function Component() {
 
   return (
     <>
-      <input onChange={fields.age.onChange} />
+      <input onChange={(e) => fields.age.onChange(e.currentTarget.value)} />
       <button
         data-testid="set-error"
-        onClick={() => fields.age.changeError('some error')}
+        onClick={() => fields.age.onChangeError('some error')}
       />
       <p data-testid="field value">{fields.age.value}</p>
       <p data-testid="field error">{fields.age.error}</p>

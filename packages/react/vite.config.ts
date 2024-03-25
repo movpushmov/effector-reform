@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
-import react from '@vitejs/plugin-react';
+import babel from 'vite-plugin-babel';
 
 export default defineConfig({
   build: {
@@ -29,19 +29,13 @@ export default defineConfig({
     },
   },
   plugins: [
+    babel(),
     dts({
       outDir: resolve(__dirname, 'dist'),
       entryRoot: resolve(__dirname, 'lib'),
       staticImport: true,
       insertTypesEntry: true,
       rollupTypes: true,
-    }),
-    react({
-      babel: {
-        plugins: ['effector/babel-plugin'],
-        babelrc: true,
-        configFile: true,
-      },
     }),
   ],
 });

@@ -1,2 +1,2 @@
-export { useForm, useArrayField, useField } from './hooks';
+export { useForm, useField, useArrayField } from './hooks';
 export type * from './types';
