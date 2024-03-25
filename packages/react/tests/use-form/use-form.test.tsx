@@ -1,32 +1,12 @@
 import { describe, test, expect } from '@jest/globals';
-import { useForm } from '../../lib';
-import { createForm } from '@effector-reform/core';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-const form = createForm({
-  age: 'a',
-});
-
-function Component() {
-  const { fields } = useForm(form);
-
-  return (
-    <>
-      <input onChange={(e) => fields.age.onChange(e.currentTarget.value)} />
-      <button
-        data-testid="set-error"
-        onClick={() => fields.age.onChangeError('some error')}
-      />
-      <p data-testid="field value">{fields.age.value}</p>
-      <p data-testid="field error">{fields.age.error}</p>
-    </>
-  );
-}
+import { DefaultFormComponent } from '../components/default';
+import { ValidatedFormComponent } from '../components/validated';
 
 describe('useForm', () => {
   test('value change', async () => {
-    const { container } = render(<Component />);
+    const { container } = render(<DefaultFormComponent />);
 
     const input = container.querySelector('input')!;
     const p = container.querySelector('[data-testid="field value"]')!;
@@ -35,11 +15,11 @@ describe('useForm', () => {
 
     await userEvent.type(input, 'abcd');
 
-    expect(p.textContent).toBe('abcd');
+    expect(p.textContent).toBe('aabcd');
   });
 
-  test('value change', async () => {
-    const { container } = render(<Component />);
+  test('error change', async () => {
+    const { container } = render(<DefaultFormComponent />);
 
     const button = container.querySelector('button')!;
     const p = container.querySelector('[data-testid="field error"]')!;
@@ -49,5 +29,26 @@ describe('useForm', () => {
     await userEvent.click(button);
 
     expect(p.textContent).toBe('some error');
+  });
+
+  test('value changed in form with validation', async () => {
+    const { container } = render(<ValidatedFormComponent />);
+
+    const input = container.querySelector('input')!;
+    const valueP = container.querySelector('[data-testid="field value"]')!;
+    const errorP = container.querySelector('[data-testid="field error"]')!;
+
+    await userEvent.type(input, 'a');
+    await userEvent.type(input, 'b');
+    await userEvent.type(input, 'c');
+    await userEvent.type(input, 'd');
+    await userEvent.type(input, 'e');
+    await userEvent.type(input, 'f');
+    await userEvent.type(input, 'g');
+    await userEvent.type(input, 'h');
+
+    expect(input.value).toBe('abcdefgh');
+    expect(valueP.textContent).toBe('abcdefgh');
+    expect(errorP.textContent).toBe('length must be lower than 4');
   });
 });
