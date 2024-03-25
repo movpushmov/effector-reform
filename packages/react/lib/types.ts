@@ -24,10 +24,8 @@ export interface ReactPrimaryFieldApi<T extends PrimaryValue> {
   isValid: boolean;
   isDirty: boolean;
 
-  change: (newValue: T) => void;
-  changeError: (newError: FieldError) => void;
-
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChangeError: (newError: FieldError) => void;
+  onChange: (newValue: T) => void;
   onFocus: () => void;
   onBlur: () => void;
 }

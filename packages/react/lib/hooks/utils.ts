@@ -62,11 +62,8 @@ export function getFields<T extends FormFields>(
           error: getStoreValue(field.$error),
           isDirty: getStoreValue(field.$isDirty),
           isValid: getStoreValue(field.$isValid),
-          changeError: bindEvent(field.changeError),
-          change,
-          focus,
-          blur,
-          onChange: (event) => change(event.target.value),
+          onChangeError: bindEvent(field.changeError),
+          onChange: (newValue) => change(newValue),
           onFocus: () => focus(),
           onBlur: () => blur(),
         } as ReactPrimaryFieldApi<any>;
