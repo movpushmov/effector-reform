@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.4](https://github.com/movpushmov/effector-reform/compare/v0.5.3...v0.5.4) (2024-03-25)
+
+### Bug Fixes
+
+- react fields bindings ([da68bac](https://github.com/movpushmov/effector-reform/commit/da68bac1e7561ef89f9002f307d60750747e43da))
+
 ## [0.5.3](https://github.com/movpushmov/effector-reform/compare/v0.5.2...v0.5.3) (2024-03-24)
 
 ### Bug Fixes
