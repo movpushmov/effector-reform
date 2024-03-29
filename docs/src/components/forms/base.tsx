@@ -2,12 +2,14 @@ import { createArrayField, createForm } from '@effector-reform/core';
 import { useForm } from '@effector-reform/react';
 
 const form = createForm({
-  a: 'string',
-  b: 0,
-  c: [] as number[],
-  d: {
-    e: 'string 2',
-    f: createArrayField<{ name: string }>([]),
+  schema: {
+    a: 'string',
+    b: 0,
+    c: [] as number[],
+    d: {
+      e: 'string 2',
+      f: createArrayField<{ name: string }>([]),
+    },
   },
 });
 
@@ -42,7 +44,7 @@ export const BaseForm = () => {
         <p>field in group</p>
         <input
           value={fields.d.e.value}
-          onChange={(e) => fields.d.e.value.onChange(e.currentTarget.value)}
+          onChange={(e) => fields.d.e.onChange(e.currentTarget.value)}
         />
 
         <p>array with subfields</p>
