@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.6](https://github.com/movpushmov/effector-reform/compare/v0.5.5...v0.5.6) (2024-03-29)
+
+### Bug Fixes
+
+- tests ([2956ce9](https://github.com/movpushmov/effector-reform/commit/2956ce9a06a635f65ee2e68ea84f0a5c4ec8353f))
+- tests crash ([c420f27](https://github.com/movpushmov/effector-reform/commit/c420f2706c9b7a2034118e43eeef2d035f41d3bc))
+- typings & deps ([9572ecb](https://github.com/movpushmov/effector-reform/commit/9572ecb9d76e95c03c20dd8fd145e8623711279b))
+
 ## [0.5.5](https://github.com/movpushmov/effector-reform/compare/v0.5.4...v0.5.5) (2024-03-25)
 
 ### Bug Fixes
