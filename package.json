@@ -13,7 +13,8 @@
     "prettier": "^3.2.5"
   },
   "scripts": {
-    "build": "lerna run build",
+    "build": "lerna run build && npm run update",
+    "update": "npx vite-node update-deps.ts",
     "publish": "npm run build && lerna run test && lerna publish",
     "publish:canary": "npm run build && lerna publish --canary --preid dev --npm-tag next --no-git-tag-version"
   },
