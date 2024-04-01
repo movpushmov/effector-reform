@@ -110,4 +110,19 @@ describe('Array field tests', () => {
 
     expect(scope.getState(field.$error)).toBe('Tessssst');
   });
+
+  test('array field push & subfield change', async () => {
+    const scope = fork();
+    const field = createArrayField<{ a: string }>([]);
+
+    await allSettled(field.push, { scope, params: { a: '' } });
+    await allSettled(field.push, { scope, params: { a: '' } });
+    await allSettled(field.push, { scope, params: { a: '' } });
+
+    const secondField = scope.getState(field.$values)[1];
+
+    await allSettled(secondField.a.change, { scope, params: '123' });
+
+    expect(scope.getState(secondField.a.$value)).toBe('123');
+  });
 });

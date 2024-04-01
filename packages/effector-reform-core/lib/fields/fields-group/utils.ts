@@ -44,9 +44,8 @@ export function prepareFieldsSchema<
       continue;
     }
 
-    if (typeof element === 'object' && !(element instanceof Date)) {
+    if (typeof element === 'object') {
       result[key] = prepareFieldsSchema(element as ReadyFieldsGroupSchema);
-      continue;
     }
   }
 

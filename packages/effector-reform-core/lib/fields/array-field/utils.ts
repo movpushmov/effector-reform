@@ -13,7 +13,7 @@ import { InnerArrayFieldApi, InnerFieldApi } from '../types';
 export function filterUnused<T>(arr: T[], newArr: T[]) {
   return arr.reduce(
     (acc, value, index) => {
-      if (newArr.includes(value)) {
+      if (!newArr.includes(value)) {
         acc.nodes.push(value);
         acc.indexes.push(index);
       }
