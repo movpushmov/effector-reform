@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.7](https://github.com/movpushmov/effector-reform/compare/v0.5.6...v0.5.7) (2024-04-01)
+
+### Bug Fixes
+
+- array field nodes clear ([bba2f60](https://github.com/movpushmov/effector-reform/commit/bba2f6064c3de3ee5e5e3f8b06cacd7e87b941d2))
+
 ## [0.5.6](https://github.com/movpushmov/effector-reform/compare/v0.5.5...v0.5.6) (2024-03-29)
 
 ### Bug Fixes

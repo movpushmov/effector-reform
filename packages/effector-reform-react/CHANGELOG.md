@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.7](https://github.com/movpushmov/effector-reform/compare/v0.5.6...v0.5.7) (2024-04-01)
+
+### Bug Fixes
+
+- react bindings lock ([99a5841](https://github.com/movpushmov/effector-reform/commit/99a5841edbf33eabc7193ea2e80f1b248c3e878b))
+
 ## [0.5.6](https://github.com/movpushmov/effector-reform/compare/v0.5.5...v0.5.6) (2024-03-29)
 
 ### Bug Fixes
