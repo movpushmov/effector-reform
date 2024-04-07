@@ -4,7 +4,7 @@ import type {
   PrimaryField,
   PrimaryValue,
 } from './types';
-import { FieldError, InnerFieldApi } from '../types';
+import { FieldBatchedSetter, FieldError, InnerFieldApi } from '../types';
 import { primaryFieldSymbol } from './symbol';
 
 const defaultOptions = {
@@ -55,6 +55,14 @@ export function createField<T extends PrimaryValue>(
 
   const reset = createEvent('<field reset>');
 
+  const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
+  const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
+  const batchedSetValue = createEvent<FieldBatchedSetter<T>>();
+
+  const batchedErrorChanged = createEvent<FieldBatchedSetter<FieldError>>();
+  const notBatchedValueChanged = createEvent<T>();
+  const notBatchedErrorChanged = createEvent<FieldError>();
+
   if (clearOuterErrorOnChange) {
     sample({ clock: $value, fn: () => null, target: $outerError });
   }
@@ -65,8 +73,40 @@ export function createField<T extends PrimaryValue>(
   sample({ clock: $isFocused, filter: (focused) => focused, target: focused });
   sample({ clock: $isFocused, filter: (focused) => !focused, target: blurred });
 
-  sample({ clock: change, target: $value });
+  sample({
+    clock: setInnerError,
+    source: $outerError,
+    fn: (outerError, innerError) => outerError || innerError,
+    target: notBatchedErrorChanged,
+  });
+
+  sample({
+    clock: changeError,
+    target: notBatchedErrorChanged,
+  });
+
+  sample({ clock: change, target: notBatchedValueChanged });
+  sample({ clock: notBatchedValueChanged, target: $value });
+
   sample({ clock: $value, fn: () => true, target: $isDirty });
+
+  sample({
+    clock: batchedSetValue,
+    fn: (payload) => payload.value,
+    target: $value,
+  });
+
+  sample({
+    clock: batchedSetInnerError,
+    fn: (payload) => payload.value,
+    target: $innerError,
+  });
+
+  sample({
+    clock: batchedSetOuterError,
+    fn: (payload) => payload.value,
+    target: $outerError,
+  });
 
   sample({ clock: $value, target: changed });
   sample({ clock: changeError, target: $outerError });
@@ -86,6 +126,14 @@ export function createField<T extends PrimaryValue>(
 
   return {
     type: primaryFieldSymbol,
+
+    batchedSetInnerError,
+    batchedSetOuterError,
+    batchedSetValue,
+
+    batchedErrorChanged,
+    notBatchedErrorChanged,
+    notBatchedValueChanged,
 
     $value,
     $error,
@@ -132,5 +180,5 @@ export function createField<T extends PrimaryValue>(
       change,
       reset,
     }),
-  } as PrimaryField<T> & InnerFieldApi;
+  } as PrimaryField<T> & InnerFieldApi<T>;
 }

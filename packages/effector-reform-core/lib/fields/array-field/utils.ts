@@ -1,4 +1,3 @@
-import { Unit, clearNode } from 'effector';
 import { ReadyFieldsGroupSchema } from '../fields-group';
 import type { ArrayField } from './types';
 import {
@@ -9,6 +8,7 @@ import {
 } from '../primary-field';
 import { arrayFieldSymbol } from './symbol';
 import { InnerArrayFieldApi, InnerFieldApi } from '../types';
+import { clearUnits } from '../../utils';
 
 export function filterUnused<T>(arr: T[], newArr: T[]) {
   return arr.reduce(
@@ -22,12 +22,6 @@ export function filterUnused<T>(arr: T[], newArr: T[]) {
     },
     { nodes: [] as T[], indexes: [] as number[] },
   );
-}
-
-export function clearUnits(units: Unit<any>[]) {
-  for (const unit of units) {
-    clearNode(unit);
-  }
 }
 
 export function clearSchemaNode(schema: ReadyFieldsGroupSchema | PrimaryValue) {

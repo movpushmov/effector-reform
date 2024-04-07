@@ -1,16 +1,16 @@
 import { isPrimaryValue } from '../../fields';
-import type { FormApi, Node } from './types';
+import type { FormApi, Node } from '../mapper';
 import { EventCallable } from 'effector';
-import { BatchInfo } from './map-schema';
+import { createBatchTask, BatchInfo } from '../batching';
 
-export function setFormPartialValues<Values>(
+export function setFormValues<Values>(
   values: Values,
   formApi: FormApi,
-  startBatch: EventCallable<BatchInfo>,
+  addBatchTask: EventCallable<BatchInfo>,
 ) {
   const iteratedValues: Record<
     string,
-    { event: (value: any) => void; value: any }
+    { event: FormApi[string]['batchedSetValue']; value: any }
   > = {};
 
   function iterate(node: Node, path: string[] = []) {
@@ -27,7 +27,7 @@ export function setFormPartialValues<Values>(
         }
 
         iteratedValues[apiKey] = {
-          event: fieldApi.setValue,
+          event: fieldApi.batchedSetValue,
           value: subNode,
         };
         continue;
@@ -45,9 +45,13 @@ export function setFormPartialValues<Values>(
     return;
   }
 
-  startBatch({ fields: Object.keys(iteratedValues), type: 'values' });
+  const task = createBatchTask(Object.keys(iteratedValues), 'values');
+  addBatchTask(task);
 
   for (const apiKey in iteratedValues) {
-    iteratedValues[apiKey].event(iteratedValues[apiKey].value);
+    iteratedValues[apiKey].event({
+      value: iteratedValues[apiKey].value,
+      '@@batchInfo': { id: task.id, fieldPath: apiKey },
+    });
   }
 }

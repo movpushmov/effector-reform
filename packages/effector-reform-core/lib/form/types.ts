@@ -136,6 +136,7 @@ export type FormType<
   submitted: Event<Values>;
 
   reset: EventCallable<void>;
+  clear: EventCallable<void>;
 
   '@@unitShape': () => {
     values: Store<Values>;
@@ -149,6 +150,7 @@ export type FormType<
     validate: EventCallable<void>;
 
     reset: EventCallable<void>;
+    clear: EventCallable<void>;
 
     setValues: EventCallable<Values>;
     setErrors: EventCallable<ErrorsSchemaPayload>;
