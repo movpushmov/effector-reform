@@ -472,6 +472,18 @@ export function createArrayField<
   });
 
   sample({
+    clock: batchedSetInnerError,
+    source: $outerError,
+    fn: (outerError, info) => ({ ...info, value: outerError || info.value }),
+    target: batchedErrorChanged,
+  });
+
+  sample({
+    clock: batchedSetOuterError,
+    target: batchedErrorChanged,
+  });
+
+  sample({
     clock: $error,
     target: errorChanged,
   });

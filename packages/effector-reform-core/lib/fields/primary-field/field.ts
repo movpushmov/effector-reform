@@ -108,6 +108,18 @@ export function createField<T extends PrimaryValue>(
     target: $outerError,
   });
 
+  sample({
+    clock: batchedSetInnerError,
+    source: $outerError,
+    fn: (outerError, info) => ({ ...info, value: outerError || info.value }),
+    target: batchedErrorChanged,
+  });
+
+  sample({
+    clock: batchedSetOuterError,
+    target: batchedErrorChanged,
+  });
+
   sample({ clock: $value, target: changed });
   sample({ clock: changeError, target: $outerError });
 

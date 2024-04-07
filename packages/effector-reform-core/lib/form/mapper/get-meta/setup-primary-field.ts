@@ -3,7 +3,6 @@ import { clearNode, createEffect, sample } from 'effector';
 import { Node } from '../types';
 import { This } from './types';
 import { combineEventsInOrder } from '../../../utils';
-import { debug } from 'patronum';
 
 interface Props {
   field: PrimaryField;
@@ -46,8 +45,6 @@ export function setupPrimaryField(
 
   const { target: batchedValueChanged, clear: clearBatchedSetValue } =
     combineEventsInOrder([field.batchedSetValue, field.changed]);
-
-  debug(field.changed, field.batchedSetValue);
 
   sample({
     clock: field.notBatchedErrorChanged,

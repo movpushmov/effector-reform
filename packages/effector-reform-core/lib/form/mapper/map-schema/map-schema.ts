@@ -3,7 +3,7 @@ import { setupUpdating } from './setup-updating';
 import { setupBatching } from './setup-batching';
 import { getMeta } from '../get-meta';
 import { createStore, sample } from 'effector';
-import { debug, spread } from 'patronum';
+import { spread } from 'patronum';
 
 export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
   const { schemaUpdated, focused, blurred } = setupUpdating();
@@ -21,8 +21,6 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
   const $values = createStore(meta.values);
   const $errors = createStore(meta.errors);
   const $isValid = createStore(meta.isValid);
-
-  debug(schemaUpdated);
 
   sample({
     clock: schemaUpdated,
