@@ -12,7 +12,7 @@ export function setupBatching(schemaUpdated: EventCallable<any>) {
   );
 
   const batchedSchemaUpdated = createEvent<BatchedSchemaUpdatedPayload>();
-  const addBatchTask = createEvent<BatchInfo>('<start batch>');
+  const addBatchTask = createEvent<BatchInfo>('<add batch task>');
 
   sample({
     clock: addBatchTask,
