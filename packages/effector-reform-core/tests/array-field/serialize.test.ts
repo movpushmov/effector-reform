@@ -1,7 +1,7 @@
 import { describe, test, expect } from '@jest/globals';
 import { createArrayField } from '../../lib';
 import { allSettled, fork, serialize } from 'effector';
-import { mapSchema } from '../../lib/form/utils';
+import { mapSchema } from '../../lib/form/mapper';
 
 describe('Array field ssr api', () => {
   test('check array field values serialization & deserialization', async () => {

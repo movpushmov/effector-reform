@@ -19,7 +19,7 @@ import type {
   ArrayFieldItemType,
 } from './types';
 import { spread } from 'patronum';
-import { FieldError, InnerArrayFieldApi } from '../types';
+import { FieldBatchedSetter, FieldError, InnerArrayFieldApi } from '../types';
 import {
   AnySchema,
   ReadyFieldsGroupSchema,
@@ -29,7 +29,7 @@ import {
 import { PrimaryValue, isPrimaryValue } from '../primary-field';
 import { arrayFieldSymbol } from './symbol';
 import { clearSchemaNode, filterUnused } from './utils';
-import { mapSchema, setFormPartialErrors } from '../../form/utils';
+import { mapSchema, setFormErrors } from '../../form/mapper';
 import { isPrimaryJsonValue } from '../primary-field/utils';
 
 const defaultOptions = {
@@ -89,10 +89,10 @@ export function createArrayField<
           const errors = schema.errors;
 
           const prepared = prepareFieldsSchema(values);
-          const { $api, startBatch } = mapSchema(prepared);
+          const { $api, addBatchTask } = mapSchema(prepared);
           const api = $api.getState();
 
-          setFormPartialErrors(errors, api, startBatch, 'outer');
+          setFormErrors(errors, api, addBatchTask, 'outer');
 
           return prepared;
         });
@@ -140,6 +140,14 @@ export function createArrayField<
 
   const $isValid = $error.map((error) => error === null);
   const $isDirty = createStore(false);
+
+  const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
+  const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
+  const batchedSetValue = createEvent<FieldBatchedSetter<T[]>>();
+
+  const notBatchedValueChanged = createEvent<Values>();
+  const notBatchedErrorChanged = createEvent<FieldError>();
+  const batchedErrorChanged = createEvent<FieldBatchedSetter<FieldError>>();
 
   const change = createEvent<T[]>();
   const changed = createEvent<Values>();
@@ -191,10 +199,7 @@ export function createArrayField<
 
   const syncFx = attach({
     source: $values,
-    effect: async (
-      values,
-      { newValues }: { newValues: Values; type: string },
-    ): Promise<Values> => {
+    effect: async (values, newValues: Values): Promise<Values> => {
       await clearNodesFx(filterUnused(values, newValues));
 
       return newValues;
@@ -210,13 +215,13 @@ export function createArrayField<
 
   sample({
     clock: clear,
-    fn: () => ({ newValues: [], type: 'clear' }),
+    fn: () => [],
     target: [syncFx, cleared],
   });
 
   sample({
     clock: reset,
-    fn: () => ({ newValues: getDefaultValues(), type: 'reset' }),
+    fn: () => getDefaultValues(),
     target: syncFx,
   });
 
@@ -301,8 +306,19 @@ export function createArrayField<
   });
 
   sample({
+    clock: batchedSetValue,
+    fn: (payload) => preparePayload(payload.value),
+    target: [syncFx, changed],
+  });
+
+  sample({
     clock: change,
-    fn: (payload) => ({ newValues: preparePayload(payload), type: 'change' }),
+    fn: (payload) => preparePayload(payload),
+    target: notBatchedValueChanged,
+  });
+
+  sample({
+    clock: notBatchedValueChanged,
     target: [syncFx, changed],
   });
 
@@ -312,7 +328,7 @@ export function createArrayField<
     clock: pushFx.done,
     fn: ({ params, result }) => ({
       pushed: { params, result },
-      values: { newValues: result, type: 'push' },
+      values: result,
     }),
     target: spread({
       pushed,
@@ -326,7 +342,7 @@ export function createArrayField<
     clock: swapFx.done,
     fn: ({ params, result }) => ({
       swapped: { params, result },
-      values: { newValues: result, type: 'swap' },
+      values: result,
     }),
     target: spread({
       swapped,
@@ -340,7 +356,7 @@ export function createArrayField<
     clock: moveFx.done,
     fn: ({ params, result }) => ({
       moved: { params, result },
-      values: { newValues: result, type: 'move' },
+      values: result,
     }),
     target: spread({
       moved,
@@ -354,7 +370,7 @@ export function createArrayField<
     clock: insertFx.done,
     fn: ({ params, result }) => ({
       inserted: { params, result },
-      values: { newValues: result, type: 'insert' },
+      values: result,
     }),
     target: spread({
       inserted,
@@ -368,7 +384,7 @@ export function createArrayField<
     clock: unshiftFx.done,
     fn: ({ params, result }) => ({
       unshifted: { params, result },
-      values: { newValues: result, type: 'unshift' },
+      values: result,
     }),
     target: spread({
       unshifted,
@@ -385,7 +401,7 @@ export function createArrayField<
     clock: removeFx.done,
     fn: ({ params, result }) => ({
       removed: { params, result },
-      values: { newValues: result, type: 'remove' },
+      values: result,
     }),
     target: spread({
       removed,
@@ -400,7 +416,7 @@ export function createArrayField<
 
   sample({
     clock: popFx.doneData,
-    fn: (values) => ({ newValues: values, type: 'pop' }),
+    fn: (values) => values,
     target: [syncFx, popped],
   });
 
@@ -413,12 +429,24 @@ export function createArrayField<
     clock: replaceFx.done,
     fn: ({ params, result }) => ({
       replaced: { params, result },
-      values: { newValues: result, type: 'replace' },
+      values: result,
     }),
     target: spread({
       replaced,
       values: syncFx,
     }),
+  });
+
+  sample({
+    clock: changeError,
+    target: notBatchedErrorChanged,
+  });
+
+  sample({
+    clock: setInnerError,
+    source: $outerError,
+    fn: (outerError, innerError) => outerError || innerError,
+    target: notBatchedErrorChanged,
   });
 
   sample({
@@ -432,12 +460,44 @@ export function createArrayField<
   });
 
   sample({
+    clock: batchedSetInnerError,
+    fn: (payload) => payload.value,
+    target: $innerError,
+  });
+
+  sample({
+    clock: batchedSetOuterError,
+    fn: (payload) => payload.value,
+    target: $outerError,
+  });
+
+  sample({
+    clock: batchedSetInnerError,
+    source: $outerError,
+    fn: (outerError, info) => ({ ...info, value: outerError || info.value }),
+    target: batchedErrorChanged,
+  });
+
+  sample({
+    clock: batchedSetOuterError,
+    target: batchedErrorChanged,
+  });
+
+  sample({
     clock: $error,
     target: errorChanged,
   });
 
   return {
     type: arrayFieldSymbol,
+
+    batchedSetInnerError,
+    batchedSetOuterError,
+    batchedSetValue,
+
+    notBatchedErrorChanged,
+    notBatchedValueChanged,
+    batchedErrorChanged,
 
     $values,
     $error,

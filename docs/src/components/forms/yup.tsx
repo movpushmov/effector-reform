@@ -5,11 +5,17 @@ import { useForm } from '@effector-reform/react';
 
 const form = createForm({
   schema: {
-    a: '',
+    nick: '',
+    email: '',
   },
+
   validation: yupAdapter(
     object({
-      a: string().min(5, 'msg'),
+      nick: string()
+        .min(4, 'nick-min-limit')
+        .max(16, 'nick-max-limit')
+        .required('nick-required'),
+      email: string().email('invalid-email').required('email-required'),
     }),
   ),
 });
@@ -21,8 +27,12 @@ export const FormWithYup = () => {
     <>
       <form>
         <input
-          value={fields.a.value}
-          onChange={(e) => fields.a.onChange(e.currentTarget.value)}
+          value={fields.nick.value}
+          onChange={(e) => fields.nick.onChange(e.currentTarget.value)}
+        />
+        <input
+          value={fields.email.value}
+          onChange={(e) => fields.email.onChange(e.currentTarget.value)}
         />
       </form>
     </>

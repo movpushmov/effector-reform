@@ -23,11 +23,12 @@ import type {
   SyncValidationFn,
 } from './types';
 import {
-  setFormPartialValues,
+  setFormValues,
   mapSchema,
   clearFormOuterErrors,
-  setFormPartialErrors,
-} from './utils';
+  setFormErrors,
+  fullFormClear,
+} from './mapper';
 
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const {
@@ -40,7 +41,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   } = options;
 
   const fields = forkGroup(prepareFieldsSchema(schema));
-  const { $errors, $values, $isValid, $api, focused, blurred, startBatch } =
+  const { $errors, $values, $isValid, $api, focused, blurred, addBatchTask } =
     mapSchema(fields);
 
   const $isDirty = createStore(false);
@@ -49,6 +50,11 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   type Errors = FormErrors<Fields>;
   type Values = FormValues<Fields>;
 
+  const clearFx = attach({
+    source: $api,
+    effect: fullFormClear,
+  });
+
   const clearOuterErrorsFx = attach({
     source: $api,
     effect: clearFormOuterErrors,
@@ -56,13 +62,13 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const setValuesFx = attach({
     source: $api,
-    effect: (api, values: any) => setFormPartialValues(values, api, startBatch),
+    effect: (api, values: any) => setFormValues(values, api, addBatchTask),
   });
 
   const setErrorsFx = attach({
     source: $api,
     effect: (api, errors: any) =>
-      setFormPartialErrors(errors, api, startBatch, 'inner'),
+      setFormErrors(errors, api, addBatchTask, 'inner'),
   });
 
   const setValues = createEvent<Values>('<form set values>');
@@ -72,6 +78,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const setErrors = createEvent<ErrorsSchemaPayload>('<form set errors>');
 
+  const clear = createEvent('<form full clear>');
   const clearOuterErrors = createEvent('<form clear outer errors>');
 
   const changed = createEvent<FormValues<Fields>>('<form changed>');
@@ -133,6 +140,11 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       }
     }
   }
+
+  sample({
+    clock: clear,
+    target: clearFx,
+  });
 
   sample({
     clock: $values,
@@ -214,6 +226,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     submitted,
 
     reset,
+    clear,
 
     validate,
     validated,
@@ -235,6 +248,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       submit,
       validate,
       reset,
+      clear,
 
       setValues,
       setErrors,

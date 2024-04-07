@@ -60,7 +60,18 @@ describe('Form tests', () => {
 
   test('errors batch test', async () => {
     const scope = fork();
-    const form = createForm({ schema: { a: '', b: '', c: '', d: '', e: '' } });
+    const form = createForm({
+      schema: {
+        a: '',
+        b: '',
+        c: '',
+        m: 0,
+        d: '',
+        e: '',
+        f: [],
+        g: { h: [], s: '', m: 0 },
+      },
+    });
 
     const mockedFn = jest.fn();
     const errorsChangedFx = createEffect(mockedFn);
@@ -78,10 +89,35 @@ describe('Form tests', () => {
         c: 'error 3',
         d: 'error 4',
         e: 'error 5',
+        f: 'error 6',
+        'g.h': 'error 7',
+        'g.s': 'error 8',
+        'g.m': 'error 9',
+        m: 'error 10',
       },
     });
 
     expect(mockedFn).toBeCalledTimes(1);
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      a: 'error 1',
+      b: 'error 2',
+      c: 'error 3',
+      d: 'error 4',
+      e: 'error 5',
+      f: {
+        error: 'error 6',
+        errors: [],
+      },
+      m: 'error 10',
+      g: {
+        h: {
+          error: 'error 7',
+          errors: [],
+        },
+        s: 'error 8',
+        m: 'error 9',
+      },
+    });
   });
 
   test('values batch test', async () => {
