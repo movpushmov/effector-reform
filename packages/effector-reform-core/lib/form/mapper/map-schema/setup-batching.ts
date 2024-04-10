@@ -1,9 +1,14 @@
 import { createEvent, createStore, EventCallable, sample } from 'effector';
 import { BatchInfo } from '../../batching';
-import { BatchedSchemaUpdatedPayload } from './types';
+import {
+  BatchedSchemaUpdatedPayload,
+  FieldInteractionEventPayload,
+} from './types';
 import { getCompletedBatchTasks } from '../../batching';
 
-export function setupBatching(schemaUpdated: EventCallable<any>) {
+export function setupBatching(
+  schemaUpdated: EventCallable<FieldInteractionEventPayload>,
+) {
   const $tasks = createStore<Record<string, BatchInfo>>(
     {},
     {
@@ -35,14 +40,22 @@ export function setupBatching(schemaUpdated: EventCallable<any>) {
 
   sample({
     clock: $tasks,
-    filter: (tasks) => getCompletedBatchTasks(tasks).length > 0,
+    filter: (tasks) => getCompletedBatchTasks(tasks).tasks.length > 0,
+    fn: (tasks) => {
+      const { tasks: completed, updateType } = getCompletedBatchTasks(tasks);
+
+      return {
+        fieldPath: completed.map((t) => t.fields).join(' '),
+        type: updateType,
+      };
+    },
     target: schemaUpdated,
   });
 
   sample({
     clock: $tasks,
     fn: (tasks) => {
-      const completed = getCompletedBatchTasks(tasks);
+      const { tasks: completed } = getCompletedBatchTasks(tasks);
 
       if (completed.length === 0) {
         return tasks;

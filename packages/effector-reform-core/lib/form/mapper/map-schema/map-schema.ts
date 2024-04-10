@@ -24,12 +24,33 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
 
   sample({
     clock: schemaUpdated,
-    fn: () => ({
-      api: { ...meta.api },
-      values: { ...meta.values },
-      errors: { ...meta.errors },
-      isValid: meta.isValid,
-    }),
+    fn: (payload) => {
+      switch (payload.type) {
+        case 'value': {
+          return {
+            values: { ...meta.values },
+            api: { ...meta.api },
+          };
+        }
+        case 'error': {
+          return {
+            errors: { ...meta.errors },
+            isValid: meta.isValid,
+          };
+        }
+        case 'all': {
+          return {
+            values: { ...meta.values },
+            api: { ...meta.api },
+            errors: { ...meta.errors },
+            isValid: meta.isValid,
+          };
+        }
+        case 'none': {
+          return {};
+        }
+      }
+    },
     target: spread({
       api: $api,
       values: $values,

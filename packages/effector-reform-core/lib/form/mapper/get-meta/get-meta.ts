@@ -5,14 +5,15 @@ import { map } from './map';
 import {
   BatchedSchemaUpdatedPayload,
   FieldInteractionEventPayload,
+  FieldInteractionEventPayloadBase,
 } from '../map-schema/types';
 
 export function getMeta(
   node: ReadyFieldsGroupSchema,
   schemaUpdated: EventCallable<FieldInteractionEventPayload>,
   batchedSchemaUpdated: EventCallable<BatchedSchemaUpdatedPayload>,
-  focused: EventCallable<FieldInteractionEventPayload>,
-  blurred: EventCallable<FieldInteractionEventPayload>,
+  focused: EventCallable<FieldInteractionEventPayloadBase>,
+  blurred: EventCallable<FieldInteractionEventPayloadBase>,
 ) {
   const values: Node = {};
   const errors: Node = {};

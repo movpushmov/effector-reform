@@ -7,7 +7,7 @@ import {
 import { clearNode, createEffect, sample } from 'effector';
 import { Node } from '../types';
 import { MapFn, This } from './types';
-import { combineEventsInOrder } from '../../../utils';
+import { FieldInteractionEventPayload } from '../map-schema/types';
 
 interface Props {
   field: ArrayField<any>;
@@ -83,12 +83,6 @@ export function setupArrayField(
     },
   );
 
-  const { target: batchedErrorChanged, clear: clearBatchedSetError } =
-    combineEventsInOrder([field.batchedErrorChanged, field.errorChanged]);
-
-  const { target: batchedValuesChanged, clear: clearBatchedSetValues } =
-    combineEventsInOrder([field.batchedSetValue, field.changed]);
-
   sample({
     clock: field.notBatchedErrorChanged,
     fn: (error) => ({ error }),
@@ -102,8 +96,8 @@ export function setupArrayField(
   });
 
   sample({
-    clock: batchedErrorChanged,
-    fn: ([{ value: error, '@@batchInfo': batchInfo }]) => ({
+    clock: field.batchedErrorChanged,
+    fn: ({ value: error, '@@batchInfo': batchInfo }) => ({
       error,
       batchInfo,
     }),
@@ -111,8 +105,8 @@ export function setupArrayField(
   });
 
   sample({
-    clock: batchedValuesChanged,
-    fn: ([{ value, '@@batchInfo': batchInfo }]) => ({
+    clock: field.batchedValueChanged,
+    fn: ({ value, '@@batchInfo': batchInfo }) => ({
       values: value,
       batchInfo,
     }),
@@ -122,7 +116,10 @@ export function setupArrayField(
   sample({
     clock: changeErrorFx.done,
     filter: ({ params }) => !params.batchInfo,
-    fn: () => ({ fieldPath: apiKey, type: 'error' }),
+    fn: (): FieldInteractionEventPayload => ({
+      fieldPath: apiKey,
+      type: 'error',
+    }),
     target: this.schemaUpdated,
   });
 
@@ -139,7 +136,10 @@ export function setupArrayField(
   sample({
     clock: changeValuesFx.done,
     filter: ({ params }) => !params.batchInfo,
-    fn: () => ({ fieldPath: apiKey }),
+    fn: (): FieldInteractionEventPayload => ({
+      fieldPath: apiKey,
+      type: 'value',
+    }),
     target: this.schemaUpdated,
   });
 
@@ -150,9 +150,7 @@ export function setupArrayField(
     batchedSetOuterError: field.batchedSetOuterError,
     batchedSetInnerError: field.batchedSetInnerError,
 
-    clearForErrors: () => {
-      clearBatchedSetError();
-    },
+    clearForErrors: () => {},
 
     clear: (fullClear) => {
       const keys = Object.keys(this.api)
@@ -166,7 +164,6 @@ export function setupArrayField(
 
       if (fullClear) {
         clearNode(changeValuesFx);
-        clearBatchedSetValues();
       }
     },
 

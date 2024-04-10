@@ -148,6 +148,7 @@ export function createArrayField<
   const notBatchedValueChanged = createEvent<Values>();
   const notBatchedErrorChanged = createEvent<FieldError>();
   const batchedErrorChanged = createEvent<FieldBatchedSetter<FieldError>>();
+  const batchedValueChanged = createEvent<FieldBatchedSetter<Values>>();
 
   const change = createEvent<T[]>();
   const changed = createEvent<Values>();
@@ -307,7 +308,13 @@ export function createArrayField<
 
   sample({
     clock: batchedSetValue,
-    fn: (payload) => preparePayload(payload.value),
+    fn: (payload) => ({ ...payload, value: preparePayload(payload.value) }),
+    target: batchedValueChanged,
+  });
+
+  sample({
+    clock: batchedValueChanged,
+    fn: (payload) => payload.value,
     target: [syncFx, changed],
   });
 
@@ -498,6 +505,7 @@ export function createArrayField<
     notBatchedErrorChanged,
     notBatchedValueChanged,
     batchedErrorChanged,
+    batchedValueChanged,
 
     $values,
     $error,

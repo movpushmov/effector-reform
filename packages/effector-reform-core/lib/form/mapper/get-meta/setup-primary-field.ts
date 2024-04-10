@@ -2,7 +2,7 @@ import { FieldError, InnerFieldApi, PrimaryField } from '../../../fields';
 import { clearNode, createEffect, sample } from 'effector';
 import { Node } from '../types';
 import { This } from './types';
-import { combineEventsInOrder } from '../../../utils';
+import { FieldInteractionEventPayload } from '../map-schema/types';
 
 interface Props {
   field: PrimaryField;
@@ -40,12 +40,6 @@ export function setupPrimaryField(
     },
   );
 
-  const { target: batchedErrorChanged, clear: clearBatchedSetError } =
-    combineEventsInOrder([field.batchedErrorChanged, field.errorChanged]);
-
-  const { target: batchedValueChanged, clear: clearBatchedSetValue } =
-    combineEventsInOrder([field.batchedSetValue, field.changed]);
-
   sample({
     clock: field.notBatchedErrorChanged,
     fn: (error) => ({ error }),
@@ -59,8 +53,8 @@ export function setupPrimaryField(
   });
 
   sample({
-    clock: batchedErrorChanged,
-    fn: ([{ value: error, '@@batchInfo': batchInfo }]) => ({
+    clock: field.batchedErrorChanged,
+    fn: ({ value: error, '@@batchInfo': batchInfo }) => ({
       error,
       batchInfo,
     }),
@@ -68,8 +62,8 @@ export function setupPrimaryField(
   });
 
   sample({
-    clock: batchedValueChanged,
-    fn: ([{ value, '@@batchInfo': batchInfo }]) => ({
+    clock: field.batchedValueChanged,
+    fn: ({ value, '@@batchInfo': batchInfo }) => ({
       value,
       batchInfo,
     }),
@@ -79,7 +73,10 @@ export function setupPrimaryField(
   sample({
     clock: changeErrorFx.done,
     filter: ({ params }) => !params.batchInfo,
-    fn: () => ({ fieldPath: apiKey, type: 'error' }),
+    fn: (): FieldInteractionEventPayload => ({
+      fieldPath: apiKey,
+      type: 'error',
+    }),
     target: this.schemaUpdated,
   });
 
@@ -96,7 +93,10 @@ export function setupPrimaryField(
   sample({
     clock: changeValueFx.done,
     filter: ({ params }) => !params.batchInfo,
-    fn: () => ({ fieldPath: apiKey }),
+    fn: (): FieldInteractionEventPayload => ({
+      fieldPath: apiKey,
+      type: 'value',
+    }),
     target: this.schemaUpdated,
   });
 
@@ -121,12 +121,10 @@ export function setupPrimaryField(
 
     clearForErrors: () => {
       clearNode(changeErrorFx);
-      clearBatchedSetError();
     },
 
     clear: () => {
       clearNode(changeValueFx);
-      clearBatchedSetValue();
     },
 
     clearInnerError: field.setInnerError.prepend(() => null),

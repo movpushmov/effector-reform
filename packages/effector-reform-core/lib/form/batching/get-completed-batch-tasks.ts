@@ -1,11 +1,24 @@
 import { BatchInfo } from './types';
+import { FieldInteractionEventPayload } from '../mapper/map-schema/types';
 
 export function getCompletedBatchTasks(tasks: Record<string, BatchInfo>) {
-  return Object.values(tasks).reduce<BatchInfo[]>((acc, info) => {
-    if (info.fields.length === 0) {
-      acc.push(info);
-    }
+  return Object.values(tasks).reduce<{
+    tasks: BatchInfo[];
+    updateType: FieldInteractionEventPayload['type'];
+  }>(
+    (acc, info) => {
+      if (info.fields.length === 0) {
+        acc.tasks.push(info);
+      }
 
-    return acc;
-  }, []);
+      if (info.type === 'values' && acc.updateType !== 'all') {
+        acc.updateType = acc.updateType === 'error' ? 'all' : 'value';
+      } else if (info.type === 'errors' && acc.updateType !== 'all') {
+        acc.updateType = acc.updateType === 'value' ? 'all' : 'error';
+      }
+
+      return acc;
+    },
+    { tasks: [], updateType: 'none' },
+  );
 }

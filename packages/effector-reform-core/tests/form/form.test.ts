@@ -154,7 +154,23 @@ describe('Form tests', () => {
 
   test.todo('Submit');
 
-  test.todo('Validate');
+  test('Validate', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: { a: '', b: '', c: '', d: '', e: '' },
+      validation: (values) => (!values.b ? { b: 'test' } : null),
+    });
+
+    await allSettled(form.validate, { scope });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      a: null,
+      b: 'test',
+      c: null,
+      d: null,
+      e: null,
+    });
+  });
 
   test.todo('Is dirty');
 

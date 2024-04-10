@@ -4,6 +4,7 @@ import { EventCallable } from 'effector';
 import {
   BatchedSchemaUpdatedPayload,
   FieldInteractionEventPayload,
+  FieldInteractionEventPayloadBase,
 } from '../map-schema/types';
 
 export type MapFn = (
@@ -16,8 +17,8 @@ export type MapFn = (
 export interface This {
   schemaUpdated: EventCallable<FieldInteractionEventPayload>;
   batchedSchemaUpdated: EventCallable<BatchedSchemaUpdatedPayload>;
-  focused: EventCallable<FieldInteractionEventPayload>;
-  blurred: EventCallable<FieldInteractionEventPayload>;
+  focused: EventCallable<FieldInteractionEventPayloadBase>;
+  blurred: EventCallable<FieldInteractionEventPayloadBase>;
 
   api: FormApi;
   isValid: boolean;

@@ -59,6 +59,7 @@ export function createField<T extends PrimaryValue>(
   const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetValue = createEvent<FieldBatchedSetter<T>>();
 
+  const batchedValueChanged = createEvent<FieldBatchedSetter<T>>();
   const batchedErrorChanged = createEvent<FieldBatchedSetter<FieldError>>();
   const notBatchedValueChanged = createEvent<T>();
   const notBatchedErrorChanged = createEvent<FieldError>();
@@ -92,6 +93,11 @@ export function createField<T extends PrimaryValue>(
 
   sample({
     clock: batchedSetValue,
+    target: batchedValueChanged,
+  });
+
+  sample({
+    clock: batchedValueChanged,
     fn: (payload) => payload.value,
     target: $value,
   });
@@ -144,6 +150,7 @@ export function createField<T extends PrimaryValue>(
     batchedSetValue,
 
     batchedErrorChanged,
+    batchedValueChanged,
     notBatchedErrorChanged,
     notBatchedValueChanged,
 

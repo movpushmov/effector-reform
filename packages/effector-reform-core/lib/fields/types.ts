@@ -13,6 +13,7 @@ type FieldInnerBatchSetters<T> = {
   batchedSetOuterError: EventCallable<FieldBatchedSetter<FieldError>>;
   batchedSetValue: EventCallable<FieldBatchedSetter<T>>;
 
+  batchedValueChanged: EventCallable<FieldBatchedSetter<T>>;
   batchedErrorChanged: EventCallable<FieldBatchedSetter<FieldError>>;
   notBatchedErrorChanged: EventCallable<FieldError>;
   notBatchedValueChanged: EventCallable<T>;

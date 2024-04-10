@@ -70,6 +70,13 @@ export function clearSchemaNode(schema: ReadyFieldsGroupSchema | PrimaryValue) {
           node.unshifted,
           innerApi.setInnerError,
           innerApi.cleared,
+          innerApi.batchedSetValue,
+          innerApi.notBatchedErrorChanged,
+          innerApi.notBatchedValueChanged,
+          innerApi.batchedSetOuterError,
+          innerApi.batchedSetInnerError,
+          innerApi.batchedErrorChanged,
+          innerApi.batchedValueChanged,
         ]);
 
         break;
@@ -85,6 +92,13 @@ export function clearSchemaNode(schema: ReadyFieldsGroupSchema | PrimaryValue) {
           node.errorChanged,
           node.changed,
           innerApi.setInnerError,
+          innerApi.batchedSetValue,
+          innerApi.notBatchedErrorChanged,
+          innerApi.notBatchedValueChanged,
+          innerApi.batchedSetOuterError,
+          innerApi.batchedSetInnerError,
+          innerApi.batchedErrorChanged,
+          innerApi.batchedValueChanged,
         ]);
 
         break;
