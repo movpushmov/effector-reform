@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/movpushmov/effector-reform/compare/v0.5.7...v0.6.0) (2024-04-10)
+
+### Bug Fixes
+
+- update yup deps ([dbe07a7](https://github.com/movpushmov/effector-reform/commit/dbe07a72ade9cf7f4142fa90a06f3f2d69d72b06))
+
 ## [0.5.7](https://github.com/movpushmov/effector-reform/compare/v0.5.6...v0.5.7) (2024-04-01)
 
 **Note:** Version bump only for package @effector-reform/yup

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/movpushmov/effector-reform/compare/v0.5.7...v0.6.0) (2024-04-10)
+
+### Bug Fixes
+
+- batching bug ([b911b02](https://github.com/movpushmov/effector-reform/commit/b911b0272199743ec0576b240cfd5f2496b99924))
+- errors batching ([3dd7906](https://github.com/movpushmov/effector-reform/commit/3dd7906fde987fc5f1c5404a9a92dfaab3903467))
+- event debug name ([99a370a](https://github.com/movpushmov/effector-reform/commit/99a370a65ace572e9e07c9d1552fd0de4ddf221c))
+- update packages ([50c958b](https://github.com/movpushmov/effector-reform/commit/50c958b54041dbabdc81dfbdc9de8363c42530e9))
+- update yup deps ([dbe07a7](https://github.com/movpushmov/effector-reform/commit/dbe07a72ade9cf7f4142fa90a06f3f2d69d72b06))
+
+### Features
+
+- refactor & new batch system ([a1ba685](https://github.com/movpushmov/effector-reform/commit/a1ba685fe1f6e60a2231476920176edfefe7e3e7))
+
 ## [0.5.7](https://github.com/movpushmov/effector-reform/compare/v0.5.6...v0.5.7) (2024-04-01)
 
 ### Bug Fixes

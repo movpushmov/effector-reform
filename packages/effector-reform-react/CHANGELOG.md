@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/movpushmov/effector-reform/compare/v0.5.7...v0.6.0) (2024-04-10)
+
+### Bug Fixes
+
+- batching bug ([b911b02](https://github.com/movpushmov/effector-reform/commit/b911b0272199743ec0576b240cfd5f2496b99924))
+
 ## [0.5.7](https://github.com/movpushmov/effector-reform/compare/v0.5.6...v0.5.7) (2024-04-01)
 
 ### Bug Fixes
