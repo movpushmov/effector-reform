@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/movpushmov/effector-reform/compare/v0.6.0...v0.7.0) (2024-04-13)
+
+### Features
+
+- fix validated event ([20cd9b8](https://github.com/movpushmov/effector-reform/commit/20cd9b80b8e08c72dfe0ea7f30932bf2f4fd5179))
+
 # [0.6.0](https://github.com/movpushmov/effector-reform/compare/v0.5.7...v0.6.0) (2024-04-10)
 
 ### Bug Fixes
