@@ -1,6 +1,7 @@
-import { describe, jest, expect, test } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 import { allSettled, createEffect, fork, sample } from 'effector';
 import { createForm } from '../../lib';
+import { fn } from 'jest-mock';
 
 describe('Form tests', () => {
   test('Change partial primary fields values', async () => {
@@ -73,7 +74,7 @@ describe('Form tests', () => {
       },
     });
 
-    const mockedFn = jest.fn();
+    const mockedFn = fn();
     const errorsChangedFx = createEffect(mockedFn);
 
     sample({
@@ -124,7 +125,7 @@ describe('Form tests', () => {
     const scope = fork();
     const form = createForm({ schema: { a: '', b: '', c: '', d: '', e: '' } });
 
-    const mockedFn = jest.fn();
+    const mockedFn = fn();
     const valuesChangedFx = createEffect(mockedFn);
 
     sample({
@@ -153,6 +154,42 @@ describe('Form tests', () => {
   test.todo('Clear outer errors');
 
   test.todo('Submit');
+
+  test('Submitted and validated', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: { a: '', b: '', c: '', d: '', e: '' },
+    });
+
+    const mockedValidatedFn = fn();
+    const mockedValidatedFx = createEffect(mockedValidatedFn);
+
+    const mockedValidatedAndSubmittedFn = fn();
+    const mockedValidatedAndSubmittedFx = createEffect(
+      mockedValidatedAndSubmittedFn,
+    );
+
+    sample({
+      clock: form.validatedAndSubmitted,
+      target: mockedValidatedAndSubmittedFx,
+    });
+
+    sample({
+      clock: form.validated,
+      target: mockedValidatedFx,
+    });
+
+    await allSettled(form.fields.a.change, { scope, params: '123' });
+    await allSettled(form.fields.b.change, { scope, params: '321' });
+
+    expect(mockedValidatedAndSubmittedFn).toBeCalledTimes(0);
+    expect(mockedValidatedFn).toBeCalledTimes(2);
+
+    await allSettled(form.submit, { scope });
+
+    expect(mockedValidatedAndSubmittedFn).toBeCalledTimes(1);
+    expect(mockedValidatedFn).toBeCalledTimes(3);
+  });
 
   test('Validate', async () => {
     const scope = fork();

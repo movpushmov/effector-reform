@@ -29,6 +29,7 @@ import {
   setFormErrors,
   fullFormClear,
 } from './mapper';
+import { combineEvents } from 'patronum';
 
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const {
@@ -204,7 +205,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   });
 
   sample({
-    clock: validated,
+    clock: combineEvents([validated, submitted]),
     source: $values,
     target: validatedAndSubmitted,
   });
