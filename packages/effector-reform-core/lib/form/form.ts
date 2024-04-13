@@ -33,7 +33,7 @@ import {
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const {
     schema,
-    validation = (() => {}) as unknown as SyncValidationFn<
+    validation = (() => null) as unknown as SyncValidationFn<
       UserFormSchema<UserFormSchema<T>>
     >,
     validationStrategies = ['submit', 'change', 'blur', 'focus'],
@@ -193,7 +193,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   sample({
     clock: validateFx.doneData as EventCallable<any>,
-    filter: (result) => result === null,
+    filter: (result) => !result,
     target: validated,
   });
 
