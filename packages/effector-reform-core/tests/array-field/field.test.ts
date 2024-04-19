@@ -1,15 +1,25 @@
 import { describe, expect, test } from '@jest/globals';
 import { createArrayField } from '../../lib';
-import { allSettled, fork } from 'effector';
+import { allSettled, createEffect, fork, sample } from 'effector';
+import { fn } from 'jest-mock';
 
 describe('Array field tests', () => {
   test('push', async () => {
     const scope = fork();
     const field = createArrayField<number>([0]);
 
+    const mockedFn = fn();
+    const fx = createEffect(mockedFn);
+
+    sample({
+      clock: field.changed,
+      target: fx,
+    });
+
     await allSettled(field.push, { scope, params: 1 });
 
     expect(scope.getState(field.$values)).toStrictEqual([0, 1]);
+    expect(mockedFn).toBeCalledTimes(1);
   });
 
   test('swap', async () => {

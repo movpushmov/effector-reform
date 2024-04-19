@@ -38,7 +38,9 @@ export const BaseForm = () => {
             <span onClick={() => fields.c.remove({ index })}>{num}</span>
           ))}
 
-          <button onClick={() => fields.c.push(Math.random())}>add num</button>
+          <button type="button" onClick={() => fields.c.push(Math.random())}>
+            add num
+          </button>
         </div>
 
         <p>field in group</p>
@@ -56,7 +58,7 @@ export const BaseForm = () => {
             />
           ))}
 
-          <button onClick={() => fields.d.f.push({ name: '' })}>
+          <button type="button" onClick={() => fields.d.f.push({ name: '' })}>
             add friend
           </button>
         </div>

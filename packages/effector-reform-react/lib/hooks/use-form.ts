@@ -52,8 +52,8 @@ export function useForm<
   const scope = useProvidedScope();
 
   const { values, errors, ...formParams } = useUnit(form);
-  const fields = useMemo(
-    () => getFields(form.fields, scope) as ReactFields<T['fields']>,
+  const fields = useMemo<ReactFields<T['fields']>>(
+    () => getFields(form.fields, scope),
     [form.fields, values, errors],
   );
 

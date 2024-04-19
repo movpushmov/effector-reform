@@ -1,8 +1,8 @@
 import {
-  FormFields,
   arrayFieldSymbol,
   isPrimaryValue,
   primaryFieldSymbol,
+  ReadyFieldsGroupSchema,
 } from '@effector-reform/core';
 import { Scope, scopeBind, EventCallable, Store } from 'effector';
 import {
@@ -11,7 +11,7 @@ import {
   ReactPrimaryFieldApi,
 } from '../types';
 
-export function getFields<T extends FormFields>(
+export function getFields<T extends ReadyFieldsGroupSchema>(
   fields: T,
   scope: Scope | null,
 ): ReactFields<T> {
@@ -71,7 +71,10 @@ export function getFields<T extends FormFields>(
         break;
       }
       default: {
-        node[fieldName] = getFields(fields[fieldName] as FormFields, scope);
+        node[fieldName] = getFields(
+          fields[fieldName] as ReadyFieldsGroupSchema,
+          scope,
+        );
       }
     }
   }

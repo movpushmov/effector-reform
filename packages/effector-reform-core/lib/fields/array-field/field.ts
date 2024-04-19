@@ -307,6 +307,11 @@ export function createArrayField<
   });
 
   sample({
+    clock: $values,
+    target: changed,
+  });
+
+  sample({
     clock: batchedSetValue,
     fn: (payload) => ({ ...payload, value: preparePayload(payload.value) }),
     target: batchedValueChanged,
@@ -315,7 +320,7 @@ export function createArrayField<
   sample({
     clock: batchedValueChanged,
     fn: (payload) => payload.value,
-    target: [syncFx, changed],
+    target: syncFx,
   });
 
   sample({
@@ -326,7 +331,7 @@ export function createArrayField<
 
   sample({
     clock: notBatchedValueChanged,
-    target: [syncFx, changed],
+    target: syncFx,
   });
 
   sample({ clock: push, target: pushFx });

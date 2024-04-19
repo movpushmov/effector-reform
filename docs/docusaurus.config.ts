@@ -15,7 +15,7 @@ const config: Config = {
   organizationName: 'movpushmov',
   projectName: 'effector-reform',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
@@ -88,20 +88,16 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Fields',
-              to: '/docs/intro',
+              label: 'Getting Started',
+              to: '/docs/learn/introduction/getting-started',
             },
             {
-              label: 'Forms',
-              to: '/docs/intro',
+              label: 'Examples',
+              to: '/docs/learn/examples/base-form',
             },
             {
-              label: 'Validation',
-              to: '/docs/intro',
-            },
-            {
-              label: 'React bindings',
-              to: '/docs/intro',
+              label: 'Core API',
+              to: '/docs/api/core/create-field',
             },
           ],
         },

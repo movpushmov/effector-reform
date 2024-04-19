@@ -18,7 +18,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <Link
           className={clsx(styles.action, 'button button--lg')}
-          to="/docs/learn/introductions/getting-started"
+          to="/docs/learn/introduction/getting-started"
         >
           Getting started
         </Link>
