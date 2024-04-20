@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/movpushmov/effector-reform/compare/v0.7.2...v0.7.3) (2024-04-20)
+
+### Bug Fixes
+
+- clear inner errors on validated ([d82d5a5](https://github.com/movpushmov/effector-reform/commit/d82d5a567b08ce1d206d147757d1254c31322042))
+
 ## [0.7.2](https://github.com/movpushmov/effector-reform/compare/v0.7.1...v0.7.2) (2024-04-20)
 
 ### Bug Fixes
