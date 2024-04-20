@@ -8,15 +8,19 @@ export function setFormErrors(
   formApi: FormApi,
   addBatchTask: EventCallable<BatchInfo>,
   mode: 'inner' | 'outer',
+  clearOtherFields: boolean = false,
 ) {
-  if (Object.keys(errors).length === 0) {
+  const allFieldsKeys = Object.keys(formApi);
+  const fieldsToSet = clearOtherFields ? allFieldsKeys : Object.keys(errors);
+
+  if (Object.keys(fieldsToSet).length === 0) {
     return;
   }
 
-  const task = createBatchTask(Object.keys(errors), 'errors');
+  const task = createBatchTask(fieldsToSet, 'errors');
   addBatchTask(task);
 
-  for (const apiKey in errors) {
+  for (const apiKey of fieldsToSet) {
     const fieldApi = formApi[apiKey];
 
     if (!fieldApi) {
@@ -27,14 +31,14 @@ export function setFormErrors(
     switch (mode) {
       case 'inner': {
         fieldApi.batchedSetInnerError({
-          value: errors[apiKey],
+          value: errors[apiKey] ?? null,
           '@@batchInfo': { id: task.id, fieldPath: apiKey },
         });
         break;
       }
       case 'outer': {
         fieldApi.batchedSetOuterError({
-          value: errors[apiKey],
+          value: errors[apiKey] ?? null,
           '@@batchInfo': { id: task.id, fieldPath: apiKey },
         });
         break;

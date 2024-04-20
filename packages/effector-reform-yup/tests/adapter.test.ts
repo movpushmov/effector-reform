@@ -39,4 +39,34 @@ describe('Yup adapter', () => {
       c: { d: 'c.d must be at least 2 characters' },
     });
   });
+
+  test('clear not settled errors', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: {
+        a: '',
+        b: '',
+      },
+      validation: yupAdapter(
+        object({
+          a: string().min(2, 'min 2'),
+          b: string().min(4, 'min 4'),
+        }),
+      ),
+    });
+
+    await allSettled(form.setValues, { scope, params: { a: 'a', b: 'a' } });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      a: 'min 2',
+      b: 'min 4',
+    });
+
+    await allSettled(form.fields.a.change, { scope, params: 'aa' });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      a: null,
+      b: 'min 4',
+    });
+  });
 });

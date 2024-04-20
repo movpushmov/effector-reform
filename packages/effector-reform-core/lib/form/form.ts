@@ -69,7 +69,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const setErrorsFx = attach({
     source: $api,
     effect: (api, errors: any) =>
-      setFormErrors(errors, api, addBatchTask, 'inner'),
+      setFormErrors(errors, api, addBatchTask, 'inner', true),
   });
 
   const setValues = createEvent<Values>('<form set values>');
