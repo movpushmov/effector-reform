@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/movpushmov/effector-reform/compare/v0.7.1...v0.7.2) (2024-04-20)
+
+### Bug Fixes
+
+- array field bug & react types ([f40b7d5](https://github.com/movpushmov/effector-reform/commit/f40b7d5c95d39b742e610699503bbca14f3b8e76))
+- clear not settled errors from validation ([3f1c588](https://github.com/movpushmov/effector-reform/commit/3f1c588dfbd215fde598d64285d43f06b587de92))
+- remove useless pages ([515ce04](https://github.com/movpushmov/effector-reform/commit/515ce04374834646bb47fb2fdb8172b6939d1ce0))
+
 ## [0.7.1](https://github.com/movpushmov/effector-reform/compare/v0.7.0...v0.7.1) (2024-04-13)
 
 ### Bug Fixes
