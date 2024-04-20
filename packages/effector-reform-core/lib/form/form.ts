@@ -25,7 +25,7 @@ import type {
 import {
   setFormValues,
   mapSchema,
-  clearFormOuterErrors,
+  clearFormErrors,
   setFormErrors,
   fullFormClear,
 } from './mapper';
@@ -58,7 +58,12 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const clearOuterErrorsFx = attach({
     source: $api,
-    effect: clearFormOuterErrors,
+    effect: (api) => clearFormErrors(api, 'outer'),
+  });
+
+  const clearInnerErrorsFx = attach({
+    source: $api,
+    effect: (api) => clearFormErrors(api, 'inner'),
   });
 
   const setValuesFx = attach({
@@ -196,6 +201,11 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     clock: validateFx.doneData as EventCallable<any>,
     filter: (result) => !result,
     target: validated,
+  });
+
+  sample({
+    clock: validated,
+    target: clearInnerErrorsFx,
   });
 
   sample({

@@ -1,10 +1,14 @@
 import type { FormApi } from '../mapper';
 
-export function clearFormOuterErrors(formApi: FormApi) {
+export function clearFormErrors(formApi: FormApi, mode: 'inner' | 'outer') {
   for (const apiKey in formApi) {
     const api = formApi[apiKey];
 
-    api.clearOuterError();
+    if (mode === 'inner') {
+      api.clearInnerError();
+    } else if (mode === 'outer') {
+      api.clearOuterError();
+    }
   }
 }
 
