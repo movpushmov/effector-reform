@@ -2,7 +2,6 @@ import {
   ArrayField,
   ArrayFieldItemType,
   FieldError,
-  FormFields,
   FormValues,
   InsertOrReplacePayload,
   MovePayload,
