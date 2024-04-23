@@ -4,12 +4,12 @@ import {
   isArrayField,
 } from '../array-field';
 import {
-  PrimaryValue,
+  PrimitiveValue,
   createField,
-  isPrimaryField,
-  isPrimaryValue,
-  primaryFieldSymbol,
-} from '../primary-field';
+  isPrimitiveField,
+  isPrimitiveValue,
+  primitiveFieldSymbol,
+} from '../primitive-field';
 import type {
   AnySchema,
   ReadyFieldsGroupSchema,
@@ -17,24 +17,24 @@ import type {
 } from './types';
 
 export function prepareFieldsSchema<
-  T extends AnySchema | PrimaryValue,
+  T extends AnySchema | PrimitiveValue,
   U = UserFormSchema<T>,
 >(schema: T): U {
   const result: UserFormSchema<any> = {};
 
-  if (isPrimaryValue(schema)) {
+  if (isPrimitiveValue(schema)) {
     return schema as U;
   }
 
   for (const key in schema) {
     const element = schema[key];
 
-    if (isPrimaryValue(element)) {
+    if (isPrimitiveValue(element)) {
       result[key] = createField(element);
       continue;
     }
 
-    if (isPrimaryField(element) || isArrayField(element)) {
+    if (isPrimitiveField(element) || isArrayField(element)) {
       result[key] = element;
       continue;
     }
@@ -60,7 +60,7 @@ export function forkGroup<T extends ReadyFieldsGroupSchema>(group: T): T {
 
     switch (element.type) {
       case arrayFieldSymbol:
-      case primaryFieldSymbol: {
+      case primitiveFieldSymbol: {
         result[key] = element.forkOnCreateForm ? element.fork() : element;
 
         break;

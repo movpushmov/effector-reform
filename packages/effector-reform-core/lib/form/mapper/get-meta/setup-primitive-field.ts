@@ -1,11 +1,11 @@
-import { FieldError, InnerFieldApi, PrimaryField } from '../../../fields';
+import { FieldError, InnerFieldApi, PrimitiveField } from '../../../fields';
 import { clearNode, createEffect, sample } from 'effector';
 import { Node } from '../types';
 import { This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
 
 interface Props {
-  field: PrimaryField;
+  field: PrimitiveField;
   path: string[];
   key: string;
 
@@ -13,11 +13,11 @@ interface Props {
   resultErrorsNode: Node;
 }
 
-export function setupPrimaryField(
+export function setupPrimitiveField(
   this: This,
   { resultValuesNode, resultErrorsNode, field: rawField, key, path }: Props,
 ) {
-  const field = rawField as PrimaryField & InnerFieldApi;
+  const field = rawField as PrimitiveField & InnerFieldApi;
 
   resultValuesNode[key] = field.$value.getState();
   resultErrorsNode[key] = field.$error.getState();

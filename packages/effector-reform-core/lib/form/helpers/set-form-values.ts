@@ -1,4 +1,4 @@
-import { isPrimaryValue } from '../../fields';
+import { isPrimitiveValue } from '../../fields';
 import type { FormApi, Node } from '../mapper';
 import { EventCallable } from 'effector';
 import { createBatchTask, BatchInfo } from '../batching';
@@ -18,7 +18,7 @@ export function setFormValues<Values>(
       const subNode = node[key];
       const apiKey = [...path, key].join('.');
 
-      if (isPrimaryValue(subNode) || Array.isArray(subNode)) {
+      if (isPrimitiveValue(subNode) || Array.isArray(subNode)) {
         const fieldApi = formApi[apiKey];
 
         if (!fieldApi) {

@@ -1,6 +1,6 @@
 import { Event, EventCallable } from 'effector';
 import { FormErrors, FormValues } from '../form';
-import { PrimaryValue } from './primary-field';
+import { PrimitiveValue } from './primitive-field';
 
 export type FieldError = string | null;
 export type FieldBatchedSetter<T> = {
@@ -32,7 +32,7 @@ export type PartialRecursive<T extends FormErrors<any> | FormValues<any>> =
   Partial<{
     [K in keyof T]: T[K] extends Array<any>
       ? Array<PartialRecursive<T[K][number]>>
-      : T[K] extends PrimaryValue
+      : T[K] extends PrimitiveValue
         ? T[K]
         : T[K] extends object
           ? PartialRecursive<T[K]>

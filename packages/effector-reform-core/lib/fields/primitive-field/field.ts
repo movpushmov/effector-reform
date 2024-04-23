@@ -1,21 +1,21 @@
 import { combine, createEvent, createStore, sample } from 'effector';
 import type {
-  CreatePrimaryFieldOptions,
-  PrimaryField,
-  PrimaryValue,
+  CreatePrimitiveFieldOptions,
+  PrimitiveField,
+  PrimitiveValue,
 } from './types';
 import { FieldBatchedSetter, FieldError, InnerFieldApi } from '../types';
-import { primaryFieldSymbol } from './symbol';
+import { primitiveFieldSymbol } from './symbol';
 
 const defaultOptions = {
   error: null,
   forkOnCreateForm: true,
 };
 
-export function createField<T extends PrimaryValue>(
+export function createField<T extends PrimitiveValue>(
   defaultValue: T,
-  overrides?: CreatePrimaryFieldOptions,
-): PrimaryField<T> {
+  overrides?: CreatePrimitiveFieldOptions,
+): PrimitiveField<T> {
   const clearOuterErrorOnChange = Boolean(overrides?.clearOuterErrorOnChange);
 
   const options = { ...defaultOptions, ...overrides };
@@ -143,7 +143,7 @@ export function createField<T extends PrimaryValue>(
   });
 
   return {
-    type: primaryFieldSymbol,
+    type: primitiveFieldSymbol,
 
     batchedSetInnerError,
     batchedSetOuterError,
@@ -178,7 +178,7 @@ export function createField<T extends PrimaryValue>(
 
     forkOnCreateForm: options.forkOnCreateForm,
 
-    fork: (options?: CreatePrimaryFieldOptions) =>
+    fork: (options?: CreatePrimitiveFieldOptions) =>
       createField(defaultValue, { ...overrides, ...options }),
 
     '@@unitShape': () => ({
@@ -199,5 +199,5 @@ export function createField<T extends PrimaryValue>(
       change,
       reset,
     }),
-  } as PrimaryField<T> & InnerFieldApi<T>;
+  } as PrimitiveField<T> & InnerFieldApi<T>;
 }

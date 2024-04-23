@@ -1,18 +1,18 @@
 import { EventCallable, Store, Event } from 'effector';
 import { FieldError } from '../types';
-import { primaryFieldSymbol } from './symbol';
+import { primitiveFieldSymbol } from './symbol';
 
-export type PrimaryJsonValue = string | number | boolean | Date;
+export type PrimitiveJsonValue = string | number | boolean | Date;
 
-export type PrimaryValue =
+export type PrimitiveValue =
   | bigint
-  | PrimaryJsonValue
+  | PrimitiveJsonValue
   | Blob
   | ArrayBuffer
   | File
   | FileList;
 
-export interface PrimaryFieldApi<T extends PrimaryValue> {
+export interface PrimitiveFieldApi<T extends PrimitiveValue> {
   change: EventCallable<T>;
   changed: Event<T>;
 
@@ -24,9 +24,9 @@ export interface PrimaryFieldApi<T extends PrimaryValue> {
   errorChanged: Event<FieldError>;
 }
 
-export interface PrimaryField<T extends PrimaryValue = any>
-  extends PrimaryFieldApi<T> {
-  type: PrimaryFieldSymbolType;
+export interface PrimitiveField<T extends PrimitiveValue = any>
+  extends PrimitiveFieldApi<T> {
+  type: PrimitiveFieldSymbolType;
 
   $value: Store<T>;
   $error: Store<FieldError>;
@@ -43,7 +43,7 @@ export interface PrimaryField<T extends PrimaryValue = any>
 
   forkOnCreateForm: boolean;
 
-  fork: (options?: CreatePrimaryFieldOptions) => PrimaryField<T>;
+  fork: (options?: CreatePrimitiveFieldOptions) => PrimitiveField<T>;
 
   '@@unitShape': () => {
     value: Store<T>;
@@ -62,10 +62,10 @@ export interface PrimaryField<T extends PrimaryValue = any>
   };
 }
 
-export interface CreatePrimaryFieldOptions {
+export interface CreatePrimitiveFieldOptions {
   error?: FieldError;
   clearOuterErrorOnChange?: boolean;
   forkOnCreateForm?: boolean;
 }
 
-export type PrimaryFieldSymbolType = typeof primaryFieldSymbol;
+export type PrimitiveFieldSymbolType = typeof primitiveFieldSymbol;

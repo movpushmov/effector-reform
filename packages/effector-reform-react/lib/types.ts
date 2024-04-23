@@ -5,8 +5,8 @@ import {
   FormValues,
   InsertOrReplacePayload,
   MovePayload,
-  PrimaryField,
-  PrimaryValue,
+  PrimitiveField,
+  PrimitiveValue,
   PushPayload,
   ReadyFieldsGroupSchema,
   RemovePayload,
@@ -15,7 +15,7 @@ import {
 } from '@effector-reform/core';
 import { StoreValue } from 'effector';
 
-export interface ReactPrimaryFieldApi<T extends PrimaryValue> {
+export interface ReactPrimitiveFieldApi<T extends PrimitiveValue> {
   value: T;
   error: FieldError;
 
@@ -29,7 +29,7 @@ export interface ReactPrimaryFieldApi<T extends PrimaryValue> {
 }
 
 export interface ReactArrayFieldApi<
-  T extends ReadyFieldsGroupSchema | PrimaryValue,
+  T extends ReadyFieldsGroupSchema | PrimitiveValue,
   Payload extends ArrayFieldItemType = T extends ReadyFieldsGroupSchema
     ? T | FormValues<T>
     : T,
@@ -54,8 +54,8 @@ export interface ReactArrayFieldApi<
 }
 
 export type ReactFields<Fields extends ReadyFieldsGroupSchema> = {
-  [K in keyof Fields]: Fields[K] extends PrimaryField<any>
-    ? ReactPrimaryFieldApi<StoreValue<Fields[K]['$value']>>
+  [K in keyof Fields]: Fields[K] extends PrimitiveField<any>
+    ? ReactPrimitiveFieldApi<StoreValue<Fields[K]['$value']>>
     : Fields[K] extends ArrayField<any>
       ? ReactArrayFieldApi<StoreValue<Fields[K]['$values']>[number]>
       : Fields[K] extends ReadyFieldsGroupSchema

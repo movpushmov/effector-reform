@@ -4,7 +4,7 @@ import { createForm } from '../../lib';
 import { fn } from 'jest-mock';
 
 describe('Form tests', () => {
-  test('Change partial primary fields values', async () => {
+  test('Change partial primitive fields values', async () => {
     const scope = fork();
     const form = createForm({ schema: { a: 5, b: '' } });
 
@@ -36,11 +36,11 @@ describe('Form tests', () => {
     });
   });
 
-  test.todo('Change primary fields values');
+  test.todo('Change primitive fields values');
 
   test.todo('Change array fields values');
 
-  test.todo('Change partial primary field errors');
+  test.todo('Change partial primitive field errors');
 
   test('Change partial array field errors', async () => {
     const scope = fork();
@@ -147,7 +147,7 @@ describe('Form tests', () => {
     expect(mockedFn).toBeCalledTimes(1);
   });
 
-  test.todo('Change primary fields errors');
+  test.todo('Change primitive fields errors');
 
   test.todo('Change array field errors');
 

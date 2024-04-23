@@ -1,14 +1,14 @@
 import { StoreValue } from 'effector';
 import { ArrayField } from '../array-field';
-import { PrimaryField, PrimaryValue } from '../primary-field';
+import { PrimitiveField, PrimitiveValue } from '../primitive-field';
 
 type ReadyFieldsSchemaFieldType =
-  | PrimaryField
+  | PrimitiveField
   | ArrayField<any>
   | ReadyFieldsGroupSchema;
 
 type RawFieldsSchemaFieldType =
-  | PrimaryValue
+  | PrimitiveValue
   | RawFieldsSchemaFieldType[]
   | RawFieldsGroupSchema
   | ReadyFieldsSchemaFieldType;
@@ -18,20 +18,20 @@ export type RawFieldsGroupSchema = {
 };
 
 export type ReadyFieldsGroupSchema = {
-  [k in string]: PrimaryField | ArrayField<any> | ReadyFieldsGroupSchema;
+  [k in string]: PrimitiveField | ArrayField<any> | ReadyFieldsGroupSchema;
 };
 
 export type AnySchema = RawFieldsGroupSchema | ReadyFieldsGroupSchema;
 
-export type UserFormSchema<T extends AnySchema | PrimaryValue> =
-  T extends PrimaryValue
+export type UserFormSchema<T extends AnySchema | PrimitiveValue> =
+  T extends PrimitiveValue
     ? T
     : {
-        [K in keyof T]: T[K] extends PrimaryValue
-          ? PrimaryField<T[K]>
+        [K in keyof T]: T[K] extends PrimitiveValue
+          ? PrimitiveField<T[K]>
           : T[K] extends Array<any>
             ? ArrayField<T[K][number]>
-            : T[K] extends PrimaryField<any>
+            : T[K] extends PrimitiveField<any>
               ? T[K]
               : T[K] extends ArrayField<any>
                 ? ArrayField<

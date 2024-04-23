@@ -4,10 +4,10 @@ sidebar_position: 1
 title: useField
 tags:
   - React
-  - Primary field
+  - Primitive field
 ---
 
-Use primary field model in react component
+Use primitive field model in react component
 
 ### Formulae
 

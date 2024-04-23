@@ -1,10 +1,10 @@
 import { Event, EventCallable, Store } from 'effector';
 import { FieldError } from '../types';
 import { AnySchema, UserFormSchema } from '../fields-group';
-import { PrimaryValue } from '../primary-field';
+import { PrimitiveValue } from '../primitive-field';
 import { arrayFieldSymbol } from './symbol';
 
-export type ArrayFieldItemType = AnySchema | PrimaryValue;
+export type ArrayFieldItemType = AnySchema | PrimitiveValue;
 
 export type PushPayload<T extends ArrayFieldItemType> = T | T[];
 export type UnshiftPayload<T extends ArrayFieldItemType> = T | T[];

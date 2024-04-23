@@ -1,7 +1,7 @@
 import {
   ArrayField,
-  PrimaryField,
-  isPrimaryValue,
+  PrimitiveField,
+  isPrimitiveValue,
 } from '@effector-reform/core';
 import { useProvidedScope, useUnit } from 'effector-react';
 import { useMemo } from 'react';
@@ -9,7 +9,7 @@ import { getFields } from './utils';
 import type { ReactFields } from '../types';
 import type { StoreValue } from 'effector';
 
-export function useField<T extends PrimaryField<any>>(field: T) {
+export function useField<T extends PrimitiveField<any>>(field: T) {
   return useUnit(field);
 }
 
@@ -21,7 +21,7 @@ export function useArrayField<T extends ArrayField<any>>(field: T) {
   const syncedValues = useMemo(
     () =>
       values.map((item) =>
-        isPrimaryValue(item) ? item : getFields(item, scope),
+        isPrimitiveValue(item) ? item : getFields(item, scope),
       ) as Values,
     [values],
   );

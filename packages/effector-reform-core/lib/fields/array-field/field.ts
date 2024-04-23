@@ -26,18 +26,18 @@ import {
   UserFormSchema,
   prepareFieldsSchema,
 } from '../fields-group';
-import { PrimaryValue, isPrimaryValue } from '../primary-field';
+import { PrimitiveValue, isPrimitiveValue } from '../primitive-field';
 import { arrayFieldSymbol } from './symbol';
 import { clearSchemaNode, filterUnused } from './utils';
 import { mapSchema, setFormErrors } from '../../form/mapper';
-import { isPrimaryJsonValue } from '../primary-field/utils';
+import { isPrimitiveJsonValue } from '../primitive-field/utils';
 
 const defaultOptions = {
   forkOnCreateForm: true,
 };
 
 export function createArrayField<
-  T extends PrimaryValue | AnySchema,
+  T extends PrimitiveValue | AnySchema,
   Value = UserFormSchema<T>,
 >(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T, Value> {
   type Values = Value[];
@@ -61,11 +61,11 @@ export function createArrayField<
   const clearNodesFx = createEffect(
     ({ nodes, indexes }: ReturnType<typeof filterUnused>) => {
       for (const node of nodes) {
-        if (isPrimaryValue(node)) {
+        if (isPrimitiveValue(node)) {
           break;
         }
 
-        clearSchemaNode(node as ReadyFieldsGroupSchema | PrimaryValue);
+        clearSchemaNode(node as ReadyFieldsGroupSchema | PrimitiveValue);
       }
 
       return indexes;
@@ -100,18 +100,18 @@ export function createArrayField<
 
       write(state) {
         const readySchemas = state.map((value) =>
-          isPrimaryJsonValue(value)
+          isPrimitiveJsonValue(value)
             ? value
             : mapSchema(value as ReadyFieldsGroupSchema),
         );
 
         return readySchemas
           .map((payload) => {
-            if (isPrimaryJsonValue(payload)) {
+            if (isPrimitiveJsonValue(payload)) {
               return payload;
             }
 
-            if (isPrimaryValue(payload)) {
+            if (isPrimitiveValue(payload)) {
               return null;
             }
 

@@ -4,10 +4,10 @@ sidebar_position: 2
 title: createField
 tags:
   - Core
-  - Primary field
+  - Primitive field
 ---
 
-Creates primary field, which contains primary value (like `string`, `number`, `boolean`, `Date`, `bigint`, `Blob`, `ArrayBuffer`, `File`, `FileList`)
+Creates field, which contains primitive value (like `string`, `number`, `boolean`, `Date`, `bigint`, `Blob`, `ArrayBuffer`, `File`, `FileList`)
 
 ### Formulae
 

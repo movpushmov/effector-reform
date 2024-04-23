@@ -7,7 +7,7 @@ tags:
   - Array field
 ---
 
-Creates field, which contains an array of primary values (check [createField api docs](./create-field)) or an array of objects with subfields
+Creates field, which contains an array of primitive values (check [createField api docs](./create-field)) or an array of objects with subfields
 
 ### Formulae
 
@@ -47,7 +47,7 @@ sample({
 addNumber(10); // logFx -> [10]
 addNumber(20); // logFx -> [10, 20]
 ```
-*array field with primary values*
+*array field with primitive values*
 
 ### Limitations
 
@@ -90,7 +90,7 @@ field.change([{ names: createArrayField<string>(['John']) }])
 | removed      | `Event<{ params: RemovePayload; result: U[] }>`              | triggered when removed                                                                              |
 | popped       | `Event<U[]>`                                                 | triggered when popped                                                                               |
 | replaced     | `Event<{ params: InsertOrReplacePayload<T>; result: U[]; }>` | triggered when replaced                                                                             |
-| $values      | `Store<U[]>`                                                 | primary values (or objects with subfields)                                                          |
+| $values      | `Store<U[]>`                                                 | primitive values (or objects with subfields)                                                        |
 | $error       | `Store<FieldError>`                                          | error of array field                                                                                |
 | $isDirty     | `Store<boolean>`                                             | is field changed                                                                                    |
 | $isValid     | `Store<boolean>`                                             | is field valid                                                                                      |

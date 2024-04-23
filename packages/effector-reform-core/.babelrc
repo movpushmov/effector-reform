@@ -16,13 +16,13 @@
       {
         "factories": [
           "array-field",
-          "primary-field",
+          "primitive-field",
           "lib/form/form",
           "lib",
           "lib/form",
           "lib/fields",
           "lib/fields/array-field/field",
-          "lib/fields/primary-field/field"
+          "lib/fields/primitive-field/field"
         ],
         "addNames": true
       }

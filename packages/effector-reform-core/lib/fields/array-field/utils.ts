@@ -1,11 +1,11 @@
 import { ReadyFieldsGroupSchema } from '../fields-group';
 import type { ArrayField } from './types';
 import {
-  PrimaryField,
-  PrimaryValue,
-  isPrimaryValue,
-  primaryFieldSymbol,
-} from '../primary-field';
+  PrimitiveField,
+  PrimitiveValue,
+  isPrimitiveValue,
+  primitiveFieldSymbol,
+} from '../primitive-field';
 import { arrayFieldSymbol } from './symbol';
 import { InnerArrayFieldApi, InnerFieldApi } from '../types';
 import { clearUnits } from '../../utils';
@@ -24,8 +24,10 @@ export function filterUnused<T>(arr: T[], newArr: T[]) {
   );
 }
 
-export function clearSchemaNode(schema: ReadyFieldsGroupSchema | PrimaryValue) {
-  if (isPrimaryValue(schema)) {
+export function clearSchemaNode(
+  schema: ReadyFieldsGroupSchema | PrimitiveValue,
+) {
+  if (isPrimitiveValue(schema)) {
     return;
   }
 
@@ -38,7 +40,7 @@ export function clearSchemaNode(schema: ReadyFieldsGroupSchema | PrimaryValue) {
         const innerApi = node as ArrayField<any> & InnerArrayFieldApi;
 
         for (const subNode of values) {
-          if (isPrimaryValue(subNode)) {
+          if (isPrimitiveValue(subNode)) {
             break;
           }
 
@@ -81,8 +83,8 @@ export function clearSchemaNode(schema: ReadyFieldsGroupSchema | PrimaryValue) {
 
         break;
       }
-      case primaryFieldSymbol: {
-        const innerApi = node as PrimaryField<any> & InnerFieldApi;
+      case primitiveFieldSymbol: {
+        const innerApi = node as PrimitiveField<any> & InnerFieldApi;
 
         clearUnits([
           node.$value,

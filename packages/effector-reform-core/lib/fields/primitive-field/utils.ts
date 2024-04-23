@@ -1,11 +1,11 @@
-import { primaryFieldSymbol } from './symbol';
-import { PrimaryField, PrimaryJsonValue, PrimaryValue } from './types';
+import { primitiveFieldSymbol } from './symbol';
+import { PrimitiveField, PrimitiveJsonValue, PrimitiveValue } from './types';
 
-export function isPrimaryField(props: any): props is PrimaryField {
-  return 'type' in props && props.type === primaryFieldSymbol;
+export function isPrimitiveField(props: any): props is PrimitiveField {
+  return 'type' in props && props.type === primitiveFieldSymbol;
 }
 
-export function isPrimaryJsonValue(props: any): props is PrimaryJsonValue {
+export function isPrimitiveJsonValue(props: any): props is PrimitiveJsonValue {
   return (
     typeof props === 'boolean' ||
     typeof props === 'string' ||
@@ -13,7 +13,7 @@ export function isPrimaryJsonValue(props: any): props is PrimaryJsonValue {
   );
 }
 
-export function isPrimaryValue(props: any): props is PrimaryValue {
+export function isPrimitiveValue(props: any): props is PrimitiveValue {
   const isFile = typeof File !== 'undefined' ? props instanceof File : false;
 
   const isBuffer =
@@ -22,7 +22,7 @@ export function isPrimaryValue(props: any): props is PrimaryValue {
     typeof FileList !== 'undefined' ? props instanceof FileList : false;
 
   return (
-    isPrimaryJsonValue(props) ||
+    isPrimitiveJsonValue(props) ||
     typeof props === 'bigint' ||
     isBuffer ||
     isFile ||

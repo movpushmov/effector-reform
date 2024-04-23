@@ -1,11 +1,11 @@
 import {
   arrayFieldSymbol,
-  primaryFieldSymbol,
+  primitiveFieldSymbol,
   ReadyFieldsGroupSchema,
 } from '../../../fields';
 import { Node } from '../types';
 import { setupArrayField } from './setup-array-field';
-import { setupPrimaryField } from './setup-primary-field';
+import { setupPrimitiveField } from './setup-primitive-field';
 import { This } from './types';
 
 export function map(
@@ -19,8 +19,8 @@ export function map(
     const subNode = currentNode[key];
 
     switch (subNode.type) {
-      case primaryFieldSymbol: {
-        setupPrimaryField.call(this, {
+      case primitiveFieldSymbol: {
+        setupPrimitiveField.call(this, {
           field: subNode,
           resultValuesNode,
           resultErrorsNode,

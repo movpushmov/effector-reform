@@ -6,10 +6,10 @@ import {
   ArrayFieldSymbolType,
   FieldError,
   PartialRecursive,
-  PrimaryField,
-  PrimaryFieldApi,
-  PrimaryFieldSymbolType,
-  PrimaryValue,
+  PrimitiveField,
+  PrimitiveFieldApi,
+  PrimitiveFieldSymbolType,
+  PrimitiveValue,
   ReadyFieldsGroupSchema,
   UserFormSchema,
 } from '../fields';
@@ -34,7 +34,7 @@ export interface CreateFormOptions<T extends AnySchema> {
 }
 
 export type FormValues<T extends ReadyFieldsGroupSchema> = {
-  [K in keyof T]: T[K] extends PrimaryField<any>
+  [K in keyof T]: T[K] extends PrimitiveField<any>
     ? StoreValue<T[K]['$value']>
     : T[K] extends ArrayField<any, infer D>
       ? D extends ReadyFieldsGroupSchema
@@ -46,9 +46,9 @@ export type FormValues<T extends ReadyFieldsGroupSchema> = {
 };
 
 export type AnyFieldApi =
-  | (PrimaryFieldApi<PrimaryValue> & {
-      type: PrimaryFieldSymbolType;
-      $value: Store<PrimaryValue>;
+  | (PrimitiveFieldApi<PrimitiveValue> & {
+      type: PrimitiveFieldSymbolType;
+      $value: Store<PrimitiveValue>;
       $error: Store<FieldError>;
       $isDirty: Store<boolean>;
       $isValid: Store<boolean>;
@@ -65,12 +65,12 @@ export type FormFields = {
   [k: string]: FormFields | AnyFieldApi;
 };
 
-export type FormErrors<T extends ReadyFieldsGroupSchema | PrimaryValue> =
+export type FormErrors<T extends ReadyFieldsGroupSchema | PrimitiveValue> =
   T extends ReadyFieldsGroupSchema
     ? {
-        [K in keyof T]: T[K] extends PrimaryField<any>
+        [K in keyof T]: T[K] extends PrimitiveField<any>
           ? FieldError
-          : T[K] extends PrimaryValue
+          : T[K] extends PrimitiveValue
             ? FieldError
             : T[K] extends ArrayField<any, infer Schema>
               ? {

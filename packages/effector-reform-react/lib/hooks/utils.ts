@@ -1,14 +1,14 @@
 import {
   arrayFieldSymbol,
-  isPrimaryValue,
-  primaryFieldSymbol,
+  isPrimitiveValue,
+  primitiveFieldSymbol,
   ReadyFieldsGroupSchema,
 } from '@effector-reform/core';
 import { Scope, scopeBind, EventCallable, Store } from 'effector';
 import {
   ReactArrayFieldApi,
   ReactFields,
-  ReactPrimaryFieldApi,
+  ReactPrimitiveFieldApi,
 } from '../types';
 
 export function getFields<T extends ReadyFieldsGroupSchema>(
@@ -32,7 +32,7 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
       case arrayFieldSymbol: {
         node[fieldName] = {
           values: getStoreValue(field.$values).map((item) =>
-            isPrimaryValue(item) ? item : getFields(item, scope),
+            isPrimitiveValue(item) ? item : getFields(item, scope),
           ),
           isDirty: getStoreValue(field.$isDirty),
           isValid: getStoreValue(field.$isValid),
@@ -52,7 +52,7 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
 
         break;
       }
-      case primaryFieldSymbol: {
+      case primitiveFieldSymbol: {
         const change = bindEvent(field.change);
         const focus = bindEvent(field.focus);
         const blur = bindEvent(field.blur);
@@ -66,7 +66,7 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
           onChange: (newValue) => change(newValue),
           onFocus: () => focus(),
           onBlur: () => blur(),
-        } as ReactPrimaryFieldApi<any>;
+        } as ReactPrimitiveFieldApi<any>;
 
         break;
       }

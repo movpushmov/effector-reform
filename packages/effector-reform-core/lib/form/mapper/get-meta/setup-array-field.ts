@@ -2,7 +2,7 @@ import {
   ArrayField,
   FieldError,
   InnerArrayFieldApi,
-  isPrimaryValue,
+  isPrimitiveValue,
 } from '../../../fields';
 import { clearNode, createEffect, sample } from 'effector';
 import { Node } from '../types';
@@ -44,7 +44,7 @@ export function setupArrayField(
 
   const mapValues = (values: any[]) => {
     values.map((item, index) => {
-      if (!isPrimaryValue(item)) {
+      if (!isPrimitiveValue(item)) {
         resultValuesNode[key].push({});
         resultErrorsNode[key].errors.push({});
 
