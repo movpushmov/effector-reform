@@ -29,3 +29,9 @@ npm i @effector-reform/react
 ```
 npm i @effector-reform/yup
 ```
+
+### Zod
+
+```
+npm i @effector-reform/zod
+```

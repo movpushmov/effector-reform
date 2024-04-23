@@ -7,11 +7,12 @@ const config: Config = {
   tagline: 'make & use forms without a headache',
   favicon: 'img/favicon.ico',
 
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://movpushmov.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/effector-reform',
 
+  trailingSlash: false,
   organizationName: 'movpushmov',
   projectName: 'effector-reform',
 
@@ -53,8 +54,6 @@ const config: Config = {
       disableSwitch: true,
       respectPrefersColorScheme: false,
     },
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
     navbar: {
       title: 'effector-reform',
       logo: {
