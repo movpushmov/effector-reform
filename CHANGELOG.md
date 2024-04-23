@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.4](https://github.com/movpushmov/effector-reform/compare/v0.7.3...v0.7.4) (2024-04-23)
+
+### Bug Fixes
+
+- docs ([7d249be](https://github.com/movpushmov/effector-reform/commit/7d249be38d7ed065a9b2a3771fe755b0d90b532e))
+- remove useless type ([295a5e4](https://github.com/movpushmov/effector-reform/commit/295a5e4afb3f2ea8a3c09929206801111ce200fc))
+- rename primary to primitive ([61edcf6](https://github.com/movpushmov/effector-reform/commit/61edcf63d343ef2dd2d6fdb146d8a13f29b50a88))
+
 ## [0.7.3](https://github.com/movpushmov/effector-reform/compare/v0.7.2...v0.7.3) (2024-04-20)
 
 ### Bug Fixes
