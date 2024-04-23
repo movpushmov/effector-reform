@@ -33,26 +33,6 @@ export interface CreateFormOptions<T extends AnySchema> {
   clearOuterErrorsOnSubmit?: boolean;
 }
 
-export type OnNodeHandlers = {
-  onArrayField?: (
-    node: ArrayField<ReadyFieldsGroupSchema>,
-    nodeKey: string,
-    path: string[],
-  ) => void;
-
-  onPrimaryField?: (
-    node: PrimaryField<PrimaryValue>,
-    nodeKey: string,
-    path: string[],
-  ) => void;
-
-  onGroup?: (
-    node: ReadyFieldsGroupSchema,
-    nodeKey: string,
-    path: string[],
-  ) => void;
-};
-
 export type FormValues<T extends ReadyFieldsGroupSchema> = {
   [K in keyof T]: T[K] extends PrimaryField<any>
     ? StoreValue<T[K]['$value']>

@@ -30,10 +30,15 @@ export const FormWithYup = () => {
           value={fields.nick.value}
           onChange={(e) => fields.nick.onChange(e.currentTarget.value)}
         />
+
+        <p>nick error: {fields.nick.error}</p>
+
         <input
           value={fields.email.value}
           onChange={(e) => fields.email.onChange(e.currentTarget.value)}
         />
+
+        <p>email error: {fields.email.error}</p>
       </form>
     </>
   );

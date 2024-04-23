@@ -7,7 +7,7 @@ const form = createForm({
   schema: { a: '' },
   validation: zodAdapter(
     z.object({
-      a: z.string().min(5, 'msg'),
+      a: z.string().min(5, 'min 5'),
     }),
   ),
 });
@@ -22,6 +22,8 @@ export const FormWithZod = () => {
           value={fields.a.value}
           onChange={(e) => fields.a.onChange(e.currentTarget.value)}
         />
+
+        <p>error: {fields.a.error}</p>
       </form>
     </>
   );
