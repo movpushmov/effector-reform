@@ -32,3 +32,9 @@ npm i @effector-reform/react
 ```
 npm i @effector-reform/yup
 ```
+
+#### Zod validation schema adapter
+
+```
+npm i @effector-reform/zod
+```
