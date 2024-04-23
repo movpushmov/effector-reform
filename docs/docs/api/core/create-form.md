@@ -77,7 +77,7 @@ form.submit();
 
 | name                  | type                                      | description                                                                                             |
 |-----------------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| fields                | `Fields`                                  | contains fields or form (you can access only primary fields api, groups or array field top api          |
+| fields                | `Fields`                                  | contains fields of form (you can access only primary fields api, groups or array field top api          |
 | $values               | `Store<Values>`                           | contains values of fields                                                                               |
 | $errors               | `Store<Errors>`                           | contains error of fields (***Note:*** array field errors stored in format `{ error: null, errors: [] }` |
 | $isValid              | `Store<boolean>`                          | is all fields in form valid                                                                             |
