@@ -1,5 +1,5 @@
 .heroBanner {
-  padding: 8rem 0;
+  padding: 8rem 0 4rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -10,6 +10,19 @@
 .action {
   background-color: var(--ifm-color-primary-dark);
   color: white;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.examples-link {
+  font-size: 18px !important;
+  margin-top: 12px !important;
 }
 
 .cards {
