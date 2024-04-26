@@ -7,34 +7,13 @@ Forms without a headache
 > Highly not recommended to use this
 > library in production.
 
-## Installation
+## Documentation
 
-> [!NOTE]
-> You can use any package manager
+For additional information, guides and api reference visit [documentation site](https://movpushmov.github.io/effector-reform/)
 
-#### Core
+## Packages
 
-```
-npm i @effector-reform/core
-```
-
-and then follow this [instructions](https://effector.dev/en/api/effector/babel-plugin/#factories)
-(add `@effector-reform/core` in factories list)
-
-#### React
-
-```
-npm i @effector-reform/react
-```
-
-#### Yup validation schema adapter
-
-```
-npm i @effector-reform/yup
-```
-
-#### Zod validation schema adapter
-
-```
-npm i @effector-reform/zod
-```
+- [@effector-reform/core](https://www.npmjs.com/package/@effector-reform/core)
+- [@effector-reform/react](https://www.npmjs.com/package/@effector-reform/react)
+- [@effector-reform/yup](https://www.npmjs.com/package/@effector-reform/yup)
+- [@effector-reform/zod](https://www.npmjs.com/package/@effector-reform/zod)
