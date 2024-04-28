@@ -83,9 +83,9 @@ function Form() {
 | isValid             | `boolean`                                     | is form valid                                                                              |
 | isDirty             | `boolean`                                     | is form changed                                                                            |
 | isValidationPending | `boolean`                                     | is validating                                                                              |
-| submit              | `() => void`                                  | submit form                                                                                |
-| validate            | `() => void`                                  | validate form                                                                              |
-| reset               | `() => void`                                  | reset form values                                                                          |
+| onSubmit            | `() => void`                                  | submit form                                                                                |
+| onValidate          | `() => void`                                  | validate form                                                                              |
+| onReset             | `() => void`                                  | reset form values                                                                          |
 | setValues           | `(payload: Values) => void`                   | change values                                                                              |
 | setErrors           | `(payload: ErrorsSchemaPayload) => void`      | set outer errors                                                                           |
 | setPartialValues    | `(payload: PartialRecursive<Values>) => void` | partially change values                                                                    |
@@ -105,20 +105,20 @@ function Form() {
 
 #### ReactField (Array)
 
-| name        | type                                                        | description                                             |
-|-------------|-------------------------------------------------------------|---------------------------------------------------------|
-| values      | `(T extends ReadyFieldsGroupSchema ? ReactFields<T> : T)[]` | array field values                                      |
-| error       | `FieldError`                                                | array field error                                       |
-| isValid     | `boolean`                                                   | is array field valid                                    |
-| isDirty     | `boolean`                                                   | is array field changed                                  |
-| reset       | `() => void`                                                | reset array field values                                |
-| change      | `(values: Payload[]) => void`                               | change array field values                               |
-| changeError | `(error: FieldError) => void`                               | change array field outer error                          |
-| push        | `(payload: PushPayload<Payload>) => void`                   | push item [reference](../core/create-array-field)       |
-| swap        | `(payload: SwapPayload) => void`                            | swap items [reference](../core/create-array-field)      |
-| move        | `(payload: MovePayload) => void`                            | move item [reference](../core/create-array-field)       |
-| insert      | `(payload: InsertOrReplacePayload<Payload>) => void`        | insert item [reference](../core/create-array-field)     |
-| unshift     | `(payload: UnshiftPayload<Payload>) => void`                | unshift item(s) [reference](../core/create-array-field) |
-| remove      | `(payload: RemovePayload) => void`                          | remove item [reference](../core/create-array-field)     |
-| pop         | `(payload: void) => void`                                   | pop item [reference](../core/create-array-field)        |
-| replace     | `(payload: InsertOrReplacePayload<Payload>) => void`        | replace item [reference](../core/create-array-field)    |
+| name          | type                                                        | description                                             |
+|---------------|-------------------------------------------------------------|---------------------------------------------------------|
+| values        | `(T extends ReadyFieldsGroupSchema ? ReactFields<T> : T)[]` | array field values                                      |
+| error         | `FieldError`                                                | array field error                                       |
+| isValid       | `boolean`                                                   | is array field valid                                    |
+| isDirty       | `boolean`                                                   | is array field changed                                  |
+| onReset       | `() => void`                                                | reset array field values                                |
+| onChange      | `(values: Payload[]) => void`                               | change array field values                               |
+| onChangeError | `(error: FieldError) => void`                               | change array field outer error                          |
+| onPush        | `(payload: PushPayload<Payload>) => void`                   | push item [reference](../core/create-array-field)       |
+| onSwap        | `(payload: SwapPayload) => void`                            | swap items [reference](../core/create-array-field)      |
+| onMove        | `(payload: MovePayload) => void`                            | move item [reference](../core/create-array-field)       |
+| onInsert      | `(payload: InsertOrReplacePayload<Payload>) => void`        | insert item [reference](../core/create-array-field)     |
+| onUnshift     | `(payload: UnshiftPayload<Payload>) => void`                | unshift item(s) [reference](../core/create-array-field) |
+| onRemove      | `(payload: RemovePayload) => void`                          | remove item [reference](../core/create-array-field)     |
+| onPop         | `(payload: void) => void`                                   | pop item [reference](../core/create-array-field)        |
+| onReplace     | `(payload: InsertOrReplacePayload<Payload>) => void`        | replace item [reference](../core/create-array-field)    |

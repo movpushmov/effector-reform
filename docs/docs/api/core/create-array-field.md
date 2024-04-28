@@ -79,7 +79,7 @@ field.change([{ names: createArrayField<string>(['John']) }])
 | remove       | `EventCallable<RemovePayload>`                               | remove item by index, like:<br/>`field.remove({ index: 10 })`                                       |
 | pop          | `EventCallable<void>`                                        | pop item (remove last element), like:<br/>`field.pop()`                                             |
 | replace      | `EventCallable<InsertOrReplacePayload<T>>`                   | replace item by index, like:<br/>`field.replace({ index: 2, value: 10 })`                           |
-| reset        | `EventCallable<void>`                                        | reset field values                                                                                  |
+| reset        | `EventCallable<{ values: U; error: FieldError }>`            | reset field values                                                                                  |
 | changed      | `Event<U[]>`                                                 | triggered when values changed                                                                       |
 | errorChanged | `Event<FieldError>`                                          | triggered when outer or inner error changed                                                         |
 | pushed       | `Event<{ params: PushPayload<T>; result: U[] }>`             | triggered when pushed                                                                               |
