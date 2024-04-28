@@ -35,10 +35,10 @@ export const BaseForm = () => {
         <p>array field</p>
         <div>
           {fields.c.values.map((num, index) => (
-            <span onClick={() => fields.c.remove({ index })}>{num}</span>
+            <span onClick={() => fields.c.onRemove({ index })}>{num}</span>
           ))}
 
-          <button type="button" onClick={() => fields.c.push(Math.random())}>
+          <button type="button" onClick={() => fields.c.onPush(Math.random())}>
             add num
           </button>
         </div>
@@ -58,7 +58,7 @@ export const BaseForm = () => {
             />
           ))}
 
-          <button type="button" onClick={() => fields.d.f.push({ name: '' })}>
+          <button type="button" onClick={() => fields.d.f.onPush({ name: '' })}>
             add friend
           </button>
         </div>
