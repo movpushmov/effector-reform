@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/movpushmov/effector-reform/compare/v0.7.5...v0.8.0) (2024-04-28)
+
+### Bug Fixes
+
+- batching & improve tests ([3e2e714](https://github.com/movpushmov/effector-reform/commit/3e2e714075888df685e507136b6bf5eef917c385))
+
+### Features
+
+- fix docs & improve memory work & fix batching ([3af3284](https://github.com/movpushmov/effector-reform/commit/3af32842cadd5567fb63080dfc89dc0e00daac2c))
+
 ## [0.7.5](https://github.com/movpushmov/effector-reform/compare/v0.7.4...v0.7.5) (2024-04-26)
 
 ### Bug Fixes
