@@ -1,13 +1,12 @@
 import { ReadyFieldsGroupSchema } from '../fields-group';
 import type { ArrayField } from './types';
 import {
-  PrimitiveField,
   PrimitiveValue,
   isPrimitiveValue,
   primitiveFieldSymbol,
 } from '../primitive-field';
 import { arrayFieldSymbol } from './symbol';
-import { InnerArrayFieldApi, InnerFieldApi } from '../types';
+import { InnerArrayFieldApi } from '../types';
 import { clearUnits } from '../../utils';
 import { clearPrimitiveFieldMemory } from '../primitive-field/utils';
 
@@ -28,40 +27,43 @@ export function filterUnused<T>(arr: T[], newArr: T[]) {
 export function clearArrayFieldMemory(field: ArrayField<any>, deep = false) {
   const api = field as ArrayField<any> & InnerArrayFieldApi;
 
-  clearUnits([
-    api.$values,
-    api.$error,
-    api.change,
-    api.changed,
-    api.changeError,
-    api.errorChanged,
-    api.insert,
-    api.inserted,
-    api.move,
-    api.moved,
-    api.pop,
-    api.popped,
-    api.push,
-    api.pushed,
-    api.remove,
-    api.removed,
-    api.replace,
-    api.replaced,
-    api.swap,
-    api.swapped,
-    api.unshift,
-    api.unshifted,
-    api.clear,
-    api.cleared,
-    api.reset,
-    api.resetCompleted,
-    api.setInnerError,
-    api.batchedSetValue,
-    api.batchedSetOuterError,
-    api.batchedSetInnerError,
-    api.batchedClear,
-    api.batchedReset,
-  ]);
+  clearUnits(
+    [
+      api.$values,
+      api.$error,
+      api.change,
+      api.changed,
+      api.changeError,
+      api.errorChanged,
+      api.insert,
+      api.inserted,
+      api.move,
+      api.moved,
+      api.pop,
+      api.popped,
+      api.push,
+      api.pushed,
+      api.remove,
+      api.removed,
+      api.replace,
+      api.replaced,
+      api.swap,
+      api.swapped,
+      api.unshift,
+      api.unshifted,
+      api.clear,
+      api.cleared,
+      api.reset,
+      api.resetCompleted,
+      api.setInnerError,
+      api.batchedSetValue,
+      api.batchedSetOuterError,
+      api.batchedSetInnerError,
+      api.batchedClear,
+      api.batchedReset,
+    ],
+    deep,
+  );
 }
 
 export function clearArrayFieldValuesMemory(

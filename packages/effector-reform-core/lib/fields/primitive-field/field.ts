@@ -126,6 +126,11 @@ export function createField<T extends PrimitiveValue>(
     target: spread({ value: $value, error: $outerError, isDirty: $isDirty }),
   });
 
+  sample({
+    clock: [reset, batchedReset],
+    target: resetCompleted,
+  });
+
   return {
     type: primitiveFieldSymbol,
 

@@ -1,9 +1,16 @@
 import type { FormApi } from '../mapper';
-import { createBatchTask } from '../batching';
+import { BatchInfo, createBatchTask } from '../batching';
+import { EventCallable } from 'effector';
 
-export function clearFormErrors(formApi: FormApi, mode: 'inner' | 'outer') {
+export function clearFormErrors(
+  formApi: FormApi,
+  addBatchTask: EventCallable<BatchInfo>,
+  mode: 'inner' | 'outer',
+) {
   const keys = Object.keys(formApi);
   const task = createBatchTask(keys, 'errors');
+
+  addBatchTask(task);
 
   for (const apiKey of keys) {
     const api = formApi[apiKey];

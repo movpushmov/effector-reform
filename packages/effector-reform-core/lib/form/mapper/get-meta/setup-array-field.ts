@@ -10,7 +10,7 @@ import { MapFn, This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
 import { clearArrayFieldMemory } from '../../../fields/array-field/utils';
 import { clearUnits } from '../../../utils';
-import { combineEvents, spread } from 'patronum';
+import { combineEvents } from 'patronum';
 import { getArrayFieldApi } from '../../helpers/form-api';
 
 interface Props {
@@ -87,6 +87,37 @@ export function setupArrayField(
     },
   );
 
+  const clearFx = createEffect<{ batchInfo?: { id: string } }, void>(() => {
+    getArrayFieldApi(this.api, apiKey).clearValuesMemory();
+
+    resultValuesNode[key] = [];
+    resultErrorsNode[key] = {
+      error: null,
+      errors: [],
+    };
+  });
+
+  const resetFx = createEffect(
+    ({
+      error,
+      values,
+    }: {
+      values: any[];
+      error: FieldError;
+      batchInfo?: { id: string };
+    }) => {
+      getArrayFieldApi(this.api, apiKey).clearValuesMemory();
+
+      resultValuesNode[key] = [];
+      resultErrorsNode[key] = {
+        error: error,
+        errors: [],
+      };
+
+      mapValues(values);
+    },
+  );
+
   // not batched flow
   sample({
     clock: [
@@ -116,36 +147,36 @@ export function setupArrayField(
   });
 
   sample({
-    clock: [
-      combineEvents([field.clear, field.cleared]),
-      combineEvents([field.reset, field.resetCompleted]),
-    ],
+    clock: combineEvents([field.reset, field.resetCompleted]),
     source: [field.$values, field.$error] as const,
     fn: ([values, error]) => ({
-      changeValues: { values },
-      changeError: { error },
+      values,
+      error,
     }),
-    target: spread({
-      changeValues: changeValuesFx,
-      changeError: changeErrorFx,
-    }),
+    target: resetFx,
+  });
+
+  sample({
+    clock: combineEvents([field.clear, field.cleared]),
+    fn: () => ({}),
+    target: clearFx,
   });
 
   // batched flow
   sample({
-    clock: [
-      combineEvents([field.batchedClear, field.cleared]),
-      combineEvents([field.batchedReset, field.resetCompleted]),
-    ],
-    source: [field.$values, field.$error] as const,
-    fn: ([values, error], [{ '@@batchInfo': batchInfo }]) => ({
-      changeValues: { values, batchInfo },
-      changeError: { error, batchInfo },
+    clock: combineEvents([field.batchedClear, field.cleared]),
+    fn: ([{ '@@batchInfo': batchInfo }]) => ({ batchInfo }),
+    target: clearFx,
+  });
+
+  sample({
+    clock: combineEvents([field.batchedReset, field.resetCompleted]),
+    fn: ([{ '@@batchInfo': batchInfo }, { values, error }]) => ({
+      values,
+      error,
+      batchInfo,
     }),
-    target: spread({
-      changeValues: changeValuesFx,
-      changeError: changeErrorFx,
-    }),
+    target: resetFx,
   });
 
   sample({
@@ -156,12 +187,18 @@ export function setupArrayField(
   });
 
   sample({
-    clock: [
-      combineEvents([field.batchedSetInnerError, field.errorChanged]),
-      combineEvents([field.batchedSetOuterError, field.errorChanged]),
-    ],
-    source: field.$error,
-    fn: (error, [{ '@@batchInfo': batchInfo }]) => ({ error, batchInfo }),
+    clock: field.batchedSetInnerError,
+    source: field.$outerError,
+    fn: (outerError, { value, '@@batchInfo': batchInfo }) => ({
+      error: outerError ?? value,
+      batchInfo,
+    }),
+    target: changeErrorFx,
+  });
+
+  sample({
+    clock: field.batchedSetOuterError,
+    fn: ({ value: error, '@@batchInfo': batchInfo }) => ({ error, batchInfo }),
     target: changeErrorFx,
   });
 
@@ -176,7 +213,12 @@ export function setupArrayField(
   });
 
   sample({
-    clock: [changeValuesFx.done, changeErrorFx.done],
+    clock: [
+      changeValuesFx.done,
+      changeErrorFx.done,
+      resetFx.done,
+      clearFx.done,
+    ],
     filter: ({ params }) => !!params.batchInfo,
     fn: ({ params }) => ({
       fieldPath: apiKey,
@@ -209,7 +251,7 @@ export function setupArrayField(
 
     clearMemory: () => {
       clearArrayFieldMemory(field, true);
-      clearUnits([changeErrorFx, changeValuesFx], true);
+      clearUnits([changeErrorFx, changeValuesFx, clearFx, resetFx], true);
     },
 
     clearValuesMemory: () => {

@@ -18,7 +18,7 @@ import type {
   CreateArrayFieldOptions,
   ArrayFieldItemType,
 } from './types';
-import { combineEvents, spread } from 'patronum';
+import { spread } from 'patronum';
 import {
   FieldBatchedPayload,
   FieldBatchedSetter,
@@ -134,7 +134,7 @@ export function createArrayField<
     name: '<inner field error>',
   });
 
-  const $outerError = createStore<FieldError>(null, {
+  const $outerError = createStore<FieldError>(overrides?.error ?? null, {
     name: '<outer field error>',
   });
 
@@ -156,7 +156,7 @@ export function createArrayField<
   const changed = createEvent<Values>();
 
   const reset = createEvent();
-  const resetCompleted = createEvent();
+  const resetCompleted = createEvent<{ values: Values; error: FieldError }>();
 
   const clear = createEvent();
   const cleared = createEvent();
@@ -206,7 +206,7 @@ export function createArrayField<
     effect: async (values, newValues: Values): Promise<Values> => {
       await clearNodesFx(filterUnused(values, newValues));
 
-      return newValues;
+      return [...newValues];
     },
   });
 
@@ -228,18 +228,26 @@ export function createArrayField<
 
   sample({
     clock: [reset, batchedReset],
-    fn: () => getDefaultValues(),
-    target: syncFx,
+    fn: () => {
+      const values = getDefaultValues();
+      const error = overrides?.error ?? null;
+
+      return {
+        sync: values,
+        completed: { values, error },
+        error,
+      };
+    },
+    target: spread({
+      sync: syncFx,
+      completed: resetCompleted,
+      error: $outerError,
+    }),
   });
 
   sample({
     clock: [clear, batchedClear],
     target: cleared,
-  });
-
-  sample({
-    clock: [reset, batchedReset],
-    target: resetCompleted,
   });
 
   const pushFx = attach({
@@ -491,6 +499,7 @@ export function createArrayField<
     fn: (payload) => payload.value,
     target: $innerError,
   });
+
   sample({
     clock: batchedSetOuterError,
     fn: (payload) => payload.value,

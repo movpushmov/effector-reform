@@ -3,7 +3,7 @@ import { createEffect, sample } from 'effector';
 import { Node } from '../types';
 import { This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
-import { combineEvents, spread } from 'patronum';
+import { combineEvents } from 'patronum';
 import { clearPrimitiveFieldMemory } from '../../../fields/primitive-field/utils';
 import { clearUnits } from '../../../utils';
 
@@ -43,6 +43,20 @@ export function setupPrimitiveField(
     },
   );
 
+  const resetFx = createEffect(
+    ({
+      value,
+      error,
+    }: {
+      value: any;
+      error: FieldError;
+      batchInfo?: { id: string };
+    }) => {
+      resultValuesNode[key] = value;
+      resultErrorsNode[key] = error;
+    },
+  );
+
   // not batched changes flow
   sample({
     clock: combineEvents([field.changeError, field.errorChanged]),
@@ -57,19 +71,15 @@ export function setupPrimitiveField(
   });
 
   sample({
-    clock: [combineEvents([field.reset, field.resetCompleted])],
+    clock: combineEvents([field.reset, field.resetCompleted]),
     source: [field.$value, field.$error],
     fn: ([value, error]) => ({
-      value: { value },
-      error: { error },
+      value,
+      error,
     }),
-    target: spread({
-      value: changeValueFx,
-      error: changeErrorFx,
-    }),
+    target: resetFx,
   });
 
-  // not batched update field samples
   sample({
     clock: changeValueFx.done,
     filter: ({ params }) => !params.batchInfo,
@@ -90,14 +100,30 @@ export function setupPrimitiveField(
     target: this.schemaUpdated,
   });
 
+  sample({
+    clock: resetFx.done,
+    filter: ({ params }) => !params.batchInfo,
+    fn: (): FieldInteractionEventPayload => ({
+      fieldPath: apiKey,
+      type: 'all',
+    }),
+    target: this.schemaUpdated,
+  });
+
   // batched changes flow
   sample({
-    clock: combineEvents([field.batchedSetInnerError, field.errorChanged]),
-    source: field.$error,
-    fn: (error, [{ '@@batchInfo': batchInfo }]) => ({
-      error,
+    clock: field.batchedSetInnerError,
+    source: field.$outerError,
+    fn: (outerError, { value, '@@batchInfo': batchInfo }) => ({
+      error: outerError ?? value,
       batchInfo,
     }),
+    target: changeErrorFx,
+  });
+
+  sample({
+    clock: field.batchedSetOuterError,
+    fn: ({ value: error, '@@batchInfo': batchInfo }) => ({ error, batchInfo }),
     target: changeErrorFx,
   });
 
@@ -112,20 +138,18 @@ export function setupPrimitiveField(
   });
 
   sample({
-    clock: [combineEvents([field.batchedReset, field.resetCompleted])],
+    clock: combineEvents([field.batchedReset, field.resetCompleted]),
     source: [field.$value, field.$error],
     fn: ([value, error], [{ '@@batchInfo': batchInfo }]) => ({
-      value: { value, batchInfo },
-      error: { error, batchInfo },
+      value,
+      error,
+      batchInfo,
     }),
-    target: spread({
-      value: changeValueFx,
-      error: changeErrorFx,
-    }),
+    target: resetFx,
   });
 
   sample({
-    clock: [changeValueFx.done, changeErrorFx.done],
+    clock: [changeValueFx.done, changeErrorFx.done, resetFx.done],
     filter: ({ params }) => !!params.batchInfo,
     fn: ({ params }) => ({
       fieldPath: apiKey,
@@ -153,7 +177,7 @@ export function setupPrimitiveField(
 
     clearMemory: () => {
       clearPrimitiveFieldMemory(field, true);
-      clearUnits([changeValueFx, changeErrorFx], true);
+      clearUnits([changeValueFx, changeErrorFx, resetFx], true);
     },
 
     batchedSetValue: field.batchedSetValue,

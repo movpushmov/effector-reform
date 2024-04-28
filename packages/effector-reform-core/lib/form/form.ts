@@ -53,17 +53,17 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const clearOuterErrorsFx = attach({
     source: $api,
-    effect: (api) => clearFormErrors(api, 'outer'),
+    effect: (api) => clearFormErrors(api, addBatchTask, 'outer'),
   });
 
   const clearInnerErrorsFx = attach({
     source: $api,
-    effect: (api) => clearFormErrors(api, 'inner'),
+    effect: (api) => clearFormErrors(api, addBatchTask, 'inner'),
   });
 
   const resetFx = attach({
     source: $api,
-    effect: resetForm,
+    effect: (api) => resetForm(api, addBatchTask),
   });
 
   const setValuesFx = attach({

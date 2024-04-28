@@ -1,5 +1,5 @@
 export type BatchInfo = {
   fields: string[];
   id: string;
-  type: 'values' | 'errors' | 'all';
+  type: 'values' | 'errors' | 'reset' | 'all';
 };

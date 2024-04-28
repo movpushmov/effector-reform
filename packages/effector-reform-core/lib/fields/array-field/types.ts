@@ -32,7 +32,7 @@ export interface ArrayFieldApi<T extends ArrayFieldItemType, U> {
 
   changed: Event<U[]>;
   cleared: EventCallable<void>;
-  resetCompleted: EventCallable<void>;
+  resetCompleted: EventCallable<{ values: U[]; error: FieldError }>;
   errorChanged: Event<FieldError>;
   pushed: Event<{ params: PushPayload<T>; result: U[] }>;
   swapped: Event<{ params: SwapPayload; result: U[] }>;
@@ -89,6 +89,7 @@ export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
 }
 
 export interface CreateArrayFieldOptions {
+  error?: FieldError;
   forkOnCreateForm?: boolean;
   clearOuterErrorOnChange?: boolean;
 }
