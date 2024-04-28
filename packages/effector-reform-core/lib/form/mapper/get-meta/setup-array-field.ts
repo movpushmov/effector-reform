@@ -9,8 +9,7 @@ import { Node } from '../types';
 import { MapFn, This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
 import { clearArrayFieldMemory } from '../../../fields/array-field/utils';
-import { clearUnits } from '../../../utils';
-import { combineEvents } from 'patronum';
+import { clearUnits, inOrder } from '../../../utils';
 import { getArrayFieldApi } from '../../helpers/form-api';
 
 interface Props {
@@ -121,8 +120,8 @@ export function setupArrayField(
   // not batched flow
   sample({
     clock: [
-      combineEvents([field.setInnerError, field.errorChanged]),
-      combineEvents([field.changeError, field.errorChanged]),
+      inOrder([field.setInnerError, field.errorChanged]),
+      inOrder([field.changeError, field.errorChanged]),
     ],
     source: field.$error,
     fn: (error) => ({ error }),
@@ -131,23 +130,22 @@ export function setupArrayField(
 
   sample({
     clock: [
-      combineEvents([field.change, field.changed]),
-      combineEvents([field.pushed, field.changed]),
-      combineEvents([field.swapped, field.changed]),
-      combineEvents([field.moved, field.changed]),
-      combineEvents([field.inserted, field.changed]),
-      combineEvents([field.unshifted, field.changed]),
-      combineEvents([field.removed, field.changed]),
-      combineEvents([field.popped, field.changed]),
-      combineEvents([field.replaced, field.changed]),
+      inOrder([field.change, field.changed]),
+      inOrder([field.pushed, field.changed]),
+      inOrder([field.swapped, field.changed]),
+      inOrder([field.moved, field.changed]),
+      inOrder([field.inserted, field.changed]),
+      inOrder([field.unshifted, field.changed]),
+      inOrder([field.removed, field.changed]),
+      inOrder([field.popped, field.changed]),
+      inOrder([field.replaced, field.changed]),
     ],
-    source: field.$values,
-    fn: (values) => ({ values }),
+    fn: ([, values]) => ({ values }),
     target: changeValuesFx,
   });
 
   sample({
-    clock: combineEvents([field.reset, field.resetCompleted]),
+    clock: inOrder([field.reset, field.resetCompleted]),
     source: [field.$values, field.$error] as const,
     fn: ([values, error]) => ({
       values,
@@ -157,20 +155,20 @@ export function setupArrayField(
   });
 
   sample({
-    clock: combineEvents([field.clear, field.cleared]),
+    clock: inOrder([field.clear, field.cleared]),
     fn: () => ({}),
     target: clearFx,
   });
 
   // batched flow
   sample({
-    clock: combineEvents([field.batchedClear, field.cleared]),
+    clock: inOrder([field.batchedClear, field.cleared]),
     fn: ([{ '@@batchInfo': batchInfo }]) => ({ batchInfo }),
     target: clearFx,
   });
 
   sample({
-    clock: combineEvents([field.batchedReset, field.resetCompleted]),
+    clock: inOrder([field.batchedReset, field.resetCompleted]),
     fn: ([{ '@@batchInfo': batchInfo }, { values, error }]) => ({
       values,
       error,
@@ -180,7 +178,7 @@ export function setupArrayField(
   });
 
   sample({
-    clock: combineEvents([field.batchedSetValue, field.changed]),
+    clock: inOrder([field.batchedSetValue, field.changed]),
     source: field.$values,
     fn: (values, [{ '@@batchInfo': batchInfo }]) => ({ values, batchInfo }),
     target: changeValuesFx,

@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DefaultFormComponent } from '../components/default';
 import { ValidatedFormComponent } from '../components/validated';
+import { ArrayFieldForm } from '../components/array-field';
 
 describe('useForm', () => {
   test('value change', async () => {
@@ -50,5 +51,24 @@ describe('useForm', () => {
     expect(input.value).toBe('abcdefgh');
     expect(valueP.textContent).toBe('abcdefgh');
     expect(errorP.textContent).toBe('length must be lower than 4');
+  });
+
+  test.only('array field form works correctly', async () => {
+    console.error = () => {};
+    const { container } = render(<ArrayFieldForm />);
+
+    const addButton = container.querySelector(
+      'button[data-testid="add-button"]',
+    ) as HTMLButtonElement;
+
+    await userEvent.click(addButton);
+    await userEvent.click(addButton);
+    await userEvent.click(addButton);
+
+    expect(container.querySelectorAll('button[data-index]').length).toBe(3);
+
+    await userEvent.click(container.querySelector('button[data-index="1"]')!);
+
+    expect(container.querySelectorAll('button[data-index]').length).toBe(2);
   });
 });

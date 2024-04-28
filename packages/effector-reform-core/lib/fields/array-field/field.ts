@@ -152,54 +152,62 @@ export function createArrayField<
   const batchedClear = createEvent<FieldBatchedPayload>();
   const batchedReset = createEvent<FieldBatchedPayload>();
 
-  const change = createEvent<T[]>();
-  const changed = createEvent<Values>();
+  const change = createEvent<T[]>('<field change>');
+  const changed = createEvent<Values>('<field changed>');
 
-  const reset = createEvent();
-  const resetCompleted = createEvent<{ values: Values; error: FieldError }>();
+  const reset = createEvent('<field reset>');
+  const resetCompleted = createEvent<{ values: Values; error: FieldError }>(
+    '<field resetCompleted>',
+  );
 
-  const clear = createEvent();
-  const cleared = createEvent();
+  const clear = createEvent('<field clear>');
+  const cleared = createEvent('<field cleared>');
 
-  const setInnerError = createEvent<FieldError>();
-  const changeError = createEvent<FieldError>();
-  const errorChanged = createEvent<FieldError>();
+  const setInnerError = createEvent<FieldError>('<field setInnerError>');
+  const changeError = createEvent<FieldError>('<field changeError>');
+  const errorChanged = createEvent<FieldError>('<field errorChanged>');
 
-  const push = createEvent<PushPayload<T>>();
+  const push = createEvent<PushPayload<T>>('<field push>');
   const pushed = createEvent<{
     params: PushPayload<T>;
     result: Values;
   }>();
 
-  const swap = createEvent<SwapPayload>();
-  const swapped = createEvent<{ params: SwapPayload; result: Values }>();
+  const swap = createEvent<SwapPayload>('<field swap>');
+  const swapped = createEvent<{ params: SwapPayload; result: Values }>(
+    '<field swap>',
+  );
 
-  const move = createEvent<MovePayload>();
-  const moved = createEvent<{ params: MovePayload; result: Values }>();
+  const move = createEvent<MovePayload>('<field move>');
+  const moved = createEvent<{ params: MovePayload; result: Values }>(
+    '<field moved>',
+  );
 
-  const insert = createEvent<InsertOrReplacePayload<T>>();
+  const insert = createEvent<InsertOrReplacePayload<T>>('<field insert>');
   const inserted = createEvent<{
     params: InsertOrReplacePayload<T>;
     result: Values;
-  }>();
+  }>('<field inserted>');
 
-  const unshift = createEvent<UnshiftPayload<T>>();
+  const unshift = createEvent<UnshiftPayload<T>>('<field unshift>');
   const unshifted = createEvent<{
     params: UnshiftPayload<T>;
     result: Values;
-  }>();
+  }>('<field unshifted>');
 
-  const remove = createEvent<RemovePayload>();
-  const removed = createEvent<{ params: RemovePayload; result: Values }>();
+  const remove = createEvent<RemovePayload>('<field remove>');
+  const removed = createEvent<{ params: RemovePayload; result: Values }>(
+    '<field removed>',
+  );
 
-  const pop = createEvent<void>();
-  const popped = createEvent<Values>();
+  const pop = createEvent<void>('<field pop>');
+  const popped = createEvent<Values>('<field popped>');
 
-  const replace = createEvent<InsertOrReplacePayload<T>>();
+  const replace = createEvent<InsertOrReplacePayload<T>>('<field replace>');
   const replaced = createEvent<{
     params: InsertOrReplacePayload<T>;
     result: Values;
-  }>();
+  }>('<field replaced>');
 
   const syncFx = attach({
     source: $values,
@@ -208,6 +216,7 @@ export function createArrayField<
 
       return [...newValues];
     },
+    name: 'syncFx',
   });
 
   if (clearOuterErrorOnChange) {
@@ -254,6 +263,7 @@ export function createArrayField<
     source: $values,
     effect: (values, payload: PushPayload<T>) =>
       values.concat(preparePayload(payload)),
+    name: 'pushFx',
   });
 
   const swapFx = attach({
@@ -268,6 +278,7 @@ export function createArrayField<
 
       return newValues;
     },
+    name: 'swapFx',
   });
 
   const moveFx = attach({
@@ -278,6 +289,7 @@ export function createArrayField<
 
       return newValues;
     },
+    name: 'moveFx',
   });
 
   const insertFx = attach({
@@ -288,6 +300,7 @@ export function createArrayField<
 
       return newValues;
     },
+    name: 'insertFx',
   });
 
   const unshiftFx = attach({
@@ -298,6 +311,7 @@ export function createArrayField<
 
       return newValues;
     },
+    name: 'unshiftFx',
   });
 
   const removeFx = attach({
@@ -308,6 +322,7 @@ export function createArrayField<
 
       return newValues;
     },
+    name: 'removeFx',
   });
 
   const popFx = attach({
@@ -318,6 +333,7 @@ export function createArrayField<
 
       return newValues;
     },
+    name: 'popFx',
   });
 
   const replaceFx = attach({
@@ -328,6 +344,7 @@ export function createArrayField<
 
       return newValues;
     },
+    name: 'replaceFx',
   });
 
   sample({

@@ -34,9 +34,11 @@ export const BaseForm = () => {
 
         <p>array field</p>
         <div>
-          {fields.c.values.map((num, index) => (
-            <span onClick={() => fields.c.onRemove({ index })}>{num}</span>
-          ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {fields.c.values.map((num, index) => (
+              <span onClick={() => fields.c.onRemove({ index })}>{num}</span>
+            ))}
+          </div>
 
           <button type="button" onClick={() => fields.c.onPush(Math.random())}>
             add num
@@ -51,12 +53,14 @@ export const BaseForm = () => {
 
         <p>array with subfields</p>
         <div>
-          {fields.d.f.values.map((group) => (
-            <input
-              value={group.name.value}
-              onChange={(e) => group.name.onChange(e.currentTarget.value)}
-            />
-          ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {fields.d.f.values.map((group) => (
+              <input
+                value={group.name.value}
+                onChange={(e) => group.name.onChange(e.currentTarget.value)}
+              />
+            ))}
+          </div>
 
           <button type="button" onClick={() => fields.d.f.onPush({ name: '' })}>
             add friend
