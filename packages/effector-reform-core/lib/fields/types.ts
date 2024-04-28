@@ -1,31 +1,33 @@
-import { Event, EventCallable } from 'effector';
+import { Event, EventCallable, Store } from 'effector';
 import { FormErrors, FormValues } from '../form';
 import { PrimitiveValue } from './primitive-field';
 
 export type FieldError = string | null;
-export type FieldBatchedSetter<T> = {
-  value: T;
+export type FieldBatchedPayload = {
   '@@batchInfo': { id: string; fieldPath: string };
 };
+
+export type FieldBatchedSetter<T> = { value: T } & FieldBatchedPayload;
 
 type FieldInnerBatchSetters<T> = {
   batchedSetInnerError: EventCallable<FieldBatchedSetter<FieldError>>;
   batchedSetOuterError: EventCallable<FieldBatchedSetter<FieldError>>;
   batchedSetValue: EventCallable<FieldBatchedSetter<T>>;
-
-  batchedValueChanged: EventCallable<FieldBatchedSetter<T>>;
-  batchedErrorChanged: EventCallable<FieldBatchedSetter<FieldError>>;
-  notBatchedErrorChanged: EventCallable<FieldError>;
-  notBatchedValueChanged: EventCallable<T>;
+  batchedReset: EventCallable<FieldBatchedPayload>;
 };
 
 export type InnerFieldApi<T = any> = FieldInnerBatchSetters<T> & {
+  $outerError: Store<string>;
+  $innerError: Store<string>;
   setInnerError: EventCallable<FieldError>;
 };
 
 export type InnerArrayFieldApi<T = any> = FieldInnerBatchSetters<T> & {
+  $outerError: Store<string>;
+  $innerError: Store<string>;
   setInnerError: EventCallable<FieldError>;
-  cleared: Event<number[]>;
+
+  batchedClear: EventCallable<FieldBatchedPayload>;
 };
 
 export type PartialRecursive<T extends FormErrors<any> | FormValues<any>> =

@@ -19,7 +19,12 @@ import type {
   ArrayFieldItemType,
 } from './types';
 import { spread } from 'patronum';
-import { FieldBatchedSetter, FieldError, InnerArrayFieldApi } from '../types';
+import {
+  FieldBatchedPayload,
+  FieldBatchedSetter,
+  FieldError,
+  InnerArrayFieldApi,
+} from '../types';
 import {
   AnySchema,
   ReadyFieldsGroupSchema,
@@ -28,7 +33,7 @@ import {
 } from '../fields-group';
 import { PrimitiveValue, isPrimitiveValue } from '../primitive-field';
 import { arrayFieldSymbol } from './symbol';
-import { clearSchemaNode, filterUnused } from './utils';
+import { clearArrayFieldValuesMemory, filterUnused } from './utils';
 import { mapSchema, setFormErrors } from '../../form/mapper';
 import { isPrimitiveJsonValue } from '../primitive-field/utils';
 
@@ -59,16 +64,16 @@ export function createArrayField<
   const options = { ...defaultOptions, ...overrides };
 
   const clearNodesFx = createEffect(
-    ({ nodes, indexes }: ReturnType<typeof filterUnused>) => {
+    ({ nodes }: ReturnType<typeof filterUnused>) => {
       for (const node of nodes) {
         if (isPrimitiveValue(node)) {
           break;
         }
 
-        clearSchemaNode(node as ReadyFieldsGroupSchema | PrimitiveValue);
+        clearArrayFieldValuesMemory(
+          node as ReadyFieldsGroupSchema | PrimitiveValue,
+        );
       }
-
-      return indexes;
     },
   );
 
@@ -129,7 +134,7 @@ export function createArrayField<
     name: '<inner field error>',
   });
 
-  const $outerError = createStore<FieldError>(null, {
+  const $outerError = createStore<FieldError>(overrides?.error ?? null, {
     name: '<outer field error>',
   });
 
@@ -144,14 +149,17 @@ export function createArrayField<
   const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetValue = createEvent<FieldBatchedSetter<T[]>>();
-
-  const notBatchedValueChanged = createEvent<Values>();
-  const notBatchedErrorChanged = createEvent<FieldError>();
-  const batchedErrorChanged = createEvent<FieldBatchedSetter<FieldError>>();
-  const batchedValueChanged = createEvent<FieldBatchedSetter<Values>>();
+  const batchedClear = createEvent<FieldBatchedPayload>();
+  const batchedReset = createEvent<FieldBatchedPayload>();
 
   const change = createEvent<T[]>();
   const changed = createEvent<Values>();
+
+  const reset = createEvent();
+  const resetCompleted = createEvent<{ values: Values; error: FieldError }>();
+
+  const clear = createEvent();
+  const cleared = createEvent();
 
   const setInnerError = createEvent<FieldError>();
   const changeError = createEvent<FieldError>();
@@ -193,17 +201,12 @@ export function createArrayField<
     result: Values;
   }>();
 
-  const clear = createEvent();
-  const cleared = createEvent();
-
-  const reset = createEvent();
-
   const syncFx = attach({
     source: $values,
     effect: async (values, newValues: Values): Promise<Values> => {
       await clearNodesFx(filterUnused(values, newValues));
 
-      return newValues;
+      return [...newValues];
     },
   });
 
@@ -215,15 +218,36 @@ export function createArrayField<
   sample({ clock: syncFx.doneData, target: $values });
 
   sample({
-    clock: clear,
-    fn: () => [],
-    target: [syncFx, cleared],
+    clock: [clear, batchedClear],
+    fn: () => ({ values: [], error: null }),
+    target: spread({
+      values: syncFx,
+      error: $outerError,
+    }),
   });
 
   sample({
-    clock: reset,
-    fn: () => getDefaultValues(),
-    target: syncFx,
+    clock: [reset, batchedReset],
+    fn: () => {
+      const values = getDefaultValues();
+      const error = overrides?.error ?? null;
+
+      return {
+        sync: values,
+        completed: { values, error },
+        error,
+      };
+    },
+    target: spread({
+      sync: syncFx,
+      completed: resetCompleted,
+      error: $outerError,
+    }),
+  });
+
+  sample({
+    clock: [clear, batchedClear],
+    target: cleared,
   });
 
   const pushFx = attach({
@@ -313,24 +337,13 @@ export function createArrayField<
 
   sample({
     clock: batchedSetValue,
-    fn: (payload) => ({ ...payload, value: preparePayload(payload.value) }),
-    target: batchedValueChanged,
-  });
-
-  sample({
-    clock: batchedValueChanged,
-    fn: (payload) => payload.value,
+    fn: (payload) => preparePayload(payload.value),
     target: syncFx,
   });
 
   sample({
     clock: change,
     fn: (payload) => preparePayload(payload),
-    target: notBatchedValueChanged,
-  });
-
-  sample({
-    clock: notBatchedValueChanged,
     target: syncFx,
   });
 
@@ -451,14 +464,12 @@ export function createArrayField<
 
   sample({
     clock: changeError,
-    target: notBatchedErrorChanged,
+    target: $outerError,
   });
 
   sample({
     clock: setInnerError,
-    source: $outerError,
-    fn: (outerError, innerError) => outerError || innerError,
-    target: notBatchedErrorChanged,
+    target: $innerError,
   });
 
   sample({
@@ -485,14 +496,14 @@ export function createArrayField<
 
   sample({
     clock: batchedSetInnerError,
-    source: $outerError,
-    fn: (outerError, info) => ({ ...info, value: outerError || info.value }),
-    target: batchedErrorChanged,
+    fn: (payload) => payload.value,
+    target: $innerError,
   });
 
   sample({
     clock: batchedSetOuterError,
-    target: batchedErrorChanged,
+    fn: (payload) => payload.value,
+    target: $outerError,
   });
 
   sample({
@@ -506,14 +517,13 @@ export function createArrayField<
     batchedSetInnerError,
     batchedSetOuterError,
     batchedSetValue,
-
-    notBatchedErrorChanged,
-    notBatchedValueChanged,
-    batchedErrorChanged,
-    batchedValueChanged,
+    batchedClear,
+    batchedReset,
 
     $values,
     $error,
+    $outerError,
+    $innerError,
 
     $isDirty,
     $isValid,
@@ -534,7 +544,8 @@ export function createArrayField<
     move,
     moved,
 
-    cleared: clearNodesFx.doneData,
+    clear,
+    cleared,
 
     insert,
     inserted,
@@ -552,6 +563,8 @@ export function createArrayField<
     replaced,
 
     reset,
+    resetCompleted,
+
     forkOnCreateForm: options.forkOnCreateForm,
 
     fork: (options?: CreateArrayFieldOptions) =>
@@ -567,7 +580,9 @@ export function createArrayField<
       change,
       changeError,
 
+      clear,
       reset,
+
       push,
       move,
       swap,

@@ -1,5 +1,7 @@
 import { primitiveFieldSymbol } from './symbol';
 import { PrimitiveField, PrimitiveJsonValue, PrimitiveValue } from './types';
+import { InnerFieldApi } from '../types';
+import { clearUnits } from '../../utils';
 
 export function isPrimitiveField(props: any): props is PrimitiveField {
   return 'type' in props && props.type === primitiveFieldSymbol;
@@ -34,5 +36,33 @@ export function isPrimitiveValue(props: any): props is PrimitiveValue {
     props instanceof Int16Array ||
     props instanceof Int32Array ||
     props instanceof BigInt64Array
+  );
+}
+
+export function clearPrimitiveFieldMemory(field: PrimitiveField, deep = false) {
+  const innerApi = field as PrimitiveField & InnerFieldApi;
+
+  clearUnits(
+    [
+      field.$value,
+      field.$error,
+      field.change,
+      field.changeError,
+      field.errorChanged,
+      field.changed,
+      field.cleared,
+      field.clear,
+      field.reset,
+      field.resetCompleted,
+      innerApi.$outerError,
+      innerApi.$innerError,
+      innerApi.setInnerError,
+      innerApi.batchedSetValue,
+      innerApi.batchedSetOuterError,
+      innerApi.batchedSetInnerError,
+      innerApi.batchedClear,
+      innerApi.batchedReset,
+    ],
+    deep,
   );
 }

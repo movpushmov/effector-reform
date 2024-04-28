@@ -15,6 +15,8 @@ export function getCompletedBatchTasks(tasks: Record<string, BatchInfo>) {
         acc.updateType = acc.updateType === 'error' ? 'all' : 'value';
       } else if (info.type === 'errors' && acc.updateType !== 'all') {
         acc.updateType = acc.updateType === 'value' ? 'all' : 'error';
+      } else if (info.type === 'reset' || info.type === 'all') {
+        acc.updateType = 'all';
       }
 
       return acc;

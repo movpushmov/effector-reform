@@ -16,7 +16,7 @@ describe('Array field ssr api', () => {
       values = serialize(scope);
 
       expect(values).toMatchObject({
-        '2n8fgy|eci76e': [
+        [field.$values.sid!]: [
           { values: { a: 5, b: 10 }, errors: { a: null, b: null } },
         ],
       });

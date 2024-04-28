@@ -147,10 +147,6 @@ describe('Form tests', () => {
     expect(mockedFn).toBeCalledTimes(1);
   });
 
-  test.todo('Change primitive fields errors');
-
-  test.todo('Change array field errors');
-
   test.todo('Clear outer errors');
 
   test.todo('Submit');
@@ -209,7 +205,7 @@ describe('Form tests', () => {
     });
   });
 
-  test.todo('Is dirty');
+  test.todo('Is dirty changed');
 
-  test.todo('Is valid');
+  test.todo('Is valid changed');
 });

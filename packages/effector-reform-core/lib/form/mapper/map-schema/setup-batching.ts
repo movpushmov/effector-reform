@@ -31,6 +31,7 @@ export function setupBatching(
     source: $tasks,
     fn: (tasks, { fieldPath, '@@batchInfo': info }) => {
       const task = tasks[info.id];
+
       task.fields = task.fields.filter((f) => f !== fieldPath);
 
       return { ...tasks };

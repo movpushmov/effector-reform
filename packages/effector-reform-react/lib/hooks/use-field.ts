@@ -2,22 +2,46 @@ import {
   ArrayField,
   PrimitiveField,
   isPrimitiveValue,
+  PrimitiveValue,
+  ArrayFieldItemType,
 } from '@effector-reform/core';
 import { useProvidedScope, useUnit } from 'effector-react';
 import { useMemo } from 'react';
-import { getFields } from './utils';
-import type { ReactFields } from '../types';
-import type { StoreValue } from 'effector';
+import { getFields, getPrimitiveField } from './utils';
+import type { ReactArrayFieldApi, ReactPrimitiveFieldApi } from '../types';
 
-export function useField<T extends PrimitiveField<any>>(field: T) {
-  return useUnit(field);
+export function useField<T extends PrimitiveValue>(
+  field: PrimitiveField<T>,
+): ReactPrimitiveFieldApi<T> {
+  useUnit(field);
+
+  return getPrimitiveField(field, useProvidedScope());
 }
 
-export function useArrayField<T extends ArrayField<any>>(field: T) {
-  type Values = ReactFields<StoreValue<T['$values']>[number]>;
+export function useArrayField<
+  T extends ArrayField<any>,
+  Value extends ArrayFieldItemType = T extends ArrayField<any, infer D>
+    ? D
+    : never,
+>(field: T): ReactArrayFieldApi<Value> {
+  type Values = ReactArrayFieldApi<Value>['values'];
 
   const scope = useProvidedScope();
-  const { values, ...params } = useUnit(field);
+  const {
+    values,
+    change,
+    changeError,
+    reset,
+    pop,
+    push,
+    replace,
+    remove,
+    swap,
+    move,
+    unshift,
+    insert,
+    ...params
+  } = useUnit(field);
   const syncedValues = useMemo(
     () =>
       values.map((item) =>
@@ -26,5 +50,19 @@ export function useArrayField<T extends ArrayField<any>>(field: T) {
     [values],
   );
 
-  return { values: syncedValues, ...params };
+  return {
+    values: syncedValues,
+    onChange: change,
+    onChangeError: changeError,
+    onReset: reset,
+    onSwap: swap,
+    onMove: move,
+    onUnshift: unshift,
+    onInsert: insert,
+    onReplace: replace,
+    onRemove: remove,
+    onPop: pop,
+    onPush: push,
+    ...params,
+  };
 }

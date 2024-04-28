@@ -1,11 +1,13 @@
-import { FieldBatchedSetter, FieldError } from '../../fields';
+import {
+  FieldBatchedPayload,
+  FieldBatchedSetter,
+  FieldError,
+} from '../../fields';
 
 export type Node = any;
 
-export type PathApi = {
+export type BasePathApi = {
   reset: () => void;
-  clear: (fullClear?: boolean) => void;
-  clearForErrors: () => void;
 
   clearInnerError: () => void;
   clearOuterError: () => void;
@@ -18,6 +20,25 @@ export type PathApi = {
   batchedSetValue: <T>(info: FieldBatchedSetter<T>) => void;
   batchedSetInnerError: (error: FieldBatchedSetter<FieldError>) => void;
   batchedSetOuterError: (error: FieldBatchedSetter<FieldError>) => void;
+  batchedReset: (info: FieldBatchedPayload) => void;
 };
+
+export type ArrayFieldPathApi = {
+  type: 'array-field';
+
+  clearValuesMemory: () => void;
+  clearMemory: () => void;
+
+  clear: () => void;
+  batchedClear: (info: FieldBatchedPayload) => void;
+} & BasePathApi;
+
+export type PrimitiveFieldPathApi = {
+  type: 'primitive-field';
+
+  clearMemory: () => void;
+} & BasePathApi;
+
+export type PathApi = ArrayFieldPathApi | PrimitiveFieldPathApi;
 
 export type FormApi = Record<string, PathApi>;

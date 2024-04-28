@@ -4,10 +4,14 @@ import {
   InnerArrayFieldApi,
   isPrimitiveValue,
 } from '../../../fields';
-import { clearNode, createEffect, sample } from 'effector';
+import { createEffect, sample } from 'effector';
 import { Node } from '../types';
 import { MapFn, This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
+import { clearArrayFieldMemory } from '../../../fields/array-field/utils';
+import { clearUnits } from '../../../utils';
+import { combineEvents } from 'patronum';
+import { getArrayFieldApi } from '../../helpers/form-api';
 
 interface Props {
   field: ArrayField<any>;
@@ -65,7 +69,7 @@ export function setupArrayField(
 
   const changeValuesFx = createEffect(
     ({ values }: { values: any[]; batchInfo?: { id: string } }) => {
-      this.api[apiKey].clear();
+      getArrayFieldApi(this.api, apiKey).clearValuesMemory();
 
       resultValuesNode[key] = [];
       resultErrorsNode[key] = {
@@ -83,34 +87,119 @@ export function setupArrayField(
     },
   );
 
+  const clearFx = createEffect<{ batchInfo?: { id: string } }, void>(() => {
+    getArrayFieldApi(this.api, apiKey).clearValuesMemory();
+
+    resultValuesNode[key] = [];
+    resultErrorsNode[key] = {
+      error: null,
+      errors: [],
+    };
+  });
+
+  const resetFx = createEffect(
+    ({
+      error,
+      values,
+    }: {
+      values: any[];
+      error: FieldError;
+      batchInfo?: { id: string };
+    }) => {
+      getArrayFieldApi(this.api, apiKey).clearValuesMemory();
+
+      resultValuesNode[key] = [];
+      resultErrorsNode[key] = {
+        error: error,
+        errors: [],
+      };
+
+      mapValues(values);
+    },
+  );
+
+  // not batched flow
   sample({
-    clock: field.notBatchedErrorChanged,
+    clock: [
+      combineEvents([field.setInnerError, field.errorChanged]),
+      combineEvents([field.changeError, field.errorChanged]),
+    ],
+    source: field.$error,
     fn: (error) => ({ error }),
     target: changeErrorFx,
   });
 
   sample({
-    clock: field.notBatchedValueChanged,
+    clock: [
+      combineEvents([field.change, field.changed]),
+      combineEvents([field.pushed, field.changed]),
+      combineEvents([field.swapped, field.changed]),
+      combineEvents([field.moved, field.changed]),
+      combineEvents([field.inserted, field.changed]),
+      combineEvents([field.unshifted, field.changed]),
+      combineEvents([field.removed, field.changed]),
+      combineEvents([field.popped, field.changed]),
+      combineEvents([field.replaced, field.changed]),
+    ],
+    source: field.$values,
     fn: (values) => ({ values }),
     target: changeValuesFx,
   });
 
   sample({
-    clock: field.batchedErrorChanged,
-    fn: ({ value: error, '@@batchInfo': batchInfo }) => ({
+    clock: combineEvents([field.reset, field.resetCompleted]),
+    source: [field.$values, field.$error] as const,
+    fn: ([values, error]) => ({
+      values,
       error,
+    }),
+    target: resetFx,
+  });
+
+  sample({
+    clock: combineEvents([field.clear, field.cleared]),
+    fn: () => ({}),
+    target: clearFx,
+  });
+
+  // batched flow
+  sample({
+    clock: combineEvents([field.batchedClear, field.cleared]),
+    fn: ([{ '@@batchInfo': batchInfo }]) => ({ batchInfo }),
+    target: clearFx,
+  });
+
+  sample({
+    clock: combineEvents([field.batchedReset, field.resetCompleted]),
+    fn: ([{ '@@batchInfo': batchInfo }, { values, error }]) => ({
+      values,
+      error,
+      batchInfo,
+    }),
+    target: resetFx,
+  });
+
+  sample({
+    clock: combineEvents([field.batchedSetValue, field.changed]),
+    source: field.$values,
+    fn: (values, [{ '@@batchInfo': batchInfo }]) => ({ values, batchInfo }),
+    target: changeValuesFx,
+  });
+
+  sample({
+    clock: field.batchedSetInnerError,
+    source: field.$outerError,
+    fn: (outerError, { value, '@@batchInfo': batchInfo }) => ({
+      error: outerError ?? value,
       batchInfo,
     }),
     target: changeErrorFx,
   });
 
   sample({
-    clock: field.batchedValueChanged,
-    fn: ({ value, '@@batchInfo': batchInfo }) => ({
-      values: value,
-      batchInfo,
-    }),
-    target: changeValuesFx,
+    clock: field.batchedSetOuterError,
+    fn: ({ value: error, '@@batchInfo': batchInfo }) => ({ error, batchInfo }),
+    target: changeErrorFx,
   });
 
   sample({
@@ -124,7 +213,12 @@ export function setupArrayField(
   });
 
   sample({
-    clock: [changeValuesFx.done, changeErrorFx.done],
+    clock: [
+      changeValuesFx.done,
+      changeErrorFx.done,
+      resetFx.done,
+      clearFx.done,
+    ],
     filter: ({ params }) => !!params.batchInfo,
     fn: ({ params }) => ({
       fieldPath: apiKey,
@@ -144,26 +238,29 @@ export function setupArrayField(
   });
 
   this.api[apiKey] = {
+    type: 'array-field',
+
     reset: field.reset,
+    clear: field.clear,
 
     batchedSetValue: field.batchedSetValue,
     batchedSetOuterError: field.batchedSetOuterError,
     batchedSetInnerError: field.batchedSetInnerError,
+    batchedReset: field.batchedReset,
+    batchedClear: field.batchedClear,
 
-    clearForErrors: () => {},
+    clearMemory: () => {
+      clearArrayFieldMemory(field, true);
+      clearUnits([changeErrorFx, changeValuesFx, clearFx, resetFx], true);
+    },
 
-    clear: (fullClear) => {
+    clearValuesMemory: () => {
       const keys = Object.keys(this.api)
         .filter((key) => key.startsWith(apiKey))
         .filter((key) => key !== apiKey);
 
       for (const subApiKey of keys) {
-        this.api[subApiKey].clear(true);
-        this.api[subApiKey].clearForErrors();
-      }
-
-      if (fullClear) {
-        clearNode(changeValuesFx);
+        this.api[subApiKey].clearMemory();
       }
     },
 

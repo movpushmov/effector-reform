@@ -35,6 +35,9 @@ export interface PrimitiveField<T extends PrimitiveValue = any>
   $isValid: Store<boolean>;
   $isFocused: Store<boolean>;
 
+  reset: EventCallable<void>;
+  resetCompleted: Event<void>;
+
   blur: EventCallable<void>;
   blurred: Event<void>;
 

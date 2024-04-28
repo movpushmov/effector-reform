@@ -4,8 +4,14 @@ import type {
   PrimitiveField,
   PrimitiveValue,
 } from './types';
-import { FieldBatchedSetter, FieldError, InnerFieldApi } from '../types';
+import {
+  FieldBatchedPayload,
+  FieldBatchedSetter,
+  FieldError,
+  InnerFieldApi,
+} from '../types';
 import { primitiveFieldSymbol } from './symbol';
+import { spread } from 'patronum';
 
 const defaultOptions = {
   error: null,
@@ -26,7 +32,7 @@ export function createField<T extends PrimitiveValue>(
     name: '<inner field error>',
   });
 
-  const $outerError = createStore<FieldError>(null, {
+  const $outerError = createStore<FieldError>(overrides?.error ?? null, {
     name: '<outer field error>',
   });
 
@@ -52,17 +58,15 @@ export function createField<T extends PrimitiveValue>(
   const errorChanged = createEvent<FieldError>('<field error changed>');
 
   const setInnerError = createEvent<FieldError>();
+  const setOuterError = createEvent<FieldError>();
 
   const reset = createEvent('<field reset>');
+  const resetCompleted = createEvent('<field reset completed>');
 
   const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetValue = createEvent<FieldBatchedSetter<T>>();
-
-  const batchedValueChanged = createEvent<FieldBatchedSetter<T>>();
-  const batchedErrorChanged = createEvent<FieldBatchedSetter<FieldError>>();
-  const notBatchedValueChanged = createEvent<T>();
-  const notBatchedErrorChanged = createEvent<FieldError>();
+  const batchedReset = createEvent<FieldBatchedPayload>();
 
   if (clearOuterErrorOnChange) {
     sample({ clock: $value, fn: () => null, target: $outerError });
@@ -76,28 +80,20 @@ export function createField<T extends PrimitiveValue>(
 
   sample({
     clock: setInnerError,
-    source: $outerError,
-    fn: (outerError, innerError) => outerError || innerError,
-    target: notBatchedErrorChanged,
+    target: $innerError,
   });
 
   sample({
     clock: changeError,
-    target: notBatchedErrorChanged,
+    target: $outerError,
   });
 
-  sample({ clock: change, target: notBatchedValueChanged });
-  sample({ clock: notBatchedValueChanged, target: $value });
+  sample({ clock: change, target: $value });
 
   sample({ clock: $value, fn: () => true, target: $isDirty });
 
   sample({
     clock: batchedSetValue,
-    target: batchedValueChanged,
-  });
-
-  sample({
-    clock: batchedValueChanged,
     fn: (payload) => payload.value,
     target: $value,
   });
@@ -114,32 +110,25 @@ export function createField<T extends PrimitiveValue>(
     target: $outerError,
   });
 
-  sample({
-    clock: batchedSetInnerError,
-    source: $outerError,
-    fn: (outerError, info) => ({ ...info, value: outerError || info.value }),
-    target: batchedErrorChanged,
-  });
-
-  sample({
-    clock: batchedSetOuterError,
-    target: batchedErrorChanged,
-  });
-
   sample({ clock: $value, target: changed });
   sample({ clock: changeError, target: $outerError });
 
   sample({ clock: $error, target: errorChanged });
   sample({ clock: setInnerError, target: $innerError });
 
-  sample({ clock: reset, fn: () => defaultValue, target: $value });
-  sample({ clock: reset, fn: () => null, target: [$innerError, $outerError] });
-  sample({ clock: reset, fn: () => false, target: $isDirty });
+  sample({
+    clock: [reset, batchedReset],
+    fn: () => ({
+      value: defaultValue,
+      error: overrides?.error ?? null,
+      isDirty: false,
+    }),
+    target: spread({ value: $value, error: $outerError, isDirty: $isDirty }),
+  });
 
   sample({
-    clock: reset,
-    fn: () => null,
-    target: [setInnerError, changeError],
+    clock: [reset, batchedReset],
+    target: resetCompleted,
   });
 
   return {
@@ -148,13 +137,11 @@ export function createField<T extends PrimitiveValue>(
     batchedSetInnerError,
     batchedSetOuterError,
     batchedSetValue,
-
-    batchedErrorChanged,
-    batchedValueChanged,
-    notBatchedErrorChanged,
-    notBatchedValueChanged,
+    batchedReset,
 
     $value,
+    $outerError,
+    $innerError,
     $error,
 
     $isValid,
@@ -174,7 +161,10 @@ export function createField<T extends PrimitiveValue>(
     errorChanged,
 
     reset,
+    resetCompleted,
+
     setInnerError,
+    setOuterError,
 
     forkOnCreateForm: options.forkOnCreateForm,
 
