@@ -1,21 +1,23 @@
 import type { FormApi } from '../mapper';
+import { createBatchTask } from '../batching';
 
 export function clearFormErrors(formApi: FormApi, mode: 'inner' | 'outer') {
-  for (const apiKey in formApi) {
+  const keys = Object.keys(formApi);
+  const task = createBatchTask(keys, 'errors');
+
+  for (const apiKey of keys) {
     const api = formApi[apiKey];
 
     if (mode === 'inner') {
-      api.clearInnerError();
+      api.batchedSetInnerError({
+        value: null,
+        '@@batchInfo': { fieldPath: apiKey, id: task.id },
+      });
     } else if (mode === 'outer') {
-      api.clearOuterError();
+      api.batchedSetOuterError({
+        value: null,
+        '@@batchInfo': { fieldPath: apiKey, id: task.id },
+      });
     }
-  }
-}
-
-export function fullFormClear(formApi: FormApi) {
-  for (const apiKey in formApi) {
-    const api = formApi[apiKey];
-
-    api.clear(true);
   }
 }

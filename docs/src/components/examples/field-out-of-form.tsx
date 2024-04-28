@@ -1,28 +1,28 @@
 import { createField, createForm } from '@effector-reform/core';
-import { useEffect, useState } from 'react';
-import { useField, useForm } from '@effector-reform/react';
+import { useForm } from '@effector-reform/react';
 
-const name = createField<string>('', { forkOnCreateForm: false });
+import { createStore, sample } from 'effector';
+import { useUnit } from 'effector-react';
+
+const nameField = createField<string>('', { forkOnCreateForm: false });
 
 const form = createForm({
   schema: {
-    name,
+    name: nameField,
   },
 });
 
+const $message = createStore(':(');
+
+sample({
+  clock: nameField.changed,
+  fn: (name) => (name === 'Edward' ? 'nice!' : ':('),
+  target: $message,
+});
+
 export function FieldOutOfForm() {
-  const field = useField(name);
   const { fields } = useForm(form);
-
-  const [message, setMessage] = useState<string>(':(');
-
-  useEffect(() => {
-    if (field.value === 'Edward') {
-      setMessage('Nice!');
-    } else {
-      setMessage(':(');
-    }
-  }, [field.value]);
+  const message = useUnit($message);
 
   return (
     <>

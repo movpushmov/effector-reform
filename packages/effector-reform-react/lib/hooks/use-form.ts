@@ -24,12 +24,15 @@ type ReactForm<
   errors: Errors;
   fields: ReactFields<Schema>;
 
+  onSubmit: (e: SubmitEvent) => void;
+  onValidate: () => void;
+  onReset: () => void;
+  onClear: () => void;
+
   isValid: boolean;
   isDirty: boolean;
   isValidationPending: boolean;
-  submit: () => void;
-  validate: () => void;
-  reset: () => void;
+
   setValues: (payload: Values) => void;
   setErrors: (payload: ErrorsSchemaPayload) => void;
   setPartialValues: (payload: PartialRecursive<Values>) => void;
@@ -51,7 +54,8 @@ export function useForm<
 >(form: T, props?: UseFormProps): ReactForm<Schema, Values, Errors> {
   const scope = useProvidedScope();
 
-  const { values, errors, ...formParams } = useUnit(form);
+  const { values, errors, submit, reset, clear, validate, ...formParams } =
+    useUnit(form);
   const fields = useMemo<ReactFields<T['fields']>>(
     () => getFields(form.fields, scope),
     [form.fields, values, errors],
@@ -60,7 +64,7 @@ export function useForm<
   useEffect(() => {
     return () => {
       if (props?.resetOnUnmount) {
-        formParams.reset();
+        reset();
       }
     };
   }, []);
@@ -69,6 +73,16 @@ export function useForm<
     values,
     errors,
     fields,
+
+    onSubmit: (e: SubmitEvent) => {
+      e.preventDefault();
+      submit();
+    },
+
+    onReset: reset,
+    onValidate: validate,
+    onClear: clear,
+
     ...formParams,
   };
 }

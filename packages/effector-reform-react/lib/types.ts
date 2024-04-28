@@ -21,6 +21,7 @@ export interface ReactPrimitiveFieldApi<T extends PrimitiveValue> {
 
   isValid: boolean;
   isDirty: boolean;
+  isFocused: boolean;
 
   onChangeError: (newError: FieldError) => void;
   onChange: (newValue: T) => void;
@@ -29,7 +30,7 @@ export interface ReactPrimitiveFieldApi<T extends PrimitiveValue> {
 }
 
 export interface ReactArrayFieldApi<
-  T extends ReadyFieldsGroupSchema | PrimitiveValue,
+  T extends ArrayFieldItemType,
   Payload extends ArrayFieldItemType = T extends ReadyFieldsGroupSchema
     ? T | FormValues<T>
     : T,
@@ -40,17 +41,17 @@ export interface ReactArrayFieldApi<
   isValid: boolean;
   isDirty: boolean;
 
-  reset: () => void;
-  change: (values: Payload[]) => void;
-  changeError: (error: FieldError) => void;
-  push: (payload: PushPayload<Payload>) => void;
-  swap: (payload: SwapPayload) => void;
-  move: (payload: MovePayload) => void;
-  insert: (payload: InsertOrReplacePayload<Payload>) => void;
-  unshift: (payload: UnshiftPayload<Payload>) => void;
-  remove: (payload: RemovePayload) => void;
-  pop: (payload: void) => void;
-  replace: (payload: InsertOrReplacePayload<Payload>) => void;
+  onChange: (values: Payload[]) => void;
+  onChangeError: (error: FieldError) => void;
+  onReset: () => void;
+  onPush: (payload: PushPayload<Payload>) => void;
+  onSwap: (payload: SwapPayload) => void;
+  onMove: (payload: MovePayload) => void;
+  onInsert: (payload: InsertOrReplacePayload<Payload>) => void;
+  onUnshift: (payload: UnshiftPayload<Payload>) => void;
+  onRemove: (payload: RemovePayload) => void;
+  onPop: (payload: void) => void;
+  onReplace: (payload: InsertOrReplacePayload<Payload>) => void;
 }
 
 export type ReactFields<Fields extends ReadyFieldsGroupSchema> = {

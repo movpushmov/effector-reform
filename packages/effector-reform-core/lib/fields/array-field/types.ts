@@ -28,8 +28,11 @@ export interface ArrayFieldApi<T extends ArrayFieldItemType, U> {
   pop: EventCallable<void>;
   replace: EventCallable<InsertOrReplacePayload<T>>;
   reset: EventCallable<void>;
+  clear: EventCallable<void>;
 
   changed: Event<U[]>;
+  cleared: EventCallable<void>;
+  resetCompleted: EventCallable<void>;
   errorChanged: Event<FieldError>;
   pushed: Event<{ params: PushPayload<T>; result: U[] }>;
   swapped: Event<{ params: SwapPayload; result: U[] }>;
@@ -71,6 +74,7 @@ export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
     isValid: Store<boolean>;
 
     reset: EventCallable<void>;
+    clear: EventCallable<void>;
     change: EventCallable<T[]>;
     changeError: EventCallable<FieldError>;
     push: EventCallable<PushPayload<T>>;
