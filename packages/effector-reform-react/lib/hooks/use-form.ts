@@ -7,7 +7,7 @@ import {
   ReadyFieldsGroupSchema,
 } from '@effector-reform/core';
 import { useProvidedScope, useUnit } from 'effector-react';
-import { useEffect, useMemo } from 'react';
+import { FormEvent, useEffect, useMemo } from 'react';
 import { getFields } from './utils';
 import { ReactFields } from '../types';
 
@@ -24,7 +24,7 @@ type ReactForm<
   errors: Errors;
   fields: ReactFields<Schema>;
 
-  onSubmit: (e: SubmitEvent) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onValidate: () => void;
   onReset: () => void;
   onClear: () => void;
@@ -74,7 +74,7 @@ export function useForm<
     errors,
     fields,
 
-    onSubmit: (e: SubmitEvent) => {
+    onSubmit: (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       submit();
     },
