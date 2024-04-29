@@ -25,3 +25,4 @@ dist-ssr
 *.sw?
 
 docs/node_modules
+packages/playground

@@ -239,7 +239,6 @@ export function setupArrayField(
     type: 'array-field',
 
     reset: field.reset,
-    clear: field.clear,
 
     batchedSetValue: field.batchedSetValue,
     batchedSetOuterError: field.batchedSetOuterError,
@@ -247,9 +246,13 @@ export function setupArrayField(
     batchedReset: field.batchedReset,
     batchedClear: field.batchedClear,
 
-    clearMemory: () => {
-      clearArrayFieldMemory(field, true);
-      clearUnits([changeErrorFx, changeValuesFx, clearFx, resetFx], true);
+    clearMemory: (withField = false) => {
+      if (withField) {
+        clearArrayFieldMemory(field);
+      }
+
+      clearUnits([changeErrorFx, changeValuesFx, clearFx, resetFx]);
+      delete this.api[apiKey];
     },
 
     clearValuesMemory: () => {

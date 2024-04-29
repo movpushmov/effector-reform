@@ -27,16 +27,15 @@ export type ArrayFieldPathApi = {
   type: 'array-field';
 
   clearValuesMemory: () => void;
-  clearMemory: () => void;
+  clearMemory: (withField?: boolean) => void;
 
-  clear: () => void;
   batchedClear: (info: FieldBatchedPayload) => void;
 } & BasePathApi;
 
 export type PrimitiveFieldPathApi = {
   type: 'primitive-field';
 
-  clearMemory: () => void;
+  clearMemory: (withField?: boolean) => void;
 } & BasePathApi;
 
 export type PathApi = ArrayFieldPathApi | PrimitiveFieldPathApi;

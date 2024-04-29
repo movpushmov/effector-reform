@@ -6,6 +6,7 @@ import { FieldInteractionEventPayload } from '../map-schema/types';
 import { combineEvents } from 'patronum';
 import { clearPrimitiveFieldMemory } from '../../../fields/primitive-field/utils';
 import { clearUnits } from '../../../utils';
+import { clearArrayFieldMemory } from '../../../fields/array-field/utils';
 
 interface Props {
   field: PrimitiveField;
@@ -175,9 +176,13 @@ export function setupPrimitiveField(
 
     reset: field.reset,
 
-    clearMemory: () => {
-      clearPrimitiveFieldMemory(field, true);
-      clearUnits([changeValueFx, changeErrorFx, resetFx], true);
+    clearMemory: (withField = false) => {
+      if (withField) {
+        clearPrimitiveFieldMemory(field);
+      }
+
+      clearUnits([changeValueFx, changeErrorFx, resetFx]);
+      delete this.api[apiKey];
     },
 
     batchedSetValue: field.batchedSetValue,
