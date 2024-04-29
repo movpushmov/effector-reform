@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.3](https://github.com/movpushmov/effector-reform/compare/v0.8.2...v0.8.3) (2024-04-29)
+
+### Bug Fixes
+
+- react form types ([d5eabfa](https://github.com/movpushmov/effector-reform/commit/d5eabfaa21a39119f6acfb39eca670b67a18eaec))
+
 ## [0.8.2](https://github.com/movpushmov/effector-reform/compare/v0.8.1...v0.8.2) (2024-04-29)
 
 **Note:** Version bump only for package @effector-reform/react
