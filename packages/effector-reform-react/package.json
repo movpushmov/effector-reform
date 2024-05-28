@@ -20,8 +20,8 @@
     "effect-react-form",
     "effector-form"
   ],
-  "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
-  "homepage": "https://github.com/movpushmov/effector-reform#readme",
+  "author": "qvelty",
+  "homepage": "https://github.com/qvelty/effector-reform#readme",
   "license": "MIT",
   "type": "module",
   "module": "./dist/index.js",
@@ -40,14 +40,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/movpushmov/effector-reform.git"
+    "url": "git+https://github.com/qvelty/effector-reform.git"
   },
   "scripts": {
     "build": "vite build",
     "test": "jest --env=jsdom"
   },
   "bugs": {
-    "url": "https://github.com/movpushmov/effector-reform/issues"
+    "url": "https://github.com/qvelty/effector-reform/issues"
   },
   "dependencies": {
     "@effector-reform/core": "^0.8.2"

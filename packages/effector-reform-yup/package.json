@@ -23,8 +23,8 @@
     "validation",
     "adapter"
   ],
-  "author": "Edward Gigolaev <49155506+movpushmov@users.noreply.github.com>",
-  "homepage": "https://github.com/movpushmov/effector-reform#readme",
+  "author": "qvelty",
+  "homepage": "https://github.com/qvelty/effector-reform#readme",
   "license": "MIT",
   "directories": {
     "lib": "lib",
@@ -44,14 +44,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/movpushmov/effector-reform.git"
+    "url": "git+https://github.com/qvelty/effector-reform.git"
   },
   "scripts": {
     "build": "vite build",
     "test": "jest"
   },
   "bugs": {
-    "url": "https://github.com/movpushmov/effector-reform/issues"
+    "url": "https://github.com/qvelty/effector-reform/issues"
   },
   "gitHead": "d35b5e5d94287cc6ba5b6568ef9e67c3a51312cc",
   "dependencies": {
