@@ -1,14 +1,10 @@
 import { describe, test, expect } from '@jest/globals';
-import { act, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DefaultFormComponent } from '../components/default';
 import { ValidatedFormComponent } from '../components/validated';
 import { ArrayFieldForm } from '../components/array-field';
 import { MetaForm } from '../components/meta';
-
-function click(target: HTMLElement) {
-  return act(() => userEvent.click(target));
-}
 
 describe('useForm', () => {
   test.only('value change', async () => {
@@ -19,9 +15,7 @@ describe('useForm', () => {
 
     expect(p.textContent).toBe('a');
 
-    await act(async () => {
-      await userEvent.type(input, 'abcd', { delay: 20 });
-    });
+    await userEvent.type(input, 'abcd', { delay: 20 });
 
     expect(p.textContent).toBe('aabcd');
   });
@@ -34,7 +28,7 @@ describe('useForm', () => {
 
     expect(p.textContent).toBe('');
 
-    await click(button);
+    await userEvent.click(button);
 
     expect(p.textContent).toBe('some error');
   });
@@ -67,13 +61,13 @@ describe('useForm', () => {
       'button[data-testid="add-button"]',
     ) as HTMLButtonElement;
 
-    await click(addButton);
-    await click(addButton);
-    await click(addButton);
+    await userEvent.click(addButton);
+    await userEvent.click(addButton);
+    await userEvent.click(addButton);
 
     expect(container.querySelectorAll('button[data-index]').length).toBe(3);
 
-    await click(container.querySelector('button[data-index="1"]')!);
+    await userEvent.click(container.querySelector('button[data-index="1"]')!);
 
     expect(container.querySelectorAll('button[data-index]').length).toBe(2);
   });
@@ -86,7 +80,7 @@ describe('useForm', () => {
 
     expect(text.textContent).toBe('is positive: false');
 
-    await click(button);
+    await userEvent.click(button);
 
     expect(text.textContent).toBe('is positive: true');
   });
