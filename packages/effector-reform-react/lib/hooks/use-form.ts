@@ -7,7 +7,7 @@ import {
   ReadyFieldsGroupSchema,
 } from '@effector-reform/core';
 import { useProvidedScope, useUnit } from 'effector-react';
-import { FormEvent, useEffect, useMemo } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { getFields } from './utils';
 import { ReactFields } from '../types';
 
@@ -56,13 +56,23 @@ export function useForm<
 
   const { values, errors, submit, reset, clear, validate, ...formParams } =
     useUnit(form);
-  const fields = useMemo<ReactFields<T['fields']>>(
-    () => getFields(form.fields, scope),
-    [form.fields, values, errors],
+
+  const [fields, setFields] = useState<ReactFields<T['fields']>>(() =>
+    getFields(form.fields, scope),
   );
 
   useEffect(() => {
+    setFields(getFields(form.fields, scope));
+  }, [values, errors]);
+
+  useEffect(() => {
+    const stop = form.metaChanged.watch(() =>
+      setFields(getFields(form.fields, scope)),
+    );
+
     return () => {
+      stop();
+
       if (props?.resetOnUnmount) {
         reset();
       }

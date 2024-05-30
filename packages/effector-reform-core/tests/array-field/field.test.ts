@@ -216,4 +216,21 @@ describe('Array field tests', () => {
 
     expect(scope.getState(secondField.a.$value)).toBe('123');
   });
+
+  test('meta', async () => {
+    const mockedFn = jest.fn();
+
+    const scope = fork();
+    const field = createArrayField<{ a: string }, { isDisabled?: boolean }>([]);
+
+    sample({
+      clock: field.metaChanged,
+      target: createEffect(mockedFn),
+    });
+
+    await allSettled(field.changeMeta, { scope, params: { isDisabled: true } });
+
+    expect(scope.getState(field.$meta)).toStrictEqual({ isDisabled: true });
+    expect(mockedFn).toBeCalledTimes(1);
+  });
 });

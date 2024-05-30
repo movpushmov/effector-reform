@@ -17,7 +17,7 @@ function getStoreValueByScope<U>(store: Store<U>, scope: Scope | null) {
   return scope ? scope.getState(store) : store.getState();
 }
 
-function bindEvenByScope<U>(event: EventCallable<U>, scope: Scope | null) {
+function bindEventByScope<U>(event: EventCallable<U>, scope: Scope | null) {
   return scope ? scopeBind(event, { scope }) : event;
 }
 
@@ -28,13 +28,15 @@ export function getPrimitiveField<T extends PrimitiveValue>(
   return {
     value: getStoreValueByScope(field.$value, scope),
     error: getStoreValueByScope(field.$error, scope),
+    meta: getStoreValueByScope(field.$meta, scope),
     isDirty: getStoreValueByScope(field.$isDirty, scope),
     isValid: getStoreValueByScope(field.$isValid, scope),
     isFocused: getStoreValueByScope(field.$isFocused, scope),
-    onChangeError: bindEvenByScope(field.changeError, scope),
-    onChange: bindEvenByScope(field.change, scope),
-    onFocus: bindEvenByScope(field.focus, scope),
-    onBlur: bindEvenByScope(field.blur, scope),
+    onChangeError: bindEventByScope(field.changeError, scope),
+    onChange: bindEventByScope(field.change, scope),
+    onFocus: bindEventByScope(field.focus, scope),
+    onBlur: bindEventByScope(field.blur, scope),
+    onChangeMeta: bindEventByScope(field.changeMeta, scope),
   };
 }
 
@@ -48,7 +50,7 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
     getStoreValueByScope($store, scope);
 
   const bindEvent = <T>(event: EventCallable<T>) =>
-    bindEvenByScope(event, scope);
+    bindEventByScope(event, scope);
 
   for (const fieldName in fields) {
     const field = fields[fieldName];
@@ -59,6 +61,7 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
           values: getStoreValue(field.$values).map((item) =>
             isPrimitiveValue(item) ? item : getFields(item, scope),
           ),
+          meta: getStoreValue(field.$meta),
           isDirty: getStoreValue(field.$isDirty),
           isValid: getStoreValue(field.$isValid),
           error: getStoreValue(field.$error),
@@ -73,6 +76,7 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
           onRemove: bindEvent(field.remove),
           onPop: bindEvent(field.pop),
           onReplace: bindEvent(field.replace),
+          onChangeMeta: bindEvent(field.changeMeta),
         } as ReactArrayFieldApi<any>;
 
         break;
@@ -81,9 +85,11 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
         node[fieldName] = {
           value: getStoreValue(field.$value),
           error: getStoreValue(field.$error),
+          meta: getStoreValue(field.$meta),
           isDirty: getStoreValue(field.$isDirty),
           isValid: getStoreValue(field.$isValid),
           isFocused: getStoreValue(field.$isFocused),
+          onChangeMeta: bindEvent(field.changeMeta),
           onChangeError: bindEvent(field.changeError),
           onChange: bindEvent(field.change),
           onFocus: bindEvent(field.focus),

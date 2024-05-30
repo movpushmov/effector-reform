@@ -1,12 +1,17 @@
 import { describe, test, expect } from '@jest/globals';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DefaultFormComponent } from '../components/default';
 import { ValidatedFormComponent } from '../components/validated';
 import { ArrayFieldForm } from '../components/array-field';
+import { MetaForm } from '../components/meta';
+
+function click(target: HTMLElement) {
+  return act(() => userEvent.click(target));
+}
 
 describe('useForm', () => {
-  test('value change', async () => {
+  test.only('value change', async () => {
     const { container } = render(<DefaultFormComponent />);
 
     const input = container.querySelector('input')!;
@@ -14,7 +19,9 @@ describe('useForm', () => {
 
     expect(p.textContent).toBe('a');
 
-    await userEvent.type(input, 'abcd');
+    await act(async () => {
+      await userEvent.type(input, 'abcd', { delay: 20 });
+    });
 
     expect(p.textContent).toBe('aabcd');
   });
@@ -27,7 +34,7 @@ describe('useForm', () => {
 
     expect(p.textContent).toBe('');
 
-    await userEvent.click(button);
+    await click(button);
 
     expect(p.textContent).toBe('some error');
   });
@@ -53,22 +60,34 @@ describe('useForm', () => {
     expect(errorP.textContent).toBe('length must be lower than 4');
   });
 
-  test.only('array field form works correctly', async () => {
-    console.error = () => {};
+  test('array field form works correctly', async () => {
     const { container } = render(<ArrayFieldForm />);
 
     const addButton = container.querySelector(
       'button[data-testid="add-button"]',
     ) as HTMLButtonElement;
 
-    await userEvent.click(addButton);
-    await userEvent.click(addButton);
-    await userEvent.click(addButton);
+    await click(addButton);
+    await click(addButton);
+    await click(addButton);
 
     expect(container.querySelectorAll('button[data-index]').length).toBe(3);
 
-    await userEvent.click(container.querySelector('button[data-index="1"]')!);
+    await click(container.querySelector('button[data-index="1"]')!);
 
     expect(container.querySelectorAll('button[data-index]').length).toBe(2);
+  });
+
+  test('meta', async () => {
+    const { container } = render(<MetaForm />);
+
+    const button = container.querySelector('button')!;
+    const text = container.querySelector('p')!;
+
+    expect(text.textContent).toBe('is positive: false');
+
+    await click(button);
+
+    expect(text.textContent).toBe('is positive: true');
   });
 });

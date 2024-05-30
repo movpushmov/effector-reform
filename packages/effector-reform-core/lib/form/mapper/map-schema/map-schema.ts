@@ -1,16 +1,17 @@
 import { ReadyFieldsGroupSchema } from '../../../fields';
 import { setupUpdating } from './setup-updating';
 import { setupBatching } from './setup-batching';
-import { getMeta } from '../get-meta';
+import { getFormMeta } from '../get-form-meta';
 import { createStore, sample } from 'effector';
 import { spread } from 'patronum';
 
 export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
-  const { schemaUpdated, focused, blurred } = setupUpdating();
+  const { schemaUpdated, focused, blurred, metaChanged } = setupUpdating();
   const { batchedSchemaUpdated, addBatchTask } = setupBatching(schemaUpdated);
 
-  const meta = getMeta(
+  const meta = getFormMeta(
     node,
+    metaChanged,
     schemaUpdated,
     batchedSchemaUpdated,
     focused,
@@ -59,5 +60,14 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
     }),
   });
 
-  return { $api, $values, $errors, $isValid, addBatchTask, focused, blurred };
+  return {
+    $api,
+    $values,
+    $errors,
+    $isValid,
+    addBatchTask,
+    focused,
+    blurred,
+    metaChanged,
+  };
 }

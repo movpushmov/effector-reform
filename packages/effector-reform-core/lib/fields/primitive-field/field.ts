@@ -13,15 +13,19 @@ import {
 import { primitiveFieldSymbol } from './symbol';
 import { spread } from 'patronum';
 
-const defaultOptions = {
+const defaultOptions: CreatePrimitiveFieldOptions = {
   error: null,
+  meta: {},
   forkOnCreateForm: true,
 };
 
-export function createField<T extends PrimitiveValue>(
+export function createField<
+  T extends PrimitiveValue,
+  Meta extends object = any,
+>(
   defaultValue: T,
-  overrides?: CreatePrimitiveFieldOptions,
-): PrimitiveField<T> {
+  overrides?: CreatePrimitiveFieldOptions<Meta>,
+): PrimitiveField<T, Meta> {
   const clearOuterErrorOnChange = Boolean(overrides?.clearOuterErrorOnChange);
 
   const options = { ...defaultOptions, ...overrides };
@@ -44,6 +48,21 @@ export function createField<T extends PrimitiveValue>(
   const $isValid = $error.map((error) => error === null);
   const $isDirty = createStore(false);
   const $isFocused = createStore(false);
+
+  const $meta = createStore<Meta>(options.meta);
+
+  const changeMeta = createEvent<Meta>();
+  const metaChanged = createEvent<Meta>();
+
+  sample({
+    clock: changeMeta,
+    target: $meta,
+  });
+
+  sample({
+    clock: $meta,
+    target: metaChanged,
+  });
 
   const change = createEvent<T>('<field change>');
   const changed = createEvent<T>('<field changed>');
@@ -139,6 +158,7 @@ export function createField<T extends PrimitiveValue>(
     batchedSetValue,
     batchedReset,
 
+    $meta,
     $value,
     $outerError,
     $innerError,
@@ -147,6 +167,9 @@ export function createField<T extends PrimitiveValue>(
     $isValid,
     $isDirty,
     $isFocused,
+
+    changeMeta,
+    metaChanged,
 
     blur,
     blurred,
@@ -174,10 +197,13 @@ export function createField<T extends PrimitiveValue>(
     '@@unitShape': () => ({
       value: $value,
       error: $error,
+      meta: $meta,
 
       isValid: $isValid,
       isDirty: $isDirty,
       isFocused: $isFocused,
+
+      changeMeta,
 
       blur,
       blurred,

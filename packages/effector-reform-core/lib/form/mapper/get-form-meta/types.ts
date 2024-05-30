@@ -5,6 +5,7 @@ import {
   BatchedSchemaUpdatedPayload,
   FieldInteractionEventPayload,
   FieldInteractionEventPayloadBase,
+  MetaChangedEventPayload,
 } from '../map-schema/types';
 
 export type MapFn = (
@@ -15,6 +16,7 @@ export type MapFn = (
 ) => void;
 
 export interface This {
+  metaChanged: EventCallable<MetaChangedEventPayload>;
   schemaUpdated: EventCallable<FieldInteractionEventPayload>;
   batchedSchemaUpdated: EventCallable<BatchedSchemaUpdatedPayload>;
   focused: EventCallable<FieldInteractionEventPayloadBase>;

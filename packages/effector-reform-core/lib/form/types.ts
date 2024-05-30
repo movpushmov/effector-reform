@@ -118,6 +118,8 @@ export type FormType<
   reset: EventCallable<void>;
   clear: EventCallable<void>;
 
+  metaChanged: EventCallable<{ fieldPath: string; meta: any }>;
+
   '@@unitShape': () => {
     values: Store<Values>;
     errors: Store<Errors>;

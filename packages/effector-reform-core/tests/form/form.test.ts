@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { allSettled, createEffect, fork, sample } from 'effector';
-import { createForm } from '../../lib';
+import { createArrayField, createField, createForm } from '../../lib';
 import { fn } from 'jest-mock';
 
 describe('Form tests', () => {
@@ -208,4 +208,42 @@ describe('Form tests', () => {
   test.todo('Is dirty changed');
 
   test.todo('Is valid changed');
+
+  test('meta', async () => {
+    const mockedFn = jest.fn();
+
+    const scope = fork();
+
+    const form = createForm({
+      schema: {
+        a: createField<number, { isDisabled: boolean }>(5),
+        b: createArrayField<number, { isKnown: boolean }>([]),
+      },
+    });
+
+    sample({
+      clock: form.metaChanged,
+      target: createEffect(mockedFn),
+    });
+
+    await allSettled(form.fields.a.changeMeta, {
+      scope,
+      params: { isDisabled: true },
+    });
+
+    await allSettled(form.fields.b.changeMeta, {
+      scope,
+      params: { isKnown: false },
+    });
+
+    expect(scope.getState(form.fields.a.$meta)).toStrictEqual({
+      isDisabled: true,
+    });
+
+    expect(scope.getState(form.fields.b.$meta)).toStrictEqual({
+      isKnown: false,
+    });
+
+    expect(mockedFn).toBeCalledTimes(2);
+  });
 });

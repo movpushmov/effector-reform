@@ -9,3 +9,7 @@ export type FieldInteractionEventPayload = FieldInteractionEventPayloadBase & {
 export type BatchedSchemaUpdatedPayload = FieldInteractionEventPayloadBase & {
   '@@batchInfo': { id: string };
 };
+
+export type MetaChangedEventPayload = FieldInteractionEventPayloadBase & {
+  meta: any;
+};

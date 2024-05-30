@@ -6,7 +6,6 @@ import { FieldInteractionEventPayload } from '../map-schema/types';
 import { combineEvents } from 'patronum';
 import { clearPrimitiveFieldMemory } from '../../../fields/primitive-field/utils';
 import { clearUnits } from '../../../utils';
-import { clearArrayFieldMemory } from '../../../fields/array-field/utils';
 
 interface Props {
   field: PrimitiveField;
@@ -169,6 +168,12 @@ export function setupPrimitiveField(
     clock: field.blurred,
     fn: () => ({ fieldPath: apiKey }),
     target: this.blurred,
+  });
+
+  sample({
+    clock: field.metaChanged,
+    fn: (meta) => ({ fieldPath: apiKey, meta }),
+    target: this.metaChanged,
   });
 
   this.api[apiKey] = {

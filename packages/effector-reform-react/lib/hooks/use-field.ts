@@ -29,6 +29,8 @@ export function useArrayField<
   const scope = useProvidedScope();
   const {
     values,
+    meta,
+    changeMeta,
     change,
     changeError,
     reset,
@@ -52,6 +54,8 @@ export function useArrayField<
 
   return {
     values: syncedValues,
+    meta,
+    onChangeMeta: changeMeta,
     onChange: change,
     onChangeError: changeError,
     onReset: reset,
