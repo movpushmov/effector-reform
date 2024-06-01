@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4](https://github.com/qvelty/effector-reform/compare/v0.8.3...v0.8.4) (2024-06-01)
+
+### Bug Fixes
+
+- nullable fields ([bc9a160](https://github.com/qvelty/effector-reform/commit/bc9a160a6412b4b5bc7e553237f0384e353bc1f3))
+- update username ([cce0534](https://github.com/qvelty/effector-reform/commit/cce0534dd588bad09a0e0483367d81c5e583c430))
+
 ## [0.8.2](https://github.com/movpushmov/effector-reform/compare/v0.8.1...v0.8.2) (2024-04-29)
 
 ### Bug Fixes
