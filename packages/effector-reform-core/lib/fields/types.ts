@@ -1,4 +1,4 @@
-import { Event, EventCallable, Store } from 'effector';
+import { EventCallable, Store } from 'effector';
 import { FormErrors, FormValues } from '../form';
 import { PrimitiveValue } from './primitive-field';
 

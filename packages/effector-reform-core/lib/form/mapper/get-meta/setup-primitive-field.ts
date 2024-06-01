@@ -6,7 +6,6 @@ import { FieldInteractionEventPayload } from '../map-schema/types';
 import { combineEvents } from 'patronum';
 import { clearPrimitiveFieldMemory } from '../../../fields/primitive-field/utils';
 import { clearUnits } from '../../../utils';
-import { clearArrayFieldMemory } from '../../../fields/array-field/utils';
 
 interface Props {
   field: PrimitiveField;
