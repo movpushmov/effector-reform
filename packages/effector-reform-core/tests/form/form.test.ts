@@ -205,6 +205,22 @@ describe('Form tests', () => {
     });
   });
 
+  test('reset', async () => {
+    const scope = fork();
+    const form = createForm({ schema: { a: 0, b: '' } });
+
+    await allSettled(form.setPartialValues, {
+      scope,
+      params: { a: 10, b: 'hello' },
+    });
+
+    expect(scope.getState(form.$values)).toStrictEqual({ a: 10, b: 'hello' });
+
+    await allSettled(form.reset, { scope });
+
+    expect(scope.getState(form.$values)).toStrictEqual({ a: 0, b: '' });
+  });
+
   test.todo('Is dirty changed');
 
   test.todo('Is valid changed');
