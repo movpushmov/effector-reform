@@ -1,6 +1,6 @@
 {
   "name": "@effector-reform/zod",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Zod schema adapter for effector-reform forms",
   "publishConfig": {
     "access": "public",
@@ -54,7 +54,7 @@
     "url": "https://github.com/qvelty/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-reform/core": "^0.8.4"
+    "@effector-reform/core": "^0.8.5"
   },
   "devDependencies": {
     "effector": "^23.2.0",

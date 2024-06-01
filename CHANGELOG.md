@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.5](https://github.com/qvelty/effector-reform/compare/v0.8.4...v0.8.5) (2024-06-01)
+
+### Bug Fixes
+
+- docs ([f3088d8](https://github.com/qvelty/effector-reform/commit/f3088d8ac397f354403451fdae25dd3f90f428c7))
+- remove useless imports ([7f13e1d](https://github.com/qvelty/effector-reform/commit/7f13e1da8a8992aafdec0fda69315053ec14a300))
+
 ## [0.8.4](https://github.com/qvelty/effector-reform/compare/v0.8.3...v0.8.4) (2024-06-01)
 
 ### Bug Fixes
