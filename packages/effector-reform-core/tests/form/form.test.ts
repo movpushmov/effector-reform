@@ -208,4 +208,15 @@ describe('Form tests', () => {
   test.todo('Is dirty changed');
 
   test.todo('Is valid changed');
+
+  test('nullable fields', async () => {
+    const scope = fork();
+    const form = createForm<{ a: string | null }>({ schema: { a: null } });
+
+    expect(scope.getState(form.fields.a.$value)).toBe(null);
+
+    await allSettled(form.fields.a.change, { scope, params: 'hello' });
+
+    expect(scope.getState(form.fields.a.$value)).toBe('hello');
+  });
 });

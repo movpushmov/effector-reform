@@ -7,7 +7,7 @@ tags:
   - Primitive field
 ---
 
-Creates field, which contains primitive value (like `string`, `number`, `boolean`, `Date`, `bigint`, `Blob`, `ArrayBuffer`, `File`, `FileList`)
+Creates field, which contains primitive value (like `string`, `number`, `boolean`, `Date`, `bigint`, `Blob`, `ArrayBuffer`, `File`, `FileList`, `null`)
 
 ### Formulae
 
