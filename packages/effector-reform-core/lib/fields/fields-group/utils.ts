@@ -40,7 +40,7 @@ export function prepareFieldsSchema<
     }
 
     if (Array.isArray(element)) {
-      result[key] = createArrayField(element);
+      result[key] = createArrayField(element as (PrimitiveValue | AnySchema)[]);
       continue;
     }
 

@@ -53,7 +53,7 @@ describe('useForm', () => {
     expect(errorP.textContent).toBe('length must be lower than 4');
   });
 
-  test.only('array field form works correctly', async () => {
+  test('array field form works correctly', async () => {
     console.error = () => {};
     const { container } = render(<ArrayFieldForm />);
 
