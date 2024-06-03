@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/qvelty/effector-reform/compare/v0.8.5...v0.9.0) (2024-06-03)
+
+### Bug Fixes
+
+- change name in changelogs ([fc6d495](https://github.com/qvelty/effector-reform/commit/fc6d4954df2186ff52c7bf075d999fe2d5edab49))
+
 ## [0.8.5](https://github.com/qvelty/effector-reform/compare/v0.8.4...v0.8.5) (2024-06-01)
 
 **Note:** Version bump only for package @effector-reform/yup
