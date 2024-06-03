@@ -11,7 +11,8 @@ export function isPrimitiveJsonValue(props: any): props is PrimitiveJsonValue {
   return (
     typeof props === 'boolean' ||
     typeof props === 'string' ||
-    typeof props === 'number'
+    typeof props === 'number' ||
+    props === null
   );
 }
 

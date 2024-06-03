@@ -43,6 +43,7 @@ const form = createForm({
   schema: {
     string: createField('John'),
     number: 0,
+    nullable: null,
     array: createArrayField<Date>([new Date()]),
     group: {
       subField: createField(''),
@@ -57,6 +58,7 @@ sample({
   target: logFx,
 });
 
+form.fields.nullable.change('hi');
 form.fields.number.change(10);
 form.fields.array.push(new Date());
 form.fields.group.subField.change('Peter');
@@ -67,6 +69,7 @@ form.submit();
   logFx (form.$values) -> {
     string: 'John',
     number: 10,
+    nullable: 'hi',
     array: [Date, Date],
     group: { subField: 'Peter' }
   }

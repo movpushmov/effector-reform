@@ -7,7 +7,7 @@ import { ArrayFieldForm } from '../components/array-field';
 import { MetaForm } from '../components/meta';
 
 describe('useForm', () => {
-  test.only('value change', async () => {
+  test('value change', async () => {
     const { container } = render(<DefaultFormComponent />);
 
     const input = container.querySelector('input')!;
@@ -15,7 +15,7 @@ describe('useForm', () => {
 
     expect(p.textContent).toBe('a');
 
-    await userEvent.type(input, 'abcd', { delay: 20 });
+    await userEvent.type(input, 'abcd');
 
     expect(p.textContent).toBe('aabcd');
   });

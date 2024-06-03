@@ -2,7 +2,7 @@ import { EventCallable, Store, Event } from 'effector';
 import { FieldError } from '../types';
 import { primitiveFieldSymbol } from './symbol';
 
-export type PrimitiveJsonValue = string | number | boolean | Date;
+export type PrimitiveJsonValue = string | number | boolean | Date | null;
 
 export type PrimitiveValue =
   | bigint
