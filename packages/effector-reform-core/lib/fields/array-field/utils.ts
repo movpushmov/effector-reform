@@ -31,6 +31,7 @@ export function clearArrayFieldMemory(field: ArrayField<any>, deep = false) {
     [
       api.$values,
       api.$error,
+      api.$meta,
       api.change,
       api.changed,
       api.changeError,
@@ -61,6 +62,7 @@ export function clearArrayFieldMemory(field: ArrayField<any>, deep = false) {
       api.batchedSetInnerError,
       api.batchedClear,
       api.batchedReset,
+      api.metaChanged,
     ],
     deep,
   );

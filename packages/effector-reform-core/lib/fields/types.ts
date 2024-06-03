@@ -33,7 +33,11 @@ export type InnerArrayFieldApi<T = any> = FieldInnerBatchSetters<T> & {
 export type PartialRecursive<T extends FormErrors<any> | FormValues<any>> =
   Partial<{
     [K in keyof T]: T[K] extends Array<any>
-      ? Array<PartialRecursive<T[K][number]>>
+      ? Array<
+          T[K][number] extends PrimitiveValue
+            ? T[K][number]
+            : PartialRecursive<T[K][number]>
+        >
       : T[K] extends PrimitiveValue
         ? T[K]
         : T[K] extends object

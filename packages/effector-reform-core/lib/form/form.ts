@@ -42,8 +42,16 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   } = options;
 
   const fields = forkGroup(prepareFieldsSchema(schema));
-  const { $errors, $values, $isValid, $api, focused, blurred, addBatchTask } =
-    mapSchema(fields);
+  const {
+    $errors,
+    $values,
+    $isValid,
+    $api,
+    focused,
+    blurred,
+    addBatchTask,
+    metaChanged,
+  } = mapSchema(fields);
 
   const $isDirty = createStore(false);
 
@@ -234,6 +242,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     $isValidationPending,
 
     fields,
+    metaChanged,
 
     changed,
     errorsChanged,

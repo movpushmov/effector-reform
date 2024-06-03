@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { DefaultFormComponent } from '../components/default';
 import { ValidatedFormComponent } from '../components/validated';
 import { ArrayFieldForm } from '../components/array-field';
+import { MetaForm } from '../components/meta';
 
 describe('useForm', () => {
   test('value change', async () => {
@@ -54,7 +55,6 @@ describe('useForm', () => {
   });
 
   test('array field form works correctly', async () => {
-    console.error = () => {};
     const { container } = render(<ArrayFieldForm />);
 
     const addButton = container.querySelector(
@@ -70,5 +70,18 @@ describe('useForm', () => {
     await userEvent.click(container.querySelector('button[data-index="1"]')!);
 
     expect(container.querySelectorAll('button[data-index]').length).toBe(2);
+  });
+
+  test('meta', async () => {
+    const { container } = render(<MetaForm />);
+
+    const button = container.querySelector('button')!;
+    const text = container.querySelector('p')!;
+
+    expect(text.textContent).toBe('is positive: false');
+
+    await userEvent.click(button);
+
+    expect(text.textContent).toBe('is positive: true');
   });
 });

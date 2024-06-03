@@ -16,7 +16,11 @@ export type InsertOrReplacePayload<T extends ArrayFieldItemType> = {
 };
 export type RemovePayload = { index: number };
 
-export interface ArrayFieldApi<T extends ArrayFieldItemType, U> {
+export interface ArrayFieldApi<
+  T extends ArrayFieldItemType,
+  U,
+  Meta extends object = any,
+> {
   changeError: EventCallable<FieldError>;
   change: EventCallable<T[]>;
   push: EventCallable<PushPayload<T>>;
@@ -29,6 +33,9 @@ export interface ArrayFieldApi<T extends ArrayFieldItemType, U> {
   replace: EventCallable<InsertOrReplacePayload<T>>;
   reset: EventCallable<void>;
   clear: EventCallable<void>;
+
+  changeMeta: EventCallable<Meta>;
+  metaChanged: Event<Meta>;
 
   changed: Event<U[]>;
   cleared: EventCallable<void>;
@@ -53,10 +60,14 @@ export interface ArrayFieldApi<T extends ArrayFieldItemType, U> {
   }>;
 }
 
-export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
-  extends ArrayFieldApi<T, U> {
+export interface ArrayField<
+  T extends ArrayFieldItemType,
+  Meta extends object = any,
+  U = UserFormSchema<T>,
+> extends ArrayFieldApi<T, U, Meta> {
   type: ArrayFieldSymbolType;
 
+  $meta: Store<Meta>;
   $values: Store<U[]>;
   $error: Store<FieldError>;
 
@@ -69,10 +80,12 @@ export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
   '@@unitShape': () => {
     values: Store<U[]>;
     error: Store<FieldError>;
+    meta: Store<Meta>;
 
     isDirty: Store<boolean>;
     isValid: Store<boolean>;
 
+    changeMeta: EventCallable<Meta>;
     reset: EventCallable<void>;
     clear: EventCallable<void>;
     change: EventCallable<T[]>;
@@ -88,8 +101,9 @@ export interface ArrayField<T extends ArrayFieldItemType, U = UserFormSchema<T>>
   };
 }
 
-export interface CreateArrayFieldOptions {
+export interface CreateArrayFieldOptions<Meta extends object = any> {
   error?: FieldError;
+  meta?: Meta;
   forkOnCreateForm?: boolean;
   clearOuterErrorOnChange?: boolean;
 }

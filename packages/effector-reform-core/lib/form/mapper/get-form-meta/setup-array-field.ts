@@ -235,6 +235,12 @@ export function setupArrayField(
     target: this.schemaUpdated,
   });
 
+  sample({
+    clock: field.metaChanged,
+    fn: (meta) => ({ fieldPath: apiKey, meta }),
+    target: this.metaChanged,
+  });
+
   this.api[apiKey] = {
     type: 'array-field',
 

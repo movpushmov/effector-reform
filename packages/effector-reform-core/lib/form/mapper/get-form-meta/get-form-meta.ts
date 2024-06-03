@@ -6,10 +6,12 @@ import {
   BatchedSchemaUpdatedPayload,
   FieldInteractionEventPayload,
   FieldInteractionEventPayloadBase,
+  MetaChangedEventPayload,
 } from '../map-schema/types';
 
-export function getMeta(
+export function getFormMeta(
   node: ReadyFieldsGroupSchema,
+  metaChanged: EventCallable<MetaChangedEventPayload>,
   schemaUpdated: EventCallable<FieldInteractionEventPayload>,
   batchedSchemaUpdated: EventCallable<BatchedSchemaUpdatedPayload>,
   focused: EventCallable<FieldInteractionEventPayloadBase>,
@@ -23,6 +25,7 @@ export function getMeta(
     isValid: true,
     api,
 
+    metaChanged,
     schemaUpdated,
     batchedSchemaUpdated,
     focused,

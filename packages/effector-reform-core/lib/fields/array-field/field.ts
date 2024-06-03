@@ -37,14 +37,19 @@ import { clearArrayFieldValuesMemory, filterUnused } from './utils';
 import { mapSchema, setFormErrors } from '../../form/mapper';
 import { isPrimitiveJsonValue } from '../primitive-field/utils';
 
-const defaultOptions = {
+const defaultOptions: CreateArrayFieldOptions = {
   forkOnCreateForm: true,
+  meta: {},
 };
 
 export function createArrayField<
   T extends PrimitiveValue | AnySchema,
+  Meta extends object = any,
   Value = UserFormSchema<T>,
->(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T, Value> {
+>(
+  values: T[],
+  overrides?: CreateArrayFieldOptions<Meta>,
+): ArrayField<T, Meta, Value> {
   type Values = Value[];
 
   const clearOuterErrorOnChange = Boolean(overrides?.clearOuterErrorOnChange);
@@ -145,6 +150,21 @@ export function createArrayField<
 
   const $isValid = $error.map((error) => error === null);
   const $isDirty = createStore(false);
+
+  const $meta = createStore<Meta>(options.meta);
+
+  const changeMeta = createEvent<Meta>();
+  const metaChanged = createEvent<Meta>();
+
+  sample({
+    clock: changeMeta,
+    target: $meta,
+  });
+
+  sample({
+    clock: $meta,
+    target: metaChanged,
+  });
 
   const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
@@ -537,6 +557,7 @@ export function createArrayField<
     batchedClear,
     batchedReset,
 
+    $meta,
     $values,
     $error,
     $outerError,
@@ -544,6 +565,9 @@ export function createArrayField<
 
     $isDirty,
     $isValid,
+
+    changeMeta,
+    metaChanged,
 
     setInnerError,
     changeError,
@@ -590,9 +614,12 @@ export function createArrayField<
     '@@unitShape': () => ({
       values: $values,
       error: $error,
+      meta: $meta,
 
       isDirty: $isDirty,
       isValid: $isValid,
+
+      changeMeta,
 
       change,
       changeError,
@@ -609,5 +636,5 @@ export function createArrayField<
       pop,
       replace,
     }),
-  } as ArrayField<T, Value> & InnerArrayFieldApi;
+  } as ArrayField<T, Meta, Value> & InnerArrayFieldApi;
 }

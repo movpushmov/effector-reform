@@ -12,15 +12,21 @@ Creates field, which contains an array of primitive values (check [createField a
 ### Formulae
 
 ```ts
-interface CreateArrayFieldOptions {
+interface CreateArrayFieldOptions<Meta extends object = any> {
+  error?: FieldError;
+  meta?: Meta;
   forkOnCreateForm?: boolean;
   clearOuterErrorOnChange?: boolean;
 }
 
 function createArrayField<
-  T extends PrimaryValue | AnySchema,
+  T extends PrimitiveValue | AnySchema,
+  Meta extends object = any,
   Value = UserFormSchema<T>,
->(values: T[], overrides?: CreateArrayFieldOptions): ArrayField<T, Value>;
+>(
+  values: T[],
+  overrides?: CreateArrayFieldOptions<Meta>,
+): ArrayField<T, Meta, Value>
 ```
 
 ### Examples
@@ -49,6 +55,32 @@ addNumber(20); // logFx -> [10, 20]
 ```
 *array field with primitive values*
 
+```ts
+import { createArrayField } from "@effector-reform/core";
+import { createEvent, sample } from "effector";
+
+const field = createArrayField<number, { onlyPositive: boolean }>([], {
+  meta: { onlyPositive: false }
+});
+
+const ruleToggled = createEvent();
+
+sample({
+  clock: ruleToggled,
+  source: field.$meta,
+  fn: (meta) => { onlyPositive: !meta.onlyPositive },
+  target: field.changeMeta,
+});
+
+field.$meta.getState(); // { onlyPositive: false } 
+
+ruleToggled();
+
+field.$meta.getState(); // { onlyPositive: true } 
+```
+
+*array field meta example*
+
 ### Limitations
 
 By the some reasons, you can't use dynamic array field subfields in
@@ -72,6 +104,7 @@ field.change([{ names: createArrayField<string>(['John']) }])
 | changeError  | `EventCallable<FieldError>`                                  | change outer array field error                                                                      |
 | change       | `EventCallable<T[]>`                                         | change array field values, like:<br/>`field.change([10, 20])`                                       |
 | push         | `EventCallable<PushPayload<T>>`                              | push item at the and of array, like:<br/>`field.push(10)`                                           |
+| changeMeta   | `EventCallable<Meta>`                                        | change field meta, like:<br/>`field.changeMeta({ onlyPositive: true })`                             |
 | swap         | `EventCallable<SwapPayload>`                                 | swap items by indexes, like:<br/>`field.swap({ indexA: 2, indexB: 10 })`                            |
 | move         | `EventCallable<MovePayload>`                                 | move item by indexes, like:<br/>`field.move({ from: 2, to: 10 })`                                   |
 | insert       | `EventCallable<InsertOrReplacePayload<T>>`                   | insert item at the index, like:<br/>`field.insert({ index: 2, value: 10 })`                         |
@@ -83,6 +116,7 @@ field.change([{ names: createArrayField<string>(['John']) }])
 | changed      | `Event<U[]>`                                                 | triggered when values changed                                                                       |
 | errorChanged | `Event<FieldError>`                                          | triggered when outer or inner error changed                                                         |
 | pushed       | `Event<{ params: PushPayload<T>; result: U[] }>`             | triggered when pushed                                                                               |
+| metaChanged  | `Event<Meta>`                                                | field meta changed                                                                                  |
 | swapped      | `Event<{ params: SwapPayload; result: U[] }>`                | triggered when swapped                                                                              |
 | moved        | `Event<{ params: MovePayload; result: U[] }>`                | triggered when moved                                                                                |
 | inserted     | `Event<{ params: InsertOrReplacePayload<T>; result: U[]; }>` | triggered when inserted                                                                             |
@@ -92,6 +126,7 @@ field.change([{ names: createArrayField<string>(['John']) }])
 | replaced     | `Event<{ params: InsertOrReplacePayload<T>; result: U[]; }>` | triggered when replaced                                                                             |
 | $values      | `Store<U[]>`                                                 | primitive values (or objects with subfields)                                                        |
 | $error       | `Store<FieldError>`                                          | error of array field                                                                                |
+| $meta        | `Store<Meta>`                                                | field meta                                                                                          |
 | $isDirty     | `Store<boolean>`                                             | is field changed                                                                                    |
 | $isValid     | `Store<boolean>`                                             | is field valid                                                                                      |
 | fork         | `(options?: CreateArrayFieldOptions) => ArrayField<T>`       | fork field (create field independent copy)                                                          |

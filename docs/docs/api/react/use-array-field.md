@@ -12,7 +12,13 @@ Use array field model in react component
 ### Formulae
 
 ```ts
-function useArrayField<T extends ArrayField<any>>(field: T);
+function useArrayField<
+  T extends ArrayField<any>,
+  Value extends ArrayFieldItemType = T extends ArrayField<any, any, infer D>
+    ? D
+    : never,
+  Meta extends object = T extends ArrayField<any, infer D> ? D : any,
+>(field: T): ReactArrayFieldApi<Value, Meta>
 ```
 
 ### Examples
@@ -63,12 +69,14 @@ const Field = () => {
 | name          | type                                                        | description                                             |
 |---------------|-------------------------------------------------------------|---------------------------------------------------------|
 | values        | `(T extends ReadyFieldsGroupSchema ? ReactFields<T> : T)[]` | array field values                                      |
+| meta          | `Meta`                                                      | array field meta                                        |
 | error         | `FieldError`                                                | array field error                                       |
 | isValid       | `boolean`                                                   | is array field valid                                    |
 | isDirty       | `boolean`                                                   | is array field changed                                  |
 | onReset       | `() => void`                                                | reset array field values                                |
 | onChange      | `(values: Payload[]) => void`                               | change array field values                               |
 | onChangeError | `(error: FieldError) => void`                               | change array field outer error                          |
+| onChangeMeta  | `(meta: Meta) => void`                                      | change field meta                                       |
 | onPush        | `(payload: PushPayload<Payload>) => void`                   | push item [reference](../core/create-array-field)       |
 | onSwap        | `(payload: SwapPayload) => void`                            | swap items [reference](../core/create-array-field)      |
 | onMove        | `(payload: MovePayload) => void`                            | move item [reference](../core/create-array-field)       |

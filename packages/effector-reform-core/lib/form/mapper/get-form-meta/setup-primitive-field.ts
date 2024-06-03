@@ -170,6 +170,12 @@ export function setupPrimitiveField(
     target: this.blurred,
   });
 
+  sample({
+    clock: field.metaChanged,
+    fn: (meta) => ({ fieldPath: apiKey, meta }),
+    target: this.metaChanged,
+  });
+
   this.api[apiKey] = {
     type: 'primitive-field',
 
