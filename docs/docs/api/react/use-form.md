@@ -96,24 +96,28 @@ function Form() {
 |---------------|----------------------------------|--------------------|
 | value         | `T`                              | field value        |
 | error         | `FieldError`                     | field outer error  |
+| meta          | `Meta`                           | field meta         |
 | isValid       | `boolean`                        | is field valid     |
 | isDirty       | `boolean`                        | is field changed   |
 | onChangeError | `(newError: FieldError) => void` | change field error |
 | onChange      | `(newValue: T) => void`          | change field value |
 | onFocus       | `() => void`                     | focus field        |
 | onBlur        | `() => void`                     | blur field         |
+| onChangeMeta  | `(meta: Meta) => void`           | change field meta  |
 
 #### ReactField (Array)
 
 | name          | type                                                        | description                                             |
 |---------------|-------------------------------------------------------------|---------------------------------------------------------|
 | values        | `(T extends ReadyFieldsGroupSchema ? ReactFields<T> : T)[]` | array field values                                      |
+| meta          | `Meta`                                                      | array field meta                                        |
 | error         | `FieldError`                                                | array field error                                       |
 | isValid       | `boolean`                                                   | is array field valid                                    |
 | isDirty       | `boolean`                                                   | is array field changed                                  |
 | onReset       | `() => void`                                                | reset array field values                                |
 | onChange      | `(values: Payload[]) => void`                               | change array field values                               |
 | onChangeError | `(error: FieldError) => void`                               | change array field outer error                          |
+| onChangeMeta  | `(meta: Meta) => void`                                      | change field meta                                       |
 | onPush        | `(payload: PushPayload<Payload>) => void`                   | push item [reference](../core/create-array-field)       |
 | onSwap        | `(payload: SwapPayload) => void`                            | swap items [reference](../core/create-array-field)      |
 | onMove        | `(payload: MovePayload) => void`                            | move item [reference](../core/create-array-field)       |

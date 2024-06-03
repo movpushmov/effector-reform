@@ -10,9 +10,9 @@ import { useMemo } from 'react';
 import { getFields, getPrimitiveField } from './utils';
 import type { ReactArrayFieldApi, ReactPrimitiveFieldApi } from '../types';
 
-export function useField<T extends PrimitiveValue>(
-  field: PrimitiveField<T>,
-): ReactPrimitiveFieldApi<T> {
+export function useField<T extends PrimitiveValue, Meta extends object = any>(
+  field: PrimitiveField<T, Meta>,
+): ReactPrimitiveFieldApi<T, Meta> {
   useUnit(field);
 
   return getPrimitiveField(field, useProvidedScope());
@@ -20,11 +20,12 @@ export function useField<T extends PrimitiveValue>(
 
 export function useArrayField<
   T extends ArrayField<any>,
-  Value extends ArrayFieldItemType = T extends ArrayField<any, infer D>
+  Value extends ArrayFieldItemType = T extends ArrayField<any, any, infer D>
     ? D
     : never,
->(field: T): ReactArrayFieldApi<Value> {
-  type Values = ReactArrayFieldApi<Value>['values'];
+  Meta extends object = T extends ArrayField<any, infer D> ? D : any,
+>(field: T): ReactArrayFieldApi<Value, Meta> {
+  type Values = ReactArrayFieldApi<Value, Meta>['values'];
 
   const scope = useProvidedScope();
   const {
