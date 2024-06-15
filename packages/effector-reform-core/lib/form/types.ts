@@ -36,7 +36,7 @@ export interface CreateFormOptions<T extends AnySchema> {
 export type FormValues<T extends ReadyFieldsGroupSchema> = {
   [K in keyof T]: T[K] extends PrimitiveField<any>
     ? StoreValue<T[K]['$value']>
-    : T[K] extends ArrayField<any, infer D>
+    : T[K] extends ArrayField<any, any, infer D>
       ? D extends ReadyFieldsGroupSchema
         ? FormValues<D>[]
         : D[]
@@ -109,8 +109,8 @@ export type FormType<
   errorsChanged: Event<Errors>;
 
   validate: EventCallable<void>;
-  validated: Event<void>;
-  validatedAndSubmitted: Event<void>;
+  validated: Event<Values>;
+  validatedAndSubmitted: Event<Values>;
 
   submit: EventCallable<void>;
   submitted: Event<Values>;

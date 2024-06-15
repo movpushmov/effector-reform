@@ -14,14 +14,14 @@ type RawFieldsSchemaFieldType =
   | ReadyFieldsSchemaFieldType;
 
 export type RawFieldsGroupSchema = {
-  [k in string]: RawFieldsSchemaFieldType;
+  [k: string]: RawFieldsSchemaFieldType;
 };
 
 export type ReadyFieldsGroupSchema = {
-  [k in string]: PrimitiveField | ArrayField<any> | ReadyFieldsGroupSchema;
+  [k: string]: ReadyFieldsSchemaFieldType;
 };
 
-export type AnySchema = RawFieldsGroupSchema | ReadyFieldsGroupSchema;
+export interface AnySchema extends RawFieldsGroupSchema {}
 
 export type UserFormSchema<T extends AnySchema | PrimitiveValue> =
   T extends PrimitiveValue

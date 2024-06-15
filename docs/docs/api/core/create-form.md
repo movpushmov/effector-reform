@@ -92,8 +92,8 @@ form.submit();
 | changed               | `EventCallable<Values>`                   | triggered when any field in form value changed                                                          |
 | errorsChanged         | `Event<Errors>`                           | triggered when any field in form error changed                                                          |
 | validate              | `EventCallable<void>`                     | validate form (calls validationFn from overrides)                                                       |
-| validated             | `Event<void>`                             | triggered when form validated                                                                           |
-| validatedAndSubmitted | `Event<void>`                             | triggered when form submitted and validated                                                             |
+| validated             | `Event<Values>`                           | triggered when form validated                                                                           |
+| validatedAndSubmitted | `Event<Values>`                           | triggered when form submitted and validated                                                             |
 | submit                | `EventCallable<void>`                     | submit form                                                                                             |
 | submitted             | `Event<Values>`                           | triggered when form submitted (be careful: form submitted be called even if validate of form is failed  |
 | reset                 | `EventCallable<void>`                     | reset form values                                                                                       |

@@ -151,7 +151,7 @@ describe('Form tests', () => {
 
   test.todo('Submit');
 
-  test('Submitted and validated', async () => {
+  test('submitted and validated', async () => {
     const scope = fork();
     const form = createForm({
       schema: { a: '', b: '', c: '', d: '', e: '' },

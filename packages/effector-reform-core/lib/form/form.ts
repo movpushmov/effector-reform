@@ -102,8 +102,8 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const submitted = createEvent<FormValues<Fields>>('<form submitted>');
 
   const validate = createEvent<void>('<form validate>');
-  const validated = createEvent<void>('<form validated>');
-  const validatedAndSubmitted = createEvent<void>(
+  const validated = createEvent<Values>('<form validated>');
+  const validatedAndSubmitted = createEvent<Values>(
     '<form validated and submitted>',
   );
 
@@ -211,8 +211,9 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   });
 
   sample({
-    clock: validateFx.doneData as EventCallable<any>,
-    filter: (result) => !result,
+    clock: validateFx.done,
+    filter: ({ result }) => !result,
+    fn: ({ params }) => params,
     target: validated,
   });
 
@@ -230,6 +231,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   sample({
     clock: combineEvents([validated, submitted]),
     source: $values,
+    fn: (values) => values,
     target: validatedAndSubmitted,
   });
 
