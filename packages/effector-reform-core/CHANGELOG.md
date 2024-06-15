@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/qvelty/effector-reform/compare/v0.9.0...v0.9.1) (2024-06-15)
+
+### Bug Fixes
+
+- form types ([b94dd95](https://github.com/qvelty/effector-reform/commit/b94dd9578db02ce4c536fbd0bee94d4491b2878d))
+
 # [0.9.0](https://github.com/qvelty/effector-reform/compare/v0.8.5...v0.9.0) (2024-06-03)
 
 ### Bug Fixes

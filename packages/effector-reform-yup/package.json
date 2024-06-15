@@ -5,7 +5,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "private": false,
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Yup schema adapter for effector-reform forms",
   "keywords": [
     "effector",
@@ -55,7 +55,7 @@
   },
   "gitHead": "d35b5e5d94287cc6ba5b6568ef9e67c3a51312cc",
   "dependencies": {
-    "@effector-reform/core": "^0.9.0"
+    "@effector-reform/core": "^0.9.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.24.3",
