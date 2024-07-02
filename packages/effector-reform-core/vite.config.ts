@@ -32,4 +32,5 @@ export default defineConfig({
       rollupTypes: true,
     }),
   ],
+  test: {},
 });

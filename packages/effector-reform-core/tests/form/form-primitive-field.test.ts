@@ -1,6 +1,5 @@
-import { describe, test } from '@jest/globals';
+import { describe, test, expect, vi } from 'vitest';
 import { allSettled, createEffect, fork, sample } from 'effector';
-import { fn } from 'jest-mock';
 import { createForm } from '../../lib';
 
 describe('Form primitive field tests', () => {
@@ -8,7 +7,7 @@ describe('Form primitive field tests', () => {
     const scope = fork();
     const form = createForm({ schema: { field: '' } });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -19,14 +18,14 @@ describe('Form primitive field tests', () => {
     await allSettled(form.fields.field.change, { scope, params: 'test' });
 
     expect(scope.getState(form.$values)).toStrictEqual({ field: 'test' });
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('change error', async () => {
     const scope = fork();
     const form = createForm({ schema: { field: '' } });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -37,14 +36,14 @@ describe('Form primitive field tests', () => {
     await allSettled(form.fields.field.changeError, { scope, params: 'error' });
 
     expect(scope.getState(form.$errors)).toStrictEqual({ field: 'error' });
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('focus', async () => {
     const scope = fork();
     const form = createForm({ schema: { field: '' } });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -55,14 +54,14 @@ describe('Form primitive field tests', () => {
     await allSettled(form.fields.field.focus, { scope });
 
     expect(scope.getState(form.fields.field.$isFocused)).toBeTruthy();
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('blur', async () => {
     const scope = fork();
     const form = createForm({ schema: { field: '' } });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -74,14 +73,14 @@ describe('Form primitive field tests', () => {
     await allSettled(form.fields.field.blur, { scope });
 
     expect(scope.getState(form.fields.field.$isFocused)).toBeFalsy();
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('reset', async () => {
     const scope = fork();
     const form = createForm({ schema: { field: '' } });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -93,6 +92,6 @@ describe('Form primitive field tests', () => {
     await allSettled(form.fields.field.reset, { scope });
 
     expect(scope.getState(form.$values)).toStrictEqual({ field: '' });
-    expect(mockedFn).toBeCalledTimes(2);
+    expect(mockedFn).toHaveBeenCalledTimes(2);
   });
 });

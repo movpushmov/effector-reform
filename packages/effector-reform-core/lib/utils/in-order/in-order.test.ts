@@ -1,15 +1,16 @@
+import { test, expect, vi } from 'vitest';
+
 import { allSettled, createEffect, createEvent, fork, sample } from 'effector';
 import { inOrder } from './in-order';
-import { fn } from 'jest-mock';
 
-test.only('in order test', async () => {
+test('in order test', async () => {
   const scope = fork();
 
   const firstEvent = createEvent<number>();
   const secondEvent = createEvent<number>();
   const thirdEvent = createEvent<number>();
 
-  const mockedFn = fn();
+  const mockedFn = vi.fn();
   const fx = createEffect(mockedFn);
 
   const clock = inOrder([firstEvent, secondEvent, thirdEvent]);

@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "test": "jest --env=jsdom"
+    "test": "vitest"
   },
   "bugs": {
     "url": "https://github.com/qvelty/effector-reform/issues"

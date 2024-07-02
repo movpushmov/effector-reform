@@ -42,12 +42,12 @@
   },
   "scripts": {
     "build": "vite build",
-    "test": "jest"
+    "test": "vitest"
   },
   "bugs": {
     "url": "https://github.com/qvelty/effector-reform/issues"
   },
-  "dependencies": {
+  "peerDependencies": {
     "effector": "^23.1.0",
     "patronum": "^2.2.0"
   },
