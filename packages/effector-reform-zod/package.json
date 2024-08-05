@@ -41,7 +41,7 @@
   ],
   "scripts": {
     "build": "vite build",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "author": "qvelty",
   "homepage": "https://github.com/qvelty/effector-reform#readme",
