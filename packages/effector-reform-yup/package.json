@@ -23,8 +23,8 @@
     "validation",
     "adapter"
   ],
-  "author": "qvelty",
-  "homepage": "https://github.com/qvelty/effector-reform#readme",
+  "author": "movpushmov",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
   "license": "MIT",
   "directories": {
     "lib": "lib",
@@ -44,14 +44,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qvelty/effector-reform.git"
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
   "scripts": {
     "build": "vite build",
     "test": "vitest run"
   },
   "bugs": {
-    "url": "https://github.com/qvelty/effector-reform/issues"
+    "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "gitHead": "d35b5e5d94287cc6ba5b6568ef9e67c3a51312cc",
   "dependencies": {

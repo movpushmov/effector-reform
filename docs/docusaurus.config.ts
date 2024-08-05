@@ -7,13 +7,13 @@ const config: Config = {
   tagline: 'make & use forms without a headache',
   favicon: 'img/favicon.ico',
 
-  url: 'https://qvelty.github.io',
+  url: 'https://movpushmov.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/effector-reform',
 
   trailingSlash: false,
-  organizationName: 'qvelty',
+  organizationName: 'movpushmov',
   projectName: 'effector-reform',
 
   onBrokenLinks: 'warn',
@@ -33,11 +33,13 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/qvelty/effector-reform/tree/main/docs',
+          editUrl:
+            'https://github.com/movpushmov/effector-reform/tree/main/docs',
         },
         blog: {
           showReadingTime: true,
-          editUrl: 'https://github.com/qvelty/effector-reform/tree/main/docs',
+          editUrl:
+            'https://github.com/movpushmov/effector-reform/tree/main/docs',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -72,7 +74,7 @@ const config: Config = {
           label: 'API',
         },
         {
-          href: 'https://github.com/qvelty/effector-reform',
+          href: 'https://github.com/movpushmov/effector-reform',
           label: 'GitHub',
           position: 'right',
         },
@@ -112,12 +114,12 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/qvelty/effector-reform',
+              href: 'https://github.com/movpushmov/effector-reform',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} qvelty`,
+      copyright: `Copyright © ${new Date().getFullYear()} movpushmov`,
     },
     prism: {
       theme: prismThemes.github,

@@ -9,7 +9,7 @@ Forms without a headache
 
 ## Documentation
 
-For additional information, guides and api reference visit [documentation site](https://qvelty.github.io/effector-reform/)
+For additional information, guides and api reference visit [documentation site](https://movpushmov.github.io/effector-reform/)
 
 ## Packages
 

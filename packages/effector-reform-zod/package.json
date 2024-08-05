@@ -43,15 +43,15 @@
     "build": "vite build",
     "test": "vitest run"
   },
-  "author": "qvelty",
-  "homepage": "https://github.com/qvelty/effector-reform#readme",
+  "author": "movpushmov",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qvelty/effector-reform.git"
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
   "bugs": {
-    "url": "https://github.com/qvelty/effector-reform/issues"
+    "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
     "@effector-reform/core": "^0.9.1"

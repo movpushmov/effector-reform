@@ -18,8 +18,8 @@
     "effect-react-form",
     "effector-form"
   ],
-  "author": "qvelty",
-  "homepage": "https://github.com/qvelty/effector-reform#readme",
+  "author": "movpushmov",
+  "homepage": "https://github.com/movpushmov/effector-reform#readme",
   "license": "MIT",
   "directories": {
     "lib": "lib"
@@ -38,14 +38,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/qvelty/effector-reform.git"
+    "url": "git+https://github.com/movpushmov/effector-reform.git"
   },
   "scripts": {
     "build": "vite build",
     "test": "vitest run"
   },
   "bugs": {
-    "url": "https://github.com/qvelty/effector-reform/issues"
+    "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "peerDependencies": {
     "effector": "^23.2.2",
