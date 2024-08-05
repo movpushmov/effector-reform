@@ -66,8 +66,8 @@
     "react": "^18.2.0"
   },
   "peerDependencies": {
-    "effector": "^23.2.0",
-    "effector-react": "^23.2.0",
+    "effector": "^23.2.2",
+    "effector-react": "^23.2.1",
     "react": "^18.2.0"
   },
   "gitHead": "d35b5e5d94287cc6ba5b6568ef9e67c3a51312cc"

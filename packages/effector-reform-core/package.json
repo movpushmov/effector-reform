@@ -48,7 +48,7 @@
     "url": "https://github.com/qvelty/effector-reform/issues"
   },
   "peerDependencies": {
-    "effector": "^23.1.0",
+    "effector": "^23.2.2",
     "patronum": "^2.2.0"
   },
   "devDependencies": {

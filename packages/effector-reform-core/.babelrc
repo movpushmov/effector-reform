@@ -22,7 +22,8 @@
           "lib/form",
           "lib/fields",
           "lib/fields/array-field/field",
-          "lib/fields/primitive-field/field"
+          "lib/fields/primitive-field/field",
+          "../lib"
         ],
         "addNames": true
       }
