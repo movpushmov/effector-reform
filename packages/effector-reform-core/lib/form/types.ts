@@ -13,6 +13,7 @@ import {
   ReadyFieldsGroupSchema,
   UserFormSchema,
 } from '../fields';
+import { Contract } from '@withease/contracts';
 
 export type ErrorsSchemaPayload = Record<string, FieldError>;
 
@@ -28,7 +29,10 @@ type ValidationStrategy = 'blur' | 'focus' | 'change' | 'submit';
 
 export interface CreateFormOptions<T extends AnySchema> {
   schema: T;
-  validation?: SyncValidationFn<T> | AsyncValidationFn<T>;
+  validation?:
+    | SyncValidationFn<T>
+    | AsyncValidationFn<T>
+    | Contract<unknown, FormValues<UserFormSchema<T>>>;
   validationStrategies?: ValidationStrategy[];
   clearOuterErrorsOnSubmit?: boolean;
 }

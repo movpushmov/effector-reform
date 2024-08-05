@@ -1,6 +1,7 @@
 import { describe, test, expect, vi } from 'vitest';
 import { allSettled, createEffect, fork, sample } from 'effector';
 import { createArrayField, createField, createForm } from '../../lib';
+import { obj, str } from '@withease/contracts';
 
 describe('Form tests', () => {
   test('Change partial primitive fields values', async () => {
@@ -202,6 +203,50 @@ describe('Form tests', () => {
       d: null,
       e: null,
     });
+  });
+
+  test('contracts validation errors', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: { a: '' },
+      validation: obj({
+        a: str,
+      }),
+    });
+
+    // @ts-expect-error -- specially setting value with wrong data type
+    await allSettled(form.setPartialValues, { scope, params: { a: 0 } });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      a: 'a: expected string, got number',
+    });
+  });
+
+  test('contracts validation', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: { a: '' },
+      validation: obj({
+        a: str,
+      }),
+    });
+
+    const mockedFn = vi.fn();
+    const fx = createEffect(mockedFn);
+
+    sample({
+      clock: form.validated,
+      target: fx,
+    });
+
+    // @ts-expect-error -- specially setting value with wrong data type
+    await allSettled(form.setPartialValues, { scope, params: { a: 0 } });
+
+    expect(mockedFn).toBeCalledTimes(0);
+
+    await allSettled(form.setPartialValues, { scope, params: { a: '123' } });
+
+    expect(mockedFn).toBeCalledTimes(1);
   });
 
   test('reset', async () => {
