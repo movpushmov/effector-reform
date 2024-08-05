@@ -1,7 +1,6 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, test, expect, vi } from 'vitest';
 import { allSettled, createEffect, fork, sample } from 'effector';
 import { createArrayField, createField, createForm } from '../../lib';
-import { fn } from 'jest-mock';
 
 describe('Form tests', () => {
   test('Change partial primitive fields values', async () => {
@@ -74,7 +73,7 @@ describe('Form tests', () => {
       },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const errorsChangedFx = createEffect(mockedFn);
 
     sample({
@@ -98,7 +97,7 @@ describe('Form tests', () => {
       },
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
     expect(scope.getState(form.$errors)).toStrictEqual({
       a: 'error 1',
       b: 'error 2',
@@ -125,7 +124,7 @@ describe('Form tests', () => {
     const scope = fork();
     const form = createForm({ schema: { a: '', b: '', c: '', d: '', e: '' } });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const valuesChangedFx = createEffect(mockedFn);
 
     sample({
@@ -144,7 +143,7 @@ describe('Form tests', () => {
       },
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test.todo('Clear outer errors');
@@ -157,10 +156,10 @@ describe('Form tests', () => {
       schema: { a: '', b: '', c: '', d: '', e: '' },
     });
 
-    const mockedValidatedFn = fn();
+    const mockedValidatedFn = vi.fn();
     const mockedValidatedFx = createEffect(mockedValidatedFn);
 
-    const mockedValidatedAndSubmittedFn = fn();
+    const mockedValidatedAndSubmittedFn = vi.fn();
     const mockedValidatedAndSubmittedFx = createEffect(
       mockedValidatedAndSubmittedFn,
     );
@@ -178,13 +177,13 @@ describe('Form tests', () => {
     await allSettled(form.fields.a.change, { scope, params: '123' });
     await allSettled(form.fields.b.change, { scope, params: '321' });
 
-    expect(mockedValidatedAndSubmittedFn).toBeCalledTimes(0);
-    expect(mockedValidatedFn).toBeCalledTimes(2);
+    expect(mockedValidatedAndSubmittedFn).toHaveBeenCalledTimes(0);
+    expect(mockedValidatedFn).toHaveBeenCalledTimes(2);
 
     await allSettled(form.submit, { scope });
 
-    expect(mockedValidatedAndSubmittedFn).toBeCalledTimes(1);
-    expect(mockedValidatedFn).toBeCalledTimes(3);
+    expect(mockedValidatedAndSubmittedFn).toHaveBeenCalledTimes(1);
+    expect(mockedValidatedFn).toHaveBeenCalledTimes(3);
   });
 
   test('Validate', async () => {
@@ -226,7 +225,7 @@ describe('Form tests', () => {
   test.todo('Is valid changed');
 
   test('meta', async () => {
-    const mockedFn = jest.fn();
+    const mockedFn = vi.fn();
 
     const scope = fork();
 
@@ -260,7 +259,7 @@ describe('Form tests', () => {
       isKnown: false,
     });
 
-    expect(mockedFn).toBeCalledTimes(2);
+    expect(mockedFn).toHaveBeenCalledTimes(2);
   });
 
   test('nullable fields', async () => {

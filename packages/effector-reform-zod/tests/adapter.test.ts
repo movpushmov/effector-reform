@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 import { createArrayField, createForm } from '@effector-reform/core';
 import { zodAdapter } from '../lib';
 import { z } from 'zod';

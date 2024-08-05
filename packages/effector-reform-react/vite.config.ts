@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
 import babel from 'vite-plugin-babel';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/index.ts'),
@@ -29,7 +29,21 @@ export default defineConfig({
     },
   },
   plugins: [
-    babel(),
+    babel({
+      babelConfig: {
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              modules: mode === 'test' ? false : 'auto',
+              targets: '> 0.25%, not dead',
+            },
+          ],
+          '@babel/preset-typescript',
+          '@babel/preset-react',
+        ],
+      },
+    }),
     dts({
       outDir: resolve(__dirname, 'dist'),
       entryRoot: resolve(__dirname, 'lib'),
@@ -38,4 +52,7 @@ export default defineConfig({
       rollupTypes: true,
     }),
   ],
-});
+  test: {
+    environment: 'jsdom',
+  },
+}));

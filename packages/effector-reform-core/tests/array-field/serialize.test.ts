@@ -1,4 +1,4 @@
-import { describe, test, expect } from '@jest/globals';
+import { describe, test, expect } from 'vitest';
 import { createArrayField } from '../../lib';
 import { allSettled, fork, serialize } from 'effector';
 import { mapSchema } from '../../lib/form/mapper';

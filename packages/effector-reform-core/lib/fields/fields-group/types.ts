@@ -35,8 +35,8 @@ export type UserFormSchema<T extends AnySchema | PrimitiveValue> =
               ? T[K]
               : T[K] extends ArrayField<any>
                 ? ArrayField<
-                    T[K] extends ArrayField<infer K> ? K : never,
-                    T[K] extends ArrayField<any, infer K> ? K : never,
+                    T[K] extends ArrayField<infer K, any, any> ? K : never,
+                    T[K] extends ArrayField<any, infer K, any> ? K : never,
                     UserFormSchema<StoreValue<T[K]['$values']>[number]>
                   >
                 : T[K] extends AnySchema

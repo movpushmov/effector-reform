@@ -1,7 +1,6 @@
-import { describe, test } from '@jest/globals';
+import { describe, test, expect, vi } from 'vitest';
 import { allSettled, createEffect, fork, sample } from 'effector';
 import { createForm } from '../../lib';
-import { fn } from 'jest-mock';
 import { combineEvents } from 'patronum';
 
 describe('Form batching tests', () => {
@@ -11,7 +10,7 @@ describe('Form batching tests', () => {
       schema: { a: '', b: 0, c: { d: [] as number[] } },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -24,7 +23,7 @@ describe('Form batching tests', () => {
       params: { a: 'test', b: 123, c: { d: [1, 2] } },
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('batch form error change', async () => {
@@ -33,7 +32,7 @@ describe('Form batching tests', () => {
       schema: { a: '', b: 0, c: { d: [] } },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -50,7 +49,7 @@ describe('Form batching tests', () => {
       },
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('batch form reset', async () => {
@@ -59,7 +58,7 @@ describe('Form batching tests', () => {
       schema: { a: '', b: 0, c: { d: [] as number[] } },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     await allSettled(form.setPartialValues, {
@@ -82,6 +81,6 @@ describe('Form batching tests', () => {
     });
 
     await allSettled(form.reset, { scope });
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 });

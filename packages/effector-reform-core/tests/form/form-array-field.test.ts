@@ -1,7 +1,6 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, test, expect, vi } from 'vitest';
 import { allSettled, createEffect, fork, sample } from 'effector';
 import { createArrayField, createForm } from '../../lib';
-import { fn } from 'jest-mock';
 
 describe('Form array field tests', () => {
   test('change value', async () => {
@@ -10,7 +9,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<{ name: string }>([]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -27,7 +26,7 @@ describe('Form array field tests', () => {
       field: [{ name: 'John' }],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('change error', async () => {
@@ -36,7 +35,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<{ name: string }>([]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -53,7 +52,7 @@ describe('Form array field tests', () => {
       field: { error: 'some error', errors: [] },
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('change field suberror', async () => {
@@ -64,7 +63,7 @@ describe('Form array field tests', () => {
       },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -83,7 +82,7 @@ describe('Form array field tests', () => {
       field: { error: null, errors: [{ name: 'error' }] },
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('push', async () => {
@@ -92,7 +91,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<{ name: string }>([]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -109,7 +108,7 @@ describe('Form array field tests', () => {
       field: [{ name: 'John' }],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('swap', async () => {
@@ -118,7 +117,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<number>([1, 2]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -135,7 +134,7 @@ describe('Form array field tests', () => {
       field: [2, 1],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('move', async () => {
@@ -144,7 +143,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<number>([0, 1, 2, 3]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -161,7 +160,7 @@ describe('Form array field tests', () => {
       field: [0, 2, 3, 1],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('insert', async () => {
@@ -170,7 +169,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<number>([0, 1, 2, 3]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -187,7 +186,7 @@ describe('Form array field tests', () => {
       field: [0, 1, 10, 2, 3],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('unshift', async () => {
@@ -196,7 +195,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<number>([0, 1, 2, 3]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -213,7 +212,7 @@ describe('Form array field tests', () => {
       field: [10, 0, 1, 2, 3],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('remove', async () => {
@@ -222,7 +221,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<number>([0, 1, 2, 3]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -239,7 +238,7 @@ describe('Form array field tests', () => {
       field: [0, 2, 3],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('pop', async () => {
@@ -248,7 +247,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<number>([0, 1, 2, 3]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -264,7 +263,7 @@ describe('Form array field tests', () => {
       field: [0, 1, 2],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 
   test('replace', async () => {
@@ -273,7 +272,7 @@ describe('Form array field tests', () => {
       schema: { field: createArrayField<number>([0, 1, 2, 3]) },
     });
 
-    const mockedFn = fn();
+    const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
     sample({
@@ -290,6 +289,6 @@ describe('Form array field tests', () => {
       field: [0, 10, 2, 3],
     });
 
-    expect(mockedFn).toBeCalledTimes(1);
+    expect(mockedFn).toHaveBeenCalledTimes(1);
   });
 });
