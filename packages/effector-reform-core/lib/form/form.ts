@@ -30,6 +30,7 @@ import {
 } from './mapper';
 import { combineEvents } from 'patronum';
 import { resetForm } from './helpers/reset';
+import { contractAdapter, isContract } from './helpers';
 
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const {
@@ -109,7 +110,11 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const reset = createEvent('<form reset>');
 
-  const validateFx = createEffect(validation) as Effect<
+  const preparedValidationFn = isContract(validation)
+    ? contractAdapter(validation)
+    : validation;
+
+  const validateFx = createEffect(preparedValidationFn) as Effect<
     Values,
     PartialRecursive<Errors> | null,
     Error
