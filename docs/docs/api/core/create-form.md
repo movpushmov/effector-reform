@@ -12,9 +12,11 @@ Creates form
 ### Formulae
 
 ```ts
+import { Contract } from "@withease/contracts";
+
 interface CreateFormOptions<T extends AnySchema> {
   schema: T;
-  validation?: SyncValidationFn<T> | AsyncValidationFn<T>;
+  validation?: SyncValidationFn<T> | AsyncValidationFn<T> | Contract<unknown, FormValues<UserFormSchema<T>>>;
   validationStrategies?: ValidationStrategy[];
   clearOuterErrorsOnSubmit?: boolean;
 }

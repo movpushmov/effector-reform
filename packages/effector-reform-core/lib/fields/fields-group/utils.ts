@@ -15,6 +15,7 @@ import type {
   ReadyFieldsGroupSchema,
   UserFormSchema,
 } from './types';
+import { copy } from '../copy';
 
 export function prepareFieldsSchema<
   T extends AnySchema | PrimitiveValue,
@@ -52,22 +53,23 @@ export function prepareFieldsSchema<
   return result;
 }
 
-export function forkGroup<T extends ReadyFieldsGroupSchema>(group: T): T {
+export function copyGroup<T extends ReadyFieldsGroupSchema>(group: T): T {
   const result: UserFormSchema<any> = {};
 
   for (const key in group) {
     const element = group[key];
 
     switch (element.type) {
-      case arrayFieldSymbol:
+      case arrayFieldSymbol: {
+        result[key] = element.copyOnCreateForm ? copy(element) : element;
+        break;
+      }
       case primitiveFieldSymbol: {
-        result[key] = element.forkOnCreateForm ? element.fork() : element;
-
+        result[key] = element.copyOnCreateForm ? copy(element) : element;
         break;
       }
       case undefined: {
-        result[key] = forkGroup(element);
-
+        result[key] = copyGroup(element);
         break;
       }
     }

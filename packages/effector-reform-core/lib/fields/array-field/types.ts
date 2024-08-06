@@ -74,8 +74,8 @@ export interface ArrayField<
   $isDirty: Store<boolean>;
   $isValid: Store<boolean>;
 
-  forkOnCreateForm: boolean;
-  fork: (options?: CreateArrayFieldOptions) => ArrayField<T>;
+  copyOnCreateForm: boolean;
+  clearOuterErrorOnChange: boolean;
 
   '@@unitShape': () => {
     values: Store<U[]>;
@@ -104,7 +104,7 @@ export interface ArrayField<
 export interface CreateArrayFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
-  forkOnCreateForm?: boolean;
+  copyOnCreateForm?: boolean;
   clearOuterErrorOnChange?: boolean;
 }
 

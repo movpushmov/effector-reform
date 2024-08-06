@@ -16,7 +16,7 @@ interface CreatePrimitiveFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
   clearOuterErrorOnChange?: boolean;
-  forkOnCreateForm?: boolean;
+  copyOnCreateForm?: boolean;
 }
 
 function createField<
@@ -89,7 +89,6 @@ field.$meta.getState(); // { onlyPositive: true }
 | $isFocused   | `Store<boolean>`                                           | is user focused on field                                                      |
 | blurred      | `Event<void>`                                              | triggered when user blurred input (you must set focus/blur handlers in input) |
 | focused      | `Event<void>`                                              | triggered when user focused input (you must set focus/blur handlers in input) |
-| fork         | `(options?: CreatePrimaryFieldOptions) => PrimaryField<T>` | fork field (create field independent copy)                                    |
 | change       | `EventCallable<T>`                                         | change field value                                                            |
 | changed      | `Event<T>`                                                 | triggered when field value changed                                            |
 | reset        | `EventCallable<void>`                                      | reset field value                                                             |

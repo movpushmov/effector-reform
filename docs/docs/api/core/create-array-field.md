@@ -15,7 +15,7 @@ Creates field, which contains an array of primitive values (check [createField a
 interface CreateArrayFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
-  forkOnCreateForm?: boolean;
+  copyOnCreateForm?: boolean;
   clearOuterErrorOnChange?: boolean;
 }
 
@@ -129,4 +129,3 @@ field.change([{ names: createArrayField<string>(['John']) }])
 | $meta        | `Store<Meta>`                                                | field meta                                                                                          |
 | $isDirty     | `Store<boolean>`                                             | is field changed                                                                                    |
 | $isValid     | `Store<boolean>`                                             | is field valid                                                                                      |
-| fork         | `(options?: CreateArrayFieldOptions) => ArrayField<T>`       | fork field (create field independent copy)                                                          |

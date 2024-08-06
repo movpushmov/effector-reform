@@ -38,7 +38,7 @@ import { mapSchema, setFormErrors } from '../../form/mapper';
 import { isPrimitiveJsonValue } from '../primitive-field/utils';
 
 const defaultOptions: CreateArrayFieldOptions = {
-  forkOnCreateForm: true,
+  copyOnCreateForm: true,
   meta: {},
 };
 
@@ -606,10 +606,8 @@ export function createArrayField<
     reset,
     resetCompleted,
 
-    forkOnCreateForm: options.forkOnCreateForm,
-
-    fork: (options?: CreateArrayFieldOptions) =>
-      createArrayField(values, { ...overrides, ...options }),
+    copyOnCreateForm: options.copyOnCreateForm,
+    clearOuterErrorOnChange,
 
     '@@unitShape': () => ({
       values: $values,
@@ -635,6 +633,8 @@ export function createArrayField<
       remove,
       pop,
       replace,
+
+      clearOuterErrorOnChange,
     }),
   } as ArrayField<T, Meta, Value> & InnerArrayFieldApi;
 }

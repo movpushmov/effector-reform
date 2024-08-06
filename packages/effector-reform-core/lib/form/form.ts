@@ -11,7 +11,7 @@ import {
   AnySchema,
   PartialRecursive,
   UserFormSchema,
-  forkGroup,
+  copyGroup,
   prepareFieldsSchema,
 } from '../fields';
 import type {
@@ -42,7 +42,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     clearOuterErrorsOnSubmit = true,
   } = options;
 
-  const fields = forkGroup(prepareFieldsSchema(schema));
+  const fields = copyGroup(prepareFieldsSchema(schema));
   const {
     $errors,
     $values,

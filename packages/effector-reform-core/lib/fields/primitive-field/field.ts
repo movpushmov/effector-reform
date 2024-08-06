@@ -16,7 +16,7 @@ import { spread } from 'patronum';
 const defaultOptions: CreatePrimitiveFieldOptions = {
   error: null,
   meta: {},
-  forkOnCreateForm: true,
+  copyOnCreateForm: true,
 };
 
 export function createField<
@@ -189,7 +189,8 @@ export function createField<
     setInnerError,
     setOuterError,
 
-    forkOnCreateForm: options.forkOnCreateForm,
+    copyOnCreateForm: options.copyOnCreateForm,
+    clearOuterErrorOnChange,
 
     fork: (options?: CreatePrimitiveFieldOptions) =>
       createField(defaultValue, { ...overrides, ...options }),

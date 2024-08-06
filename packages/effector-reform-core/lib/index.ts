@@ -2,7 +2,7 @@ export { createForm } from './form';
 export {
   createArrayField,
   createField,
-  forkGroup,
+  copyGroup,
   prepareFieldsSchema,
   isArrayField,
   isPrimitiveField,

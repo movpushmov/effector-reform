@@ -53,9 +53,8 @@ export interface PrimitiveField<
   focus: EventCallable<void>;
   focused: Event<void>;
 
-  forkOnCreateForm: boolean;
-
-  fork: (options?: CreatePrimitiveFieldOptions) => PrimitiveField<T>;
+  copyOnCreateForm: boolean;
+  clearOuterErrorOnChange: boolean;
 
   '@@unitShape': () => {
     value: Store<T>;
@@ -80,7 +79,7 @@ export interface CreatePrimitiveFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
   clearOuterErrorOnChange?: boolean;
-  forkOnCreateForm?: boolean;
+  copyOnCreateForm?: boolean;
 }
 
 export type PrimitiveFieldSymbolType = typeof primitiveFieldSymbol;
