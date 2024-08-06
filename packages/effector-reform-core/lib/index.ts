@@ -7,6 +7,7 @@ export {
   isArrayField,
   isPrimitiveField,
   isPrimitiveValue,
+  copy,
 } from './fields';
 export type * from './fields/types';
 export type * from './fields/array-field/types';
