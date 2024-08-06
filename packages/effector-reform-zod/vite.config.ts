@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
 import babel from 'vite-plugin-babel';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/index.ts'),
@@ -14,20 +14,7 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {},
   },
   plugins: [
-    babel({
-      babelConfig: {
-        presets: [
-          [
-            '@babel/preset-env',
-            {
-              modules: mode === 'test' ? false : 'auto',
-              targets: '> 0.25%, not dead',
-            },
-          ],
-          '@babel/preset-typescript',
-        ],
-      },
-    }),
+    babel({ filter: /.[jt]sx?/ }),
     dts({
       outDir: resolve(__dirname, 'dist'),
       entryRoot: resolve(__dirname, 'lib'),
@@ -36,4 +23,4 @@ export default defineConfig(({ mode }) => ({
       rollupTypes: true,
     }),
   ],
-}));
+});

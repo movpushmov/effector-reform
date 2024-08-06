@@ -2,8 +2,9 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
 import babel from 'vite-plugin-babel';
+import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/index.ts'),
@@ -29,21 +30,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [
-    babel({
-      babelConfig: {
-        presets: [
-          [
-            '@babel/preset-env',
-            {
-              modules: mode === 'test' ? false : 'auto',
-              targets: '> 0.25%, not dead',
-            },
-          ],
-          '@babel/preset-typescript',
-          '@babel/preset-react',
-        ],
-      },
-    }),
+    react(),
     dts({
       outDir: resolve(__dirname, 'dist'),
       entryRoot: resolve(__dirname, 'lib'),
@@ -53,6 +40,7 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   test: {
+    globals: true,
     environment: 'jsdom',
   },
-}));
+});

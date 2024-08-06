@@ -1,0 +1,25 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "targets": "> 0.25%, not dead"
+      }
+    ],
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    [
+      "effector/babel-plugin",
+      {
+        "factories": [
+          "lib/fields/primitive-field/field",
+          "lib/fields/array-field/field",
+          "lib/form/form"
+        ],
+        "addNames": true
+      }
+    ]
+  ]
+}
