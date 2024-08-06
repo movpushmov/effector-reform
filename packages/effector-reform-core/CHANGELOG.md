@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/movpushmov/effector-reform/compare/v0.9.1...v0.10.0) (2024-08-06)
+
+### Bug Fixes
+
+- build ([4e297fa](https://github.com/movpushmov/effector-reform/commit/4e297fa4073970e231dc8f21a73d31a5e6718d16))
+- critical bug with sids (babel plugin) ([6aef38c](https://github.com/movpushmov/effector-reform/commit/6aef38c7e05e2efed17d10e1fdb28ebdc701dae6))
+
+### Features
+
+- add support for contracts validation ([f22fbca](https://github.com/movpushmov/effector-reform/commit/f22fbca9677af538a5efe70091fcd735769aad60))
+
 ## [0.9.1](https://github.com/movpushmov/effector-reform/compare/v0.9.0...v0.9.1) (2024-06-15)
 
 ### Bug Fixes
