@@ -14,7 +14,6 @@
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview",
-    "docs:publish": ""
+    "docs:preview": "vitepress preview"
   }
 }
