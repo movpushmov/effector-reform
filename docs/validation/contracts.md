@@ -1,4 +1,4 @@
-# Zod validation
+# Contracts validation
 
 `effector-reform` has out-of-box support for contracts validation.
 
