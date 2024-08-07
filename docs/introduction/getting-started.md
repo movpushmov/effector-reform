@@ -29,6 +29,20 @@ In SSR project you must add @effector-reform/core in "factories"
 list in [effector babel plugin](https://effector.dev/en/api/effector/babel-plugin/#configuration-factories)
 :::
 
+## React bindings
+
+::: code-group
+```bash [npm]
+npm install @effector-reform/react
+```
+```bash [yarn]
+yarn add @effector-reform/react
+```
+```bash [pnpm]
+pnpm add @effector-reform/react
+```
+:::
+
 ## Writing first form
 
 As an example, we will write a simple form with `name` and `age` fields.
