@@ -5,6 +5,7 @@ const version = '0.10.2'
 export default defineConfig({
   title: "effector reform",
   description: "effector reform documentation",
+  base: '/effector-reform',
   themeConfig: {
     logo: '/public/logo.svg',
     nav: [
