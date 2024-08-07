@@ -6,6 +6,9 @@ export default defineConfig({
   title: "effector reform",
   description: "effector reform documentation",
   base: '/effector-reform',
+  head: [
+    ['link', { rel: "icon", href: "/effector-reform/favicon.ico"}],
+  ],
   themeConfig: {
     logo: './logo.svg',
     nav: [
