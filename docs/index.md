@@ -7,7 +7,7 @@ hero:
   text: "make & use forms without a headache"
   tagline: with power of effector
   image:
-    src: /public/logo.svg
+    src: ./logo.svg
   actions:
     - theme: brand
       text: Get Started

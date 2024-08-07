@@ -7,7 +7,7 @@ export default defineConfig({
   description: "effector reform documentation",
   base: '/effector-reform',
   themeConfig: {
-    logo: '/public/logo.svg',
+    logo: './logo.svg',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction/getting-started' },
