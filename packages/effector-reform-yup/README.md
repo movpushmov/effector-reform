@@ -2,10 +2,8 @@
 
 Forms without a headache
 
-> [!WARNING]  
-> effector-reform is in active development.
-> Highly not recommended to use this
-> library in production.
+> [!WARNING]
+> effector-reform is not production ready yet and still may have bugs and unstable API. If you found bug — please report it on GitHub.
 
 ## Documentation
 
