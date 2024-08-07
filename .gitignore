@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+cache
 dist-ssr
 *.local
 .husky
@@ -24,5 +25,5 @@ dist-ssr
 *.sln
 *.sw?
 
-docs/node_modules
+old-docs/node_modules
 packages/playground
