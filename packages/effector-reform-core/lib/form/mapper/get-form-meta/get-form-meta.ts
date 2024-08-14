@@ -22,8 +22,8 @@ export function getFormMeta(
   const api: FormApi = {};
 
   const thisArg = {
-    isValid: true,
     api,
+    isValid: true,
 
     metaChanged,
     schemaUpdated,
@@ -34,5 +34,5 @@ export function getFormMeta(
 
   map.call(thisArg, node, values, errors);
 
-  return { values, errors, api, isValid: thisArg.isValid };
+  return { api, values, errors, isValid: thisArg.isValid };
 }

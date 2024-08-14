@@ -2,7 +2,7 @@
 
 Use form model in react component
 
-__Type Signature:__
+**Type Signature:**
 
 ```ts
 interface UseFormProps {
@@ -25,18 +25,18 @@ function useForm<
 >(form: T, props?: UseFormProps): ReactForm<Schema, Values, Errors>;
 ```
 
-__Example Usage:__
+**Example Usage:**
 
 ```tsx
 import { useForm } from '@effector-reform/react';
-import { createForm } from "@effector-reform/core";
+import { createForm } from '@effector-reform/core';
 
 const form = createForm({
   schema: {
     name: '',
     age: 18,
   },
-})
+});
 
 function Form() {
   const { fields, submit } = useForm(form);
@@ -49,28 +49,29 @@ function Form() {
         onBlur={fields.name.onBlur}
         onFocus={fields.name.onFocus}
       />
-      
+
       <input
         type="number"
         value={fields.age.value}
-        onChange={(event) => fields.age.onChange(parseInt(event.currentTarget.value))}
+        onChange={(event) =>
+          fields.age.onChange(parseInt(event.currentTarget.value))
+        }
         onBlur={fields.age.onBlur}
         onFocus={fields.age.onFocus}
       />
-      
+
       <button type="submit">Submit</button>
     </form>
-  )
+  );
 }
 ```
-
 
 ## API
 
 | name                | type                                          | description                                                                                |
-|---------------------|-----------------------------------------------|--------------------------------------------------------------------------------------------|
+| ------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | values              | `Values`                                      | form values                                                                                |
-| errors              | `Errors`                                      | form errors (***Note:*** array field error stored in format `{ error: null, errors: [] }`) |
+| errors              | `Errors`                                      | form errors (**_Note:_** array field error stored in format `{ error: null, errors: [] }`) |
 | fields              | `ReactFields<Schema>`                         | form fields (contains object of ReactFields)                                               |
 | isValid             | `boolean`                                     | is form valid                                                                              |
 | isDirty             | `boolean`                                     | is form changed                                                                            |

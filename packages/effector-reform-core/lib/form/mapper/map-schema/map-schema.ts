@@ -4,6 +4,7 @@ import { setupBatching } from './setup-batching';
 import { getFormMeta } from '../get-form-meta';
 import { createStore, sample } from 'effector';
 import { spread } from 'patronum';
+import { isFormValid } from '../../helpers';
 
 export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
   const { schemaUpdated, focused, blurred, metaChanged } = setupUpdating();
@@ -21,7 +22,7 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
   const $api = createStore(meta.api);
   const $values = createStore(meta.values);
   const $errors = createStore(meta.errors);
-  const $isValid = createStore(meta.isValid);
+  const $isValid = createStore(true);
 
   sample({
     clock: schemaUpdated,
@@ -36,7 +37,7 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
         case 'error': {
           return {
             errors: { ...meta.errors },
-            isValid: meta.isValid,
+            isValid: isFormValid(meta.api),
           };
         }
         case 'all': {
@@ -44,7 +45,7 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
             values: { ...meta.values },
             api: { ...meta.api },
             errors: { ...meta.errors },
-            isValid: meta.isValid,
+            isValid: isFormValid(meta.api),
           };
         }
         case 'none': {

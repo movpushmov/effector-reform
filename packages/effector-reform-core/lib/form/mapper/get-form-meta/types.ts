@@ -16,6 +16,7 @@ export type MapFn = (
 ) => void;
 
 export interface This {
+  isValid: boolean;
   metaChanged: EventCallable<MetaChangedEventPayload>;
   schemaUpdated: EventCallable<FieldInteractionEventPayload>;
   batchedSchemaUpdated: EventCallable<BatchedSchemaUpdatedPayload>;
@@ -23,5 +24,4 @@ export interface This {
   blurred: EventCallable<FieldInteractionEventPayloadBase>;
 
   api: FormApi;
-  isValid: boolean;
 }

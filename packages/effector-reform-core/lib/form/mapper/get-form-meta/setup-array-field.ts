@@ -5,7 +5,7 @@ import {
   isPrimitiveValue,
 } from '../../../fields';
 import { createEffect, sample } from 'effector';
-import { Node } from '../types';
+import { ArrayFieldPathApi, Node } from '../types';
 import { MapFn, This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
 import { clearArrayFieldMemory } from '../../../fields/array-field/utils';
@@ -41,9 +41,55 @@ export function setupArrayField(
 
   resultValuesNode[key] = [];
   resultErrorsNode[key] = {
-    error: null,
+    error: field.$error.getState(),
     errors: [],
   };
+
+  const fieldApi: ArrayFieldPathApi = {
+    type: 'array-field',
+    isValid: !Boolean(resultErrorsNode[key].error),
+
+    reset: field.reset,
+
+    batchedSetValue: field.batchedSetValue,
+    batchedSetOuterError: field.batchedSetOuterError,
+    batchedSetInnerError: field.batchedSetInnerError,
+    batchedReset: field.batchedReset,
+    batchedClear: field.batchedClear,
+
+    clearMemory: (withField = false) => {
+      if (withField) {
+        clearArrayFieldMemory(field);
+      }
+
+      clearUnits([changeErrorFx, changeValuesFx, clearFx, resetFx]);
+      delete this.api[apiKey];
+    },
+
+    clearValuesMemory: () => {
+      const keys = Object.keys(this.api)
+        .filter((key) => key.startsWith(apiKey))
+        .filter((key) => key !== apiKey);
+
+      for (const subApiKey of keys) {
+        this.api[subApiKey].clearMemory();
+      }
+    },
+
+    clearInnerError: field.setInnerError.prepend(() => null),
+    clearOuterError: field.changeError.prepend(() => null),
+
+    setInnerError: field.setInnerError,
+    setOuterError: field.changeError,
+
+    setValue: field.change,
+  };
+
+  this.api[apiKey] = fieldApi;
+
+  if (resultErrorsNode[key].error) {
+    this.isValid = false;
+  }
 
   const mapValues = (values: any[]) => {
     values.map((item, index) => {
@@ -71,10 +117,7 @@ export function setupArrayField(
       getArrayFieldApi(this.api, apiKey).clearValuesMemory();
 
       resultValuesNode[key] = [];
-      resultErrorsNode[key] = {
-        error: null,
-        errors: [],
-      };
+      resultErrorsNode[key].errors = [];
 
       mapValues(values);
     },
@@ -83,6 +126,12 @@ export function setupArrayField(
   const changeErrorFx = createEffect(
     ({ error }: { error: FieldError; batchInfo?: { id: string } }) => {
       resultErrorsNode[key].error = error;
+
+      fieldApi.isValid = !Boolean(resultErrorsNode[key].error);
+
+      if (resultErrorsNode[key].error) {
+        this.isValid = false;
+      }
     },
   );
 
@@ -94,6 +143,8 @@ export function setupArrayField(
       error: null,
       errors: [],
     };
+
+    fieldApi.isValid = !Boolean(resultErrorsNode[key].error);
   });
 
   const resetFx = createEffect(
@@ -112,6 +163,8 @@ export function setupArrayField(
         error: error,
         errors: [],
       };
+
+      fieldApi.isValid = !Boolean(resultErrorsNode[key].error);
 
       mapValues(values);
     },
@@ -240,43 +293,4 @@ export function setupArrayField(
     fn: (meta) => ({ fieldPath: apiKey, meta }),
     target: this.metaChanged,
   });
-
-  this.api[apiKey] = {
-    type: 'array-field',
-
-    reset: field.reset,
-
-    batchedSetValue: field.batchedSetValue,
-    batchedSetOuterError: field.batchedSetOuterError,
-    batchedSetInnerError: field.batchedSetInnerError,
-    batchedReset: field.batchedReset,
-    batchedClear: field.batchedClear,
-
-    clearMemory: (withField = false) => {
-      if (withField) {
-        clearArrayFieldMemory(field);
-      }
-
-      clearUnits([changeErrorFx, changeValuesFx, clearFx, resetFx]);
-      delete this.api[apiKey];
-    },
-
-    clearValuesMemory: () => {
-      const keys = Object.keys(this.api)
-        .filter((key) => key.startsWith(apiKey))
-        .filter((key) => key !== apiKey);
-
-      for (const subApiKey of keys) {
-        this.api[subApiKey].clearMemory();
-      }
-    },
-
-    clearInnerError: field.setInnerError.prepend(() => null),
-    clearOuterError: field.changeError.prepend(() => null),
-
-    setInnerError: field.setInnerError,
-    setOuterError: field.changeError,
-
-    setValue: field.change,
-  };
 }

@@ -28,9 +28,15 @@ import {
   clearFormErrors,
   setFormErrors,
 } from './mapper';
-import { combineEvents } from 'patronum';
 import { resetForm } from './helpers/reset';
 import { contractAdapter, isContract } from './helpers';
+
+interface FormInnerMeta {
+  /**
+   * need to call submittedAndValidatedEvent after "validated" event
+   */
+  needSav: boolean;
+}
 
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const {
@@ -39,7 +45,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       UserFormSchema<UserFormSchema<T>>
     >,
     validationStrategies = ['submit', 'change', 'blur', 'focus'],
-    clearOuterErrorsOnSubmit = true,
+    clearOuterErrorsOnSubmit = validationStrategies.includes('submit'),
   } = options;
 
   const fields = copyGroup(prepareFieldsSchema(schema));
@@ -55,6 +61,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   } = mapSchema(fields);
 
   const $isDirty = createStore(false);
+  const $innerMeta = createStore<FormInnerMeta>({ needSav: false });
 
   type Fields = typeof fields;
   type Errors = FormErrors<Fields>;
@@ -104,9 +111,12 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const validate = createEvent<void>('<form validate>');
   const validated = createEvent<Values>('<form validated>');
+  const validationFailed = createEvent<Values>('<validation failed>');
   const validatedAndSubmitted = createEvent<Values>(
     '<form validated and submitted>',
   );
+
+  const changeInnerMeta = createEvent<Partial<FormInnerMeta>>();
 
   const reset = createEvent('<form reset>');
 
@@ -122,13 +132,23 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const $isValidationPending = validateFx.pending;
 
+  sample({
+    clock: changeInnerMeta,
+    source: $innerMeta,
+    fn: (innerMeta, changedParams) => ({ ...innerMeta, ...changedParams }),
+    target: $innerMeta,
+  });
+
   const uniqueValidationStrategies = [...new Set(validationStrategies)];
   for (const strategy of uniqueValidationStrategies) {
     switch (strategy) {
       case 'submit': {
         sample({
           clock: submitted,
-          target: validate,
+          target: [
+            validate,
+            changeInnerMeta.prepend(() => ({ needSav: true })),
+          ],
         });
 
         break;
@@ -158,6 +178,20 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
         break;
       }
     }
+  }
+
+  if (!uniqueValidationStrategies.includes('submit')) {
+    sample({
+      clock: submitted,
+      source: {
+        isValid: $isValid,
+        isValidationPending: $isValidationPending,
+      },
+      filter: ({ isValid, isValidationPending }) =>
+        isValid && !isValidationPending,
+      fn: (_, values) => values,
+      target: validatedAndSubmitted,
+    });
   }
 
   sample({
@@ -230,14 +264,22 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   sample({
     clock: validateFx.doneData as EventCallable<any>,
     filter: Boolean,
-    target: setErrors,
+    target: [
+      setErrors,
+      validationFailed,
+      changeInnerMeta.prepend(() => ({ needSav: false })),
+    ],
   });
 
   sample({
-    clock: combineEvents([validated, submitted]),
-    source: $values,
-    fn: (values) => values,
-    target: validatedAndSubmitted,
+    clock: validated,
+    source: $innerMeta,
+    filter: ({ needSav }) => needSav,
+    fn: (_, values) => values,
+    target: [
+      validatedAndSubmitted,
+      changeInnerMeta.prepend(() => ({ needSav: false })),
+    ],
   });
 
   return {
@@ -262,6 +304,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
     validate,
     validated,
+    validationFailed,
     validatedAndSubmitted,
 
     setValues,
