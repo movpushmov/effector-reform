@@ -2,14 +2,17 @@
 
 Creates form
 
-__Type Signature:__
+**Type Signature:**
 
 ```ts
-import { Contract } from "@withease/contracts";
+import { Contract } from '@withease/contracts';
 
 interface CreateFormOptions<T extends AnySchema> {
   schema: T;
-  validation?: SyncValidationFn<T> | AsyncValidationFn<T> | Contract<unknown, FormValues<UserFormSchema<T>>>;
+  validation?:
+    | SyncValidationFn<T>
+    | AsyncValidationFn<T>
+    | Contract<unknown, FormValues<UserFormSchema<T>>>;
   validationStrategies?: ValidationStrategy[];
   clearOuterErrorsOnSubmit?: boolean;
 }
@@ -28,11 +31,15 @@ type ValidationStrategy = 'blur' | 'focus' | 'change' | 'submit';
 function createForm<T extends AnySchema>(options: CreateFormOptions<T>);
 ```
 
-__Example Usage:__
+**Example Usage:**
 
 ```ts
-import { createArrayField, createField, createForm } from "@effector-reform/core";
-import { sample, createEffect } from "effector";
+import {
+  createArrayField,
+  createField,
+  createForm,
+} from '@effector-reform/core';
+import { sample, createEffect } from 'effector';
 
 const form = createForm({
   schema: {
@@ -58,7 +65,7 @@ form.fields.number.change(10);
 form.fields.array.push(new Date());
 form.fields.group.subField.change('Peter');
 
-form.submit(); 
+form.submit();
 
 /*
   logFx (form.$values) -> {
@@ -74,10 +81,10 @@ form.submit();
 ## API
 
 | name                  | type                                      | description                                                                                              |
-|-----------------------|-------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| --------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | fields                | `Fields`                                  | contains fields of form (you can access only primitive fields api, groups or array field top api         |
 | $values               | `Store<Values>`                           | contains values of fields                                                                                |
-| $errors               | `Store<Errors>`                           | contains errors of fields (***Note:*** array field errors stored in format `{ error: null, errors: [] }` |
+| $errors               | `Store<Errors>`                           | contains errors of fields (**_Note:_** array field errors stored in format `{ error: null, errors: [] }` |
 | $isValid              | `Store<boolean>`                          | is all fields in form valid                                                                              |
 | $isDirty              | `Store<boolean>`                          | is any field of form changed                                                                             |
 | $isValidationPending  | `Store<boolean>`                          | is validation pending at the moment                                                                      |
@@ -88,8 +95,9 @@ form.submit();
 | errorsChanged         | `Event<Errors>`                           | triggered when any field in form error changed                                                           |
 | validate              | `EventCallable<void>`                     | validate form (calls validationFn from overrides)                                                        |
 | validated             | `Event<Values>`                           | triggered when form validated                                                                            |
+| validationFailed      | `Event<Values>`                           | triggered when form validation failed                                                                    |
 | validatedAndSubmitted | `Event<Values>`                           | triggered when form submitted and validated                                                              |
 | submit                | `EventCallable<void>`                     | submit form                                                                                              |
-| submitted             | `Event<Values>`                           | triggered when form submitted (be careful: form submitted be called even if validate of form is failed   |
+| submitted             | `Event<Values>`                           | triggered when form submitted (be careful: form "submitted" called even if validate of form is failed    |
 | reset                 | `EventCallable<void>`                     | reset form values                                                                                        |
 | clear                 | `EventCallable<void>`                     | clear form values                                                                                        |

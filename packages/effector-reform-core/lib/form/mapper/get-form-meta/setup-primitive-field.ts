@@ -1,6 +1,6 @@
 import { FieldError, InnerFieldApi, PrimitiveField } from '../../../fields';
 import { createEffect, sample } from 'effector';
-import { Node } from '../types';
+import { Node, PrimitiveFieldPathApi } from '../types';
 import { This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
 import { combineEvents } from 'patronum';
@@ -27,6 +27,37 @@ export function setupPrimitiveField(
 
   const apiKey = [...path, key].join('.');
 
+  const fieldApi: PrimitiveFieldPathApi = {
+    type: 'primitive-field',
+    isValid: !Boolean(resultErrorsNode[key]),
+
+    reset: field.reset,
+
+    clearMemory: (withField = false) => {
+      if (withField) {
+        clearPrimitiveFieldMemory(field);
+      }
+
+      clearUnits([changeValueFx, changeErrorFx, resetFx]);
+      delete this.api[apiKey];
+    },
+
+    batchedSetValue: field.batchedSetValue,
+    batchedSetOuterError: field.batchedSetOuterError,
+    batchedSetInnerError: field.batchedSetInnerError,
+    batchedReset: field.batchedReset,
+
+    clearInnerError: field.setInnerError.prepend(() => null),
+    clearOuterError: field.changeError.prepend(() => null),
+
+    setInnerError: field.setInnerError,
+    setOuterError: field.changeError,
+
+    setValue: field.change,
+  };
+
+  this.api[apiKey] = fieldApi;
+
   if (resultErrorsNode[key]) {
     this.isValid = false;
   }
@@ -40,6 +71,12 @@ export function setupPrimitiveField(
   const changeErrorFx = createEffect(
     ({ error }: { error: FieldError; batchInfo?: { id: string } }) => {
       resultErrorsNode[key] = error;
+
+      fieldApi.isValid = !Boolean(resultErrorsNode[key]);
+
+      if (resultErrorsNode[key]) {
+        this.isValid = false;
+      }
     },
   );
 
@@ -54,6 +91,12 @@ export function setupPrimitiveField(
     }) => {
       resultValuesNode[key] = value;
       resultErrorsNode[key] = error;
+
+      fieldApi.isValid = !Boolean(resultErrorsNode[key]);
+
+      if (resultErrorsNode[key]) {
+        this.isValid = false;
+      }
     },
   );
 
@@ -114,8 +157,8 @@ export function setupPrimitiveField(
   sample({
     clock: field.batchedSetInnerError,
     source: field.$outerError,
-    fn: (outerError, { value, '@@batchInfo': batchInfo }) => ({
-      error: outerError ?? value,
+    fn: (outerError, { value: innerError, '@@batchInfo': batchInfo }) => ({
+      error: outerError ?? innerError,
       batchInfo,
     }),
     target: changeErrorFx,
@@ -123,7 +166,11 @@ export function setupPrimitiveField(
 
   sample({
     clock: field.batchedSetOuterError,
-    fn: ({ value: error, '@@batchInfo': batchInfo }) => ({ error, batchInfo }),
+    source: field.$innerError,
+    fn: (innerError, { value: outerError, '@@batchInfo': batchInfo }) => ({
+      error: outerError ?? innerError,
+      batchInfo,
+    }),
     target: changeErrorFx,
   });
 
@@ -175,32 +222,4 @@ export function setupPrimitiveField(
     fn: (meta) => ({ fieldPath: apiKey, meta }),
     target: this.metaChanged,
   });
-
-  this.api[apiKey] = {
-    type: 'primitive-field',
-
-    reset: field.reset,
-
-    clearMemory: (withField = false) => {
-      if (withField) {
-        clearPrimitiveFieldMemory(field);
-      }
-
-      clearUnits([changeValueFx, changeErrorFx, resetFx]);
-      delete this.api[apiKey];
-    },
-
-    batchedSetValue: field.batchedSetValue,
-    batchedSetOuterError: field.batchedSetOuterError,
-    batchedSetInnerError: field.batchedSetInnerError,
-    batchedReset: field.batchedReset,
-
-    clearInnerError: field.setInnerError.prepend(() => null),
-    clearOuterError: field.changeError.prepend(() => null),
-
-    setInnerError: field.setInnerError,
-    setOuterError: field.changeError,
-
-    setValue: field.change,
-  };
 }

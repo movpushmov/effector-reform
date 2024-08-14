@@ -25,6 +25,7 @@ export type BasePathApi = {
 
 export type ArrayFieldPathApi = {
   type: 'array-field';
+  isValid: boolean;
 
   clearValuesMemory: () => void;
   clearMemory: (withField?: boolean) => void;
@@ -34,6 +35,7 @@ export type ArrayFieldPathApi = {
 
 export type PrimitiveFieldPathApi = {
   type: 'primitive-field';
+  isValid: boolean;
 
   clearMemory: (withField?: boolean) => void;
 } & BasePathApi;

@@ -2,6 +2,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { allSettled, createEffect, fork, sample } from 'effector';
 import { createArrayField, createField, createForm } from '../../lib';
 import { obj, str } from '@withease/contracts';
+import { watchCalls } from '../utils';
 
 describe('Form tests', () => {
   test('Change partial primitive fields values', async () => {
@@ -187,7 +188,60 @@ describe('Form tests', () => {
     expect(mockedValidatedFn).toHaveBeenCalledTimes(3);
   });
 
-  test('Validate', async () => {
+  test('"validated and submitted" event doesn\'t called after "validated" without "submitted"', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: { a: '', b: '', c: '', d: '', e: '' },
+      validation: (values) =>
+        values.a.length > 4 ? null : { a: 'some error' },
+    });
+
+    const fn = watchCalls(form.validatedAndSubmitted);
+
+    await allSettled(form.fields.a.change, { scope, params: 'aa' });
+    await allSettled(form.submit, { scope });
+
+    expect(fn).toBeCalledTimes(0);
+
+    await allSettled(form.fields.a.change, { scope, params: 'some string' });
+
+    expect(fn).toBeCalledTimes(0);
+
+    await allSettled(form.submit, { scope });
+
+    expect(fn).toBeCalledTimes(1);
+  });
+
+  test('"validated and subbmited" event called after "submit" without any validation strategies', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: { a: '', b: '', c: '', d: '', e: '' },
+      validation: (values) =>
+        values.a.length > 4 ? null : { a: 'some error' },
+      validationStrategies: [],
+    });
+
+    const fn = watchCalls(form.validatedAndSubmitted);
+
+    await allSettled(form.validate, { scope });
+
+    await allSettled(form.fields.a.change, { scope, params: 'aa' });
+    await allSettled(form.submit, { scope });
+
+    expect(fn).toBeCalledTimes(0);
+
+    await allSettled(form.fields.a.change, { scope, params: 'some string' });
+    await allSettled(form.submit, { scope });
+
+    expect(fn).toBeCalledTimes(0);
+
+    await allSettled(form.validate, { scope });
+    await allSettled(form.submit, { scope });
+
+    expect(fn).toBeCalledTimes(1);
+  });
+
+  test('validate', async () => {
     const scope = fork();
     const form = createForm({
       schema: { a: '', b: '', c: '', d: '', e: '' },

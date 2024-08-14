@@ -115,6 +115,7 @@ export type FormType<
   validate: EventCallable<void>;
   validated: Event<Values>;
   validatedAndSubmitted: Event<Values>;
+  validationFailed: Event<Values>;
 
   submit: EventCallable<void>;
   submitted: Event<Values>;
