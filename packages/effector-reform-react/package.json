@@ -5,7 +5,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "private": false,
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "React bindings for effector composable forms",
   "keywords": [
     "effector",
@@ -50,7 +50,7 @@
     "url": "https://github.com/movpushmov/effector-reform/issues"
   },
   "dependencies": {
-    "@effector-reform/core": "^0.10.2"
+    "@effector-reform/core": "^0.10.3"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.24.1",

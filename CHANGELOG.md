@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.3](https://github.com/movpushmov/effector-reform/compare/v0.10.2...v0.10.3) (2024-08-14)
+
+### Bug Fixes
+
+- add base path ([80669c0](https://github.com/movpushmov/effector-reform/commit/80669c04d83fa5f89ea223701ae29244ff003e96))
+- add react bindings package install instruction in docs ([2313441](https://github.com/movpushmov/effector-reform/commit/2313441e1e4a700971f868139130e9dd8fd59880))
+- contracts page title in docs ([7be5231](https://github.com/movpushmov/effector-reform/commit/7be5231aed1e0eb7d90b7fe91ebf674cabd271ac))
+- docs tab icon ([9ea1939](https://github.com/movpushmov/effector-reform/commit/9ea1939600be9297e79168300a7c08cb437a58d5))
+- github config ([8480e47](https://github.com/movpushmov/effector-reform/commit/8480e4767ba8f4429668a5cb5719a1455fd00617))
+- logo in docs & useless pages ([24741c5](https://github.com/movpushmov/effector-reform/commit/24741c5e7558df04cf4e9bbd9739babd91b1ed30))
+- test in current branch ([1df9425](https://github.com/movpushmov/effector-reform/commit/1df94258dbfccad94510bc40fe212ddc50b588a2))
+- update branch ([30b1584](https://github.com/movpushmov/effector-reform/commit/30b1584bcc455ba8c5a2c4077f5c468f660a0261))
+- validationAndSubmitted event calls ([e71962c](https://github.com/movpushmov/effector-reform/commit/e71962c357363fe73e63c65334f48858b9115872))
+
+### Features
+
+- update docs ([1134b1e](https://github.com/movpushmov/effector-reform/commit/1134b1ea26b4eda40b0c1b9bf34ee469658e7a53))
+
 ## [0.10.2](https://github.com/movpushmov/effector-reform/compare/v0.10.1...v0.10.2) (2024-08-06)
 
 ### Bug Fixes
