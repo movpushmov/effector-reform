@@ -39,10 +39,10 @@ const form = createForm({
 });
 
 function Form() {
-  const { fields, submit } = useForm(form);
+  const { fields, onSubmit } = useForm(form);
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={onSubmit}>
       <input
         value={fields.name.value}
         onChange={(event) => fields.name.onChange(event.currentTarget.value)}
