@@ -2,6 +2,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { allSettled, createEffect, fork, sample } from 'effector';
 import { createForm } from '../../lib';
 import { combineEvents } from 'patronum';
+import { watchCalls } from '../utils';
 
 describe('Form batching tests', () => {
   test('batch form values change', async () => {
@@ -82,5 +83,27 @@ describe('Form batching tests', () => {
 
     await allSettled(form.reset, { scope });
     expect(mockedFn).toHaveBeenCalledTimes(1);
+  });
+
+  test('batching works with unchanged fields', async () => {
+    const scope = fork();
+
+    const form = createForm({ schema: { changed: '', unchanged: '' } });
+
+    await allSettled(form.setValues, {
+      scope,
+      params: { changed: '', unchanged: '' },
+    });
+
+    const fn = watchCalls(form.$values);
+
+    expect(fn).toBeCalledTimes(0);
+
+    await allSettled(form.setValues, {
+      scope,
+      params: { changed: 'hello world', unchanged: '' },
+    });
+
+    expect(fn).toBeCalledTimes(1);
   });
 });

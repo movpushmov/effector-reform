@@ -153,6 +153,17 @@ export function setupPrimitiveField(
     target: this.schemaUpdated,
   });
 
+  // batching fix (effector skips value update)
+  sample({
+    clock: field.batchedSetValue,
+    filter: ({ value }) => value === resultValuesNode[key],
+    fn: ({ '@@batchInfo': batchInfo }) => ({
+      fieldPath: apiKey,
+      '@@batchInfo': batchInfo,
+    }),
+    target: this.batchedSchemaUpdated,
+  });
+
   // batched changes flow
   sample({
     clock: field.batchedSetInnerError,

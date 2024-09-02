@@ -122,9 +122,11 @@ describe('Form tests', () => {
     });
   });
 
-  test('values batch test', async () => {
+  test('setValues', async () => {
     const scope = fork();
-    const form = createForm({ schema: { a: '', b: '', c: '', d: '', e: '' } });
+    const form = createForm({
+      schema: { a: '', b: '', c: '', d: '', e: '' },
+    });
 
     const mockedFn = vi.fn();
     const valuesChangedFx = createEffect(mockedFn);
@@ -146,6 +148,19 @@ describe('Form tests', () => {
     });
 
     expect(mockedFn).toHaveBeenCalledTimes(1);
+  });
+
+  test('form values isolated in scopes', async () => {
+    const scopeA = fork();
+    const scopeB = fork();
+
+    const form = createForm({ schema: { value: 0 } });
+
+    await allSettled(form.fields.value.change, { scope: scopeA, params: 10 });
+    await allSettled(form.fields.value.change, { scope: scopeB, params: 20 });
+
+    expect(scopeA.getState(form.$values)).toStrictEqual({ value: 10 });
+    expect(scopeB.getState(form.$values)).toStrictEqual({ value: 20 });
   });
 
   test.todo('Clear outer errors');

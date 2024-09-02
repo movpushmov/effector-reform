@@ -29,6 +29,7 @@ export function setupBatching(
   sample({
     clock: batchedSchemaUpdated,
     source: $tasks,
+    filter: (tasks, { '@@batchInfo': info }) => Boolean(tasks[info.id]),
     fn: (tasks, { fieldPath, '@@batchInfo': info }) => {
       const task = tasks[info.id];
 
