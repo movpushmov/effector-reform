@@ -31,6 +31,7 @@
     "update-deps": "lerna exec npm install",
     "test": "lerna run test",
     "publish": "npm run build && npm run test && lerna publish",
+    "publish:force": "lerna publish",
     "publish:canary": "npm run build && lerna publish --canary --preid dev --npm-tag next --no-git-tag-version"
   },
   "husky": {
