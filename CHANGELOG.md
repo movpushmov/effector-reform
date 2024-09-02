@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.4](https://github.com/movpushmov/effector-reform/compare/v0.10.3...v0.10.4) (2024-09-02)
+
+### Bug Fixes
+
+- add force script in ci ([6bae66b](https://github.com/movpushmov/effector-reform/commit/6bae66b6c6e832a8dcc7d5a0ab485422343f424d))
+- batching dont works if effector skip update ([90be347](https://github.com/movpushmov/effector-reform/commit/90be3473beebc7d5495602f835a42fc5b2a019c4))
+
 ## [0.10.3](https://github.com/movpushmov/effector-reform/compare/v0.10.2...v0.10.3) (2024-08-14)
 
 ### Bug Fixes
