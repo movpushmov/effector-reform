@@ -213,6 +213,17 @@ export function setupArrayField(
     target: clearFx,
   });
 
+  // batching fix (effector skips value update)
+  sample({
+    clock: field.batchedSetValue,
+    filter: ({ value: values }) => resultValuesNode[key] === values,
+    fn: ({ '@@batchInfo': batchInfo }) => ({
+      fieldPath: apiKey,
+      '@@batchInfo': batchInfo,
+    }),
+    target: this.batchedSchemaUpdated,
+  });
+
   // batched flow
   sample({
     clock: inOrder([field.batchedClear, field.cleared]),
