@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/movpushmov/effector-reform/compare/v0.10.7...v0.11.0) (2024-09-04)
+
+### Features
+
+- fill event & fix clearOuterErrors ([5f640b8](https://github.com/movpushmov/effector-reform/commit/5f640b85408b88e474d1c055e3a3974843cc73ae))
+
 ## [0.10.5](https://github.com/movpushmov/effector-reform/compare/v0.10.3...v0.10.5) (2024-09-02)
 
 **Note:** Version bump only for package @effector-reform/react
