@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.6](https://github.com/movpushmov/effector-reform/compare/v0.10.5...v0.10.6) (2024-09-04)
+
+### Bug Fixes
+
+- add refine support in zod adapter ([14ea93d](https://github.com/movpushmov/effector-reform/commit/14ea93da12dcbc95ecee2cc1ccac9da879579f93))
+
 ## [0.10.5](https://github.com/movpushmov/effector-reform/compare/v0.10.3...v0.10.5) (2024-09-02)
 
 **Note:** Version bump only for package @effector-reform/zod
