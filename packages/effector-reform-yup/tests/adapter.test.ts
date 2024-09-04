@@ -55,7 +55,10 @@ describe('Yup adapter', () => {
       ),
     });
 
-    await allSettled(form.setValues, { scope, params: { a: 'a', b: 'a' } });
+    await allSettled(form.fill, {
+      scope,
+      params: { values: { a: 'a', b: 'a' } },
+    });
 
     expect(scope.getState(form.$errors)).toStrictEqual({
       a: 'min 2',

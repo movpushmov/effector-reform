@@ -19,9 +19,9 @@ describe('Form batching tests', () => {
       target: fx,
     });
 
-    await allSettled(form.setPartialValues, {
+    await allSettled(form.fill, {
       scope,
-      params: { a: 'test', b: 123, c: { d: [1, 2] } },
+      params: { values: { a: 'test', b: 123, c: { d: [1, 2] } } },
     });
 
     expect(mockedFn).toHaveBeenCalledTimes(1);
@@ -41,12 +41,10 @@ describe('Form batching tests', () => {
       target: fx,
     });
 
-    await allSettled(form.setErrors, {
+    await allSettled(form.fill, {
       scope,
       params: {
-        a: 'error 1',
-        b: 'error 2',
-        'c.d': 'error 3',
+        errors: { a: 'error 1', b: 'error 2', 'c.d': 'error 3' },
       },
     });
 
@@ -62,17 +60,15 @@ describe('Form batching tests', () => {
     const mockedFn = vi.fn();
     const fx = createEffect(mockedFn);
 
-    await allSettled(form.setPartialValues, {
+    await allSettled(form.fill, {
       scope,
-      params: { a: 'test', b: 123, c: { d: [1, 2] } },
+      params: { values: { a: 'test', b: 123, c: { d: [1, 2] } } },
     });
 
-    await allSettled(form.setErrors, {
+    await allSettled(form.fill, {
       scope,
       params: {
-        a: 'error 1',
-        b: 'error 2',
-        'c.d': 'error 3',
+        errors: { a: 'error 1', b: 'error 2', 'c.d': 'error 3' },
       },
     });
 
@@ -90,18 +86,18 @@ describe('Form batching tests', () => {
 
     const form = createForm({ schema: { changed: '', unchanged: '' } });
 
-    await allSettled(form.setValues, {
+    await allSettled(form.fill, {
       scope,
-      params: { changed: '', unchanged: '' },
+      params: { values: { changed: '', unchanged: '' } },
     });
 
     const fn = watchCalls(form.$values);
 
     expect(fn).toBeCalledTimes(0);
 
-    await allSettled(form.setValues, {
+    await allSettled(form.fill, {
       scope,
-      params: { changed: 'hello world', unchanged: '' },
+      params: { values: { changed: 'hello world', unchanged: '' } },
     });
 
     expect(fn).toBeCalledTimes(1);

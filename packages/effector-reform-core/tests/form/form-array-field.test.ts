@@ -71,10 +71,12 @@ describe('Form array field tests', () => {
       target: fx,
     });
 
-    await allSettled(form.setErrors, {
+    await allSettled(form.fill, {
       scope,
       params: {
-        'field.0.name': 'error',
+        errors: {
+          'field.0.name': 'error',
+        },
       },
     });
 

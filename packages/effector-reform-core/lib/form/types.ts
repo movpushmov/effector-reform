@@ -104,10 +104,11 @@ export type FormType<
 
   $isValidationPending: Store<boolean>;
 
-  setValues: EventCallable<Values>;
-  setPartialValues: EventCallable<PartialRecursive<Values>>;
-
-  setErrors: EventCallable<ErrorsSchemaPayload>;
+  fill: EventCallable<{
+    values?: PartialRecursive<Values>;
+    errors?: ErrorsSchemaPayload;
+    triggerIsDirty?: boolean;
+  }>;
 
   changed: EventCallable<Values>;
   errorsChanged: Event<Errors>;
@@ -122,6 +123,7 @@ export type FormType<
 
   reset: EventCallable<void>;
   clear: EventCallable<void>;
+  clearOuterErrors: EventCallable<void>;
 
   metaChanged: EventCallable<{ fieldPath: string; meta: any }>;
 
@@ -138,10 +140,12 @@ export type FormType<
 
     reset: EventCallable<void>;
     clear: EventCallable<void>;
+    clearOuterErrors: EventCallable<void>;
 
-    setValues: EventCallable<Values>;
-    setErrors: EventCallable<ErrorsSchemaPayload>;
-
-    setPartialValues: EventCallable<PartialRecursive<Values>>;
+    fill: EventCallable<{
+      values?: PartialRecursive<Values>;
+      errors?: ErrorsSchemaPayload;
+      triggerIsDirty?: boolean;
+    }>;
   };
 };
