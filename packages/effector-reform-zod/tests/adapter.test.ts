@@ -67,4 +67,42 @@ describe('Zod adapter', () => {
       b: 'min 4',
     });
   });
+
+  test('works with refine', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: {
+        password: '',
+        confirm: '',
+      },
+      validation: zodAdapter(
+        z
+          .object({
+            password: z.string(),
+            confirm: z.string(),
+          })
+          .refine((data) => data.password === data.confirm, {
+            message: "don't match",
+            path: ['confirm'],
+          }),
+      ),
+    });
+
+    await allSettled(form.setValues, {
+      scope,
+      params: { password: '1234', confirm: '00' },
+    });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      password: null,
+      confirm: "don't match",
+    });
+
+    await allSettled(form.fields.confirm.change, { scope, params: '1234' });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      password: null,
+      confirm: null,
+    });
+  });
 });
