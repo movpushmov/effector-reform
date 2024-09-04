@@ -68,17 +68,16 @@ function Form() {
 
 ## API
 
-| name                | type                                          | description                                                                                |
-| ------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| values              | `Values`                                      | form values                                                                                |
-| errors              | `Errors`                                      | form errors (**_Note:_** array field error stored in format `{ error: null, errors: [] }`) |
-| fields              | `ReactFields<Schema>`                         | form fields (contains object of ReactFields)                                               |
-| isValid             | `boolean`                                     | is form valid                                                                              |
-| isDirty             | `boolean`                                     | is form changed                                                                            |
-| isValidationPending | `boolean`                                     | is validating                                                                              |
-| onSubmit            | `() => void`                                  | submit form                                                                                |
-| onValidate          | `() => void`                                  | validate form                                                                              |
-| onReset             | `() => void`                                  | reset form values                                                                          |
-| setValues           | `(payload: Values) => void`                   | change values                                                                              |
-| setErrors           | `(payload: ErrorsSchemaPayload) => void`      | set outer errors                                                                           |
-| setPartialValues    | `(payload: PartialRecursive<Values>) => void` | partially change values                                                                    |
+| name                | type                                                                                                                  | description                                                                                                                               |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| values              | `Values`                                                                                                            | form values                                                                                                                               |
+| errors              | `Errors`                                                                                                            | form errors (**_Note:_** array field error stored in format `{ error: null, errors: [] }`)                                      |
+| fields              | `ReactFields<Schema>`                                                                                               | form fields (contains object of ReactFields)                                                                                              |
+| isValid             | `boolean`                                                                                                           | is form valid                                                                                                                             |
+| isDirty             | `boolean`                                                                                                           | is form changed                                                                                                                           |
+| isValidationPending | `boolean`                                                                                                           | is validating                                                                                                                             |
+| onSubmit            | `() => void`                                                                                                        | submit form                                                                                                                               |
+| onValidate          | `() => void`                                                                                                        | validate form                                                                                                                             |
+| onReset             | `() => void`                                                                                                        | reset form values                                                                                                                         |
+| fill                | `(payload: { values?: PartialRecursive<Values>; errors?: ErrorsSchemaPayload; triggerIsDirty?: boolean; }) => void` | set values/errors of form without trigger isDirty (by default triggerIsDirty = false, but you can pass true if you want trigger isDirty) |
+| onClearOuterErrors  | `() => void`                                                                                                        | clear form outer errors                                                                                                                   |

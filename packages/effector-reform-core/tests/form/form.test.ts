@@ -467,5 +467,5 @@ describe('Form tests', () => {
     await allSettled(form.submit, { scope });
 
     expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
-  })
+  });
 });
