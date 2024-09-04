@@ -17,6 +17,10 @@ export function zodAdapter<Schema extends AnySchema>(
       const { errors } = e as ZodError;
 
       return errors.reduce((acc: ErrorsSchemaPayload, error) => {
+        if (acc[error.path.join('.')]) {
+          return acc;
+        }
+
         acc[error.path.join('.')] = error.message;
 
         return acc;
