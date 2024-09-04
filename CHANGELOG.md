@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.7](https://github.com/movpushmov/effector-reform/compare/v0.10.6...v0.10.7) (2024-09-04)
+
+### Bug Fixes
+
+- zod errors order ([3d99919](https://github.com/movpushmov/effector-reform/commit/3d99919340ef06723bc7726064f541abcea2fcc3))
+
 ## [0.10.6](https://github.com/movpushmov/effector-reform/compare/v0.10.5...v0.10.6) (2024-09-04)
 
 ### Bug Fixes
