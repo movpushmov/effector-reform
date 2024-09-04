@@ -451,4 +451,21 @@ describe('Form tests', () => {
 
     expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
   });
+
+  test('clearOuterErrorsOnSubmit', async () => {
+    const scope = fork();
+    const form = createForm<{ a: string; b: string }>({
+      schema: { a: '', b: '' },
+      clearOuterErrorsOnSubmit: true,
+    });
+
+    await allSettled(form.fill, {
+      scope,
+      params: { errors: { a: '123', b: '321' } },
+    });
+
+    await allSettled(form.submit, { scope });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
+  })
 });
