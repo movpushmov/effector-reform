@@ -53,7 +53,10 @@ describe('Zod adapter', () => {
       ),
     });
 
-    await allSettled(form.setValues, { scope, params: { a: 'a', b: 'a' } });
+    await allSettled(form.fill, {
+      scope,
+      params: { values: { a: 'a', b: 'a' } },
+    });
 
     expect(scope.getState(form.$errors)).toStrictEqual({
       a: 'min 2',
@@ -88,9 +91,9 @@ describe('Zod adapter', () => {
       ),
     });
 
-    await allSettled(form.setValues, {
+    await allSettled(form.fill, {
       scope,
-      params: { password: '1234', confirm: '00' },
+      params: { values: { password: '1234', confirm: '00' } },
     });
 
     expect(scope.getState(form.$errors)).toStrictEqual({
@@ -119,9 +122,9 @@ describe('Zod adapter', () => {
       ),
     });
 
-    await allSettled(form.setValues, {
+    await allSettled(form.fill, {
       scope,
-      params: { email: '1' },
+      params: { values: { email: '1' } },
     });
 
     expect(scope.getState(form.$errors).email).toBe('invalid length');

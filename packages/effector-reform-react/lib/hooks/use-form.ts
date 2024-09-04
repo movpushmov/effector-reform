@@ -28,14 +28,17 @@ type ReactForm<
   onValidate: () => void;
   onReset: () => void;
   onClear: () => void;
+  onClearOuterErrors: () => void;
 
   isValid: boolean;
   isDirty: boolean;
   isValidationPending: boolean;
 
-  setValues: (payload: Values) => void;
-  setErrors: (payload: ErrorsSchemaPayload) => void;
-  setPartialValues: (payload: PartialRecursive<Values>) => void;
+  fill: (data: {
+    values?: PartialRecursive<Values>;
+    errors?: ErrorsSchemaPayload;
+    triggerIsDirty?: boolean;
+  }) => void;
 };
 
 type AnyForm = FormType<any, any, any>;
@@ -54,8 +57,16 @@ export function useForm<
 >(form: T, props?: UseFormProps): ReactForm<Schema, Values, Errors> {
   const scope = useProvidedScope();
 
-  const { values, errors, submit, reset, clear, validate, ...formParams } =
-    useUnit(form);
+  const {
+    values,
+    errors,
+    submit,
+    reset,
+    clear,
+    clearOuterErrors,
+    validate,
+    ...formParams
+  } = useUnit(form);
 
   const [fields, setFields] = useState<ReactFields<T['fields']>>(() =>
     getFields(form.fields, scope),
@@ -92,6 +103,7 @@ export function useForm<
     onReset: reset,
     onValidate: validate,
     onClear: clear,
+    onClearOuterErrors: clearOuterErrors,
 
     ...formParams,
   };

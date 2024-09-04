@@ -14,7 +14,7 @@ describe('Form tests', () => {
       b: '',
     });
 
-    await allSettled(form.setPartialValues, { scope, params: { a: 10 } });
+    await allSettled(form.fill, { scope, params: { values: { a: 10 } } });
 
     expect(scope.getState(form.$values)).toMatchObject({
       a: 10,
@@ -30,7 +30,7 @@ describe('Form tests', () => {
       a: [0, 10],
     });
 
-    await allSettled(form.setPartialValues, { scope, params: { a: [500] } });
+    await allSettled(form.fill, { scope, params: { values: { a: [500] } } });
 
     expect(scope.getState(form.$values)).toMatchObject({
       a: [500],
@@ -47,9 +47,9 @@ describe('Form tests', () => {
     const scope = fork();
     const form = createForm({ schema: { a: [0, 10] } });
 
-    await allSettled(form.setErrors, {
+    await allSettled(form.fill, {
       scope,
-      params: { a: 'error error' },
+      params: { errors: { a: 'error error' } },
     });
 
     expect(scope.getState(form.$errors)).toMatchObject({
@@ -83,19 +83,21 @@ describe('Form tests', () => {
       target: errorsChangedFx,
     });
 
-    await allSettled(form.setErrors, {
+    await allSettled(form.fill, {
       scope,
       params: {
-        a: 'error 1',
-        b: 'error 2',
-        c: 'error 3',
-        d: 'error 4',
-        e: 'error 5',
-        f: 'error 6',
-        'g.h': 'error 7',
-        'g.s': 'error 8',
-        'g.m': 'error 9',
-        m: 'error 10',
+        errors: {
+          a: 'error 1',
+          b: 'error 2',
+          c: 'error 3',
+          d: 'error 4',
+          e: 'error 5',
+          f: 'error 6',
+          'g.h': 'error 7',
+          'g.s': 'error 8',
+          'g.m': 'error 9',
+          m: 'error 10',
+        },
       },
     });
 
@@ -136,14 +138,16 @@ describe('Form tests', () => {
       target: valuesChangedFx,
     });
 
-    await allSettled(form.setValues, {
+    await allSettled(form.fill, {
       scope,
       params: {
-        a: 'value 1',
-        b: 'value 2',
-        c: 'value 3',
-        d: 'value 4',
-        e: 'value 5',
+        values: {
+          a: 'value 1',
+          b: 'value 2',
+          c: 'value 3',
+          d: 'value 4',
+          e: 'value 5',
+        },
       },
     });
 
@@ -284,7 +288,7 @@ describe('Form tests', () => {
     });
 
     // @ts-expect-error -- specially setting value with wrong data type
-    await allSettled(form.setPartialValues, { scope, params: { a: 0 } });
+    await allSettled(form.fill, { scope, params: { values: { a: 0 } } });
 
     expect(scope.getState(form.$errors)).toStrictEqual({
       a: 'a: expected string, got number',
@@ -309,11 +313,11 @@ describe('Form tests', () => {
     });
 
     // @ts-expect-error -- specially setting value with wrong data type
-    await allSettled(form.setPartialValues, { scope, params: { a: 0 } });
+    await allSettled(form.fill, { scope, params: { values: { a: 0 } } });
 
     expect(mockedFn).toBeCalledTimes(0);
 
-    await allSettled(form.setPartialValues, { scope, params: { a: '123' } });
+    await allSettled(form.fill, { scope, params: { values: { a: '123' } } });
 
     expect(mockedFn).toBeCalledTimes(1);
   });
@@ -322,9 +326,9 @@ describe('Form tests', () => {
     const scope = fork();
     const form = createForm({ schema: { a: 0, b: '' } });
 
-    await allSettled(form.setPartialValues, {
+    await allSettled(form.fill, {
       scope,
-      params: { a: 10, b: 'hello' },
+      params: { values: { a: 10, b: 'hello' } },
     });
 
     expect(scope.getState(form.$values)).toStrictEqual({ a: 10, b: 'hello' });
@@ -385,5 +389,66 @@ describe('Form tests', () => {
     await allSettled(form.fields.a.change, { scope, params: 'hello' });
 
     expect(scope.getState(form.fields.a.$value)).toBe('hello');
+  });
+
+  test('if flag is not passed in "fill" event — isDirty doesn\'t changed', async () => {
+    const scope = fork();
+    const form = createForm<{ a: string }>({ schema: { a: '' } });
+
+    expect(scope.getState(form.$isDirty)).toBe(false);
+
+    await allSettled(form.fill, { scope, params: { values: { a: '123' } } });
+
+    expect(scope.getState(form.$isDirty)).toBe(false);
+
+    await allSettled(form.fields.a.change, { scope, params: '321' });
+
+    expect(scope.getState(form.$isDirty)).toBe(true);
+  });
+
+  test('if "true" is passed in "fill" event — isDirty changed', async () => {
+    const scope = fork();
+    const form = createForm<{ a: string }>({ schema: { a: '' } });
+
+    expect(scope.getState(form.$isDirty)).toBe(false);
+
+    await allSettled(form.fill, {
+      scope,
+      params: { values: { a: '123' }, triggerIsDirty: true },
+    });
+
+    expect(scope.getState(form.$isDirty)).toBe(true);
+  });
+
+  test('if "false" is passed in "fill" event — isDirty doesn\'t changed', async () => {
+    const scope = fork();
+    const form = createForm<{ a: string }>({ schema: { a: '' } });
+
+    expect(scope.getState(form.$isDirty)).toBe(false);
+
+    await allSettled(form.fill, {
+      scope,
+      params: { values: { a: '123' }, triggerIsDirty: false },
+    });
+
+    expect(scope.getState(form.$isDirty)).toBe(false);
+  });
+
+  test('clearOuterErrors', async () => {
+    const scope = fork();
+    const form = createForm<{ a: string; b: string }>({
+      schema: { a: '', b: '' },
+    });
+
+    await allSettled(form.fill, {
+      scope,
+      params: { errors: { a: '123', b: '321' } },
+    });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({ a: '123', b: '321' });
+
+    await allSettled(form.clearOuterErrors, { scope });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
   });
 });

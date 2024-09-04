@@ -36,6 +36,7 @@ interface FormInnerMeta {
    * need to call submittedAndValidatedEvent after "validated" event
    */
   needSav: boolean;
+  triggerIsDirty: boolean;
 }
 
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
@@ -61,7 +62,10 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   } = mapSchema(fields);
 
   const $isDirty = createStore(false);
-  const $innerMeta = createStore<FormInnerMeta>({ needSav: false });
+  const $innerMeta = createStore<FormInnerMeta>({
+    needSav: false,
+    triggerIsDirty: true,
+  });
 
   type Fields = typeof fields;
   type Errors = FormErrors<Fields>;
@@ -87,18 +91,23 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     effect: (api, values: any) => setFormValues(values, api, addBatchTask),
   });
 
-  const setErrorsFx = attach({
+  const setInnerErrorsFx = attach({
     source: $api,
     effect: (api, errors: any) =>
       setFormErrors(errors, api, addBatchTask, 'inner', true),
   });
 
-  const setValues = createEvent<Values>('<form set values>');
-  const setPartialValues = createEvent<PartialRecursive<Values>>(
-    '<form set partial values>',
-  );
+  const setOuterErrorsFx = attach({
+    source: $api,
+    effect: (api, errors: any) =>
+      setFormErrors(errors, api, addBatchTask, 'outer', true),
+  });
 
-  const setErrors = createEvent<ErrorsSchemaPayload>('<form set errors>');
+  const fill = createEvent<{
+    values?: PartialRecursive<Values>;
+    errors?: ErrorsSchemaPayload;
+    triggerIsDirty?: boolean;
+  }>('<form fill>');
 
   const clear = createEvent('<form full clear>');
   const clearOuterErrors = createEvent('<form clear outer errors>');
@@ -210,19 +219,39 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   });
 
   sample({
-    clock: [setValues, setPartialValues],
+    clock: fill,
+    filter: (data) => Boolean(data.values),
+    fn: (data) => data.values!,
     target: setValuesFx,
   });
 
   sample({
-    clock: setErrors,
-    target: setErrorsFx,
+    clock: fill,
+    filter: (data) => Boolean(data.errors),
+    fn: (data) => data.errors!,
+    target: setOuterErrorsFx,
+  });
+
+  sample({
+    clock: fill,
+    fn: (data) => ({
+      triggerIsDirty:
+        data.triggerIsDirty !== undefined ? data.triggerIsDirty : false,
+    }),
+    target: changeInnerMeta,
   });
 
   sample({
     clock: $values,
+    source: $innerMeta,
+    filter: (meta) => meta.triggerIsDirty,
     fn: () => true,
     target: $isDirty,
+  });
+
+  sample({
+    clock: $values,
+    target: changeInnerMeta.prepend(() => ({ triggerIsDirty: true })),
   });
 
   sample({
@@ -265,7 +294,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     clock: validateFx.doneData as EventCallable<any>,
     filter: Boolean,
     target: [
-      setErrors,
+      setInnerErrorsFx,
       validationFailed,
       changeInnerMeta.prepend(() => ({ needSav: false })),
     ],
@@ -301,16 +330,14 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
     reset,
     clear,
+    clearOuterErrors,
 
     validate,
     validated,
     validationFailed,
     validatedAndSubmitted,
 
-    setValues,
-    setErrors,
-
-    setPartialValues,
+    fill,
 
     '@@unitShape': () => ({
       errors: $errors,
@@ -324,11 +351,9 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       validate,
       reset,
       clear,
+      clearOuterErrors,
 
-      setValues,
-      setErrors,
-
-      setPartialValues,
+      fill,
     }),
   } as FormType<Fields, Values, Errors>;
 }
