@@ -105,4 +105,25 @@ describe('Zod adapter', () => {
       confirm: null,
     });
   });
+
+  test('errors has right order', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: {
+        email: '',
+      },
+      validation: zodAdapter(
+        z.object({
+          email: z.string().min(2, 'invalid length').email('invalid email'),
+        }),
+      ),
+    });
+
+    await allSettled(form.setValues, {
+      scope,
+      params: { email: '1' },
+    });
+
+    expect(scope.getState(form.$errors).email).toBe('invalid length');
+  });
 });
