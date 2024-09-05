@@ -124,6 +124,7 @@ export type FormType<
   reset: EventCallable<void>;
   clear: EventCallable<void>;
   clearOuterErrors: EventCallable<void>;
+  clearInnerErrors: EventCallable<void>;
 
   metaChanged: EventCallable<{ fieldPath: string; meta: any }>;
 
@@ -141,6 +142,7 @@ export type FormType<
     reset: EventCallable<void>;
     clear: EventCallable<void>;
     clearOuterErrors: EventCallable<void>;
+    clearInnerErrors: EventCallable<void>;
 
     fill: EventCallable<{
       values?: PartialRecursive<Values>;

@@ -26,8 +26,6 @@ export function createField<
   defaultValue: T,
   overrides?: CreatePrimitiveFieldOptions<Meta>,
 ): PrimitiveField<T, Meta> {
-  const clearOuterErrorOnChange = Boolean(overrides?.clearOuterErrorOnChange);
-
   const options = { ...defaultOptions, ...overrides };
 
   const $value = createStore(defaultValue, { name: '<field value>' });
@@ -86,10 +84,6 @@ export function createField<
   const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetValue = createEvent<FieldBatchedSetter<T>>();
   const batchedReset = createEvent<FieldBatchedPayload>();
-
-  if (clearOuterErrorOnChange) {
-    sample({ clock: $value, fn: () => null, target: $outerError });
-  }
 
   sample({ clock: blur, fn: () => false, target: $isFocused });
   sample({ clock: focus, fn: () => true, target: $isFocused });
@@ -190,10 +184,6 @@ export function createField<
     setOuterError,
 
     copyOnCreateForm: options.copyOnCreateForm,
-    clearOuterErrorOnChange,
-
-    fork: (options?: CreatePrimitiveFieldOptions) =>
-      createField(defaultValue, { ...overrides, ...options }),
 
     '@@unitShape': () => ({
       value: $value,
