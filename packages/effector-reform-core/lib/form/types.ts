@@ -98,7 +98,9 @@ export type FormType<
 
   $values: Store<Values>;
   $errors: Store<Errors>;
+  $snapshot: Store<Values>;
 
+  $isChanged: Store<boolean>;
   $isValid: Store<boolean>;
   $isDirty: Store<boolean>;
 
@@ -126,12 +128,16 @@ export type FormType<
   clearOuterErrors: EventCallable<void>;
   clearInnerErrors: EventCallable<void>;
 
+  forceUpdateSnapshot: EventCallable<void>;
+
   metaChanged: EventCallable<{ fieldPath: string; meta: any }>;
 
   '@@unitShape': () => {
     values: Store<Values>;
     errors: Store<Errors>;
+    snapshot: Store<Values>;
 
+    isChanged: Store<boolean>;
     isValid: Store<boolean>;
     isDirty: Store<boolean>;
     isValidationPending: Store<boolean>;
@@ -143,6 +149,7 @@ export type FormType<
     clear: EventCallable<void>;
     clearOuterErrors: EventCallable<void>;
     clearInnerErrors: EventCallable<void>;
+    forceUpdateSnapshot: EventCallable<void>;
 
     fill: EventCallable<{
       values?: PartialRecursive<Values>;

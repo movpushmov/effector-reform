@@ -21,6 +21,7 @@ type ReactForm<
   Errors extends FormErrors<any> = FormErrors<Schema>,
 > = {
   values: Values;
+  snapshot: Values;
   errors: Errors;
   fields: ReactFields<Schema>;
 
@@ -30,6 +31,7 @@ type ReactForm<
   onClear: () => void;
   onClearOuterErrors: () => void;
   onClearInnerErrors: () => void;
+  onForceUpdateSnapshot: () => void;
 
   isValid: boolean;
   isDirty: boolean;
@@ -61,6 +63,8 @@ export function useForm<
   const {
     values,
     errors,
+    snapshot,
+    forceUpdateSnapshot,
     submit,
     reset,
     clear,
@@ -96,12 +100,14 @@ export function useForm<
     values,
     errors,
     fields,
+    snapshot,
 
     onSubmit: (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       submit();
     },
 
+    onForceUpdateSnapshot: forceUpdateSnapshot,
     onReset: reset,
     onValidate: validate,
     onClear: clear,
