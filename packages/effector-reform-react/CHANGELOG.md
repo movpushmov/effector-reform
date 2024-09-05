@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/movpushmov/effector-reform/compare/v0.13.0...v0.13.1) (2024-09-05)
+
+### Bug Fixes
+
+- react types ([b7e5d6a](https://github.com/movpushmov/effector-reform/commit/b7e5d6a6e58da283db9e5c33df592ab65a7602b4))
+
 # [0.13.0](https://github.com/movpushmov/effector-reform/compare/v0.12.0...v0.13.0) (2024-09-05)
 
 ### Features
