@@ -33,6 +33,7 @@ type ReactForm<
   onClearInnerErrors: () => void;
   onForceUpdateSnapshot: () => void;
 
+  isChanged: boolean;
   isValid: boolean;
   isDirty: boolean;
   isValidationPending: boolean;
