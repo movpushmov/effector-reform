@@ -55,5 +55,8 @@
   "gitHead": "8f8b0f3700f1306db8f95f7aa5744356f8960d66",
   "devDependencies": {
     "@babel/plugin-transform-export-namespace-from": "^7.24.7"
+  },
+  "dependencies": {
+    "fast-deep-equal": "^3.1.3"
   }
 }

@@ -6,6 +6,7 @@ import {
   createStore,
   sample,
   EventCallable,
+  combine,
 } from 'effector';
 import {
   AnySchema,
@@ -30,6 +31,8 @@ import {
 } from './mapper';
 import { resetForm } from './helpers/reset';
 import { contractAdapter, isContract } from './helpers';
+
+import isEqual from 'fast-deep-equal';
 
 interface FormInnerMeta {
   /**
@@ -61,7 +64,15 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     metaChanged,
   } = mapSchema(fields);
 
+  const $snapshot = createStore({ ...$values.getState() });
+
   const $isDirty = createStore(false);
+  const $isChanged = combine(
+    $values,
+    $snapshot,
+    (values, snapshot) => !isEqual(values, snapshot),
+  );
+
   const $innerMeta = createStore<FormInnerMeta>({
     needSav: false,
     triggerIsDirty: true,
@@ -127,6 +138,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   );
 
   const changeInnerMeta = createEvent<Partial<FormInnerMeta>>();
+  const forceUpdateSnapshot = createEvent();
 
   const reset = createEvent('<form reset>');
 
@@ -203,6 +215,13 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       target: validatedAndSubmitted,
     });
   }
+
+  sample({
+    clock: [validatedAndSubmitted, forceUpdateSnapshot],
+    source: $values,
+    fn: (values) => ({ ...values }),
+    target: $snapshot,
+  });
 
   sample({
     clock: reset,
@@ -320,8 +339,10 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   return {
     $errors,
     $values,
+    $snapshot,
     $isDirty,
     $isValid,
+    $isChanged,
 
     $isValidationPending,
 
@@ -344,13 +365,16 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     validationFailed,
     validatedAndSubmitted,
 
+    forceUpdateSnapshot,
     fill,
 
     '@@unitShape': () => ({
       errors: $errors,
       values: $values,
+      snapshot: $snapshot,
       isValidationPending: $isValidationPending,
 
+      isChanged: $isChanged,
       isDirty: $isDirty,
       isValid: $isValid,
 
@@ -360,6 +384,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       clear,
       clearOuterErrors,
       clearInnerErrors,
+      forceUpdateSnapshot,
 
       fill,
     }),

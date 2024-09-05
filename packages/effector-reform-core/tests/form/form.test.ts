@@ -486,4 +486,109 @@ describe('Form tests', () => {
 
     expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
   });
+
+  describe('snapshots', () => {
+    test('snapshot updated after submit & validate', async () => {
+      const scope = fork();
+      const form = createForm<{ a: string; b: number }>({
+        schema: { a: 'hello', b: 0 },
+      });
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 'world', b: 10 } },
+      });
+
+      expect(scope.getState(form.$values)).not.toStrictEqual(
+        scope.getState(form.$snapshot),
+      );
+
+      await allSettled(form.submit, { scope });
+
+      expect(scope.getState(form.$values)).toStrictEqual(
+        scope.getState(form.$snapshot),
+      );
+    });
+
+    test('snapshot not updated after failed validation', async () => {
+      const scope = fork();
+      const form = createForm<{ a: string; b: number }>({
+        schema: { a: 'hello', b: 0 },
+        validation: () => ({ a: '123' }),
+      });
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 'world', b: 10 } },
+      });
+
+      expect(scope.getState(form.$values)).not.toStrictEqual(
+        scope.getState(form.$snapshot),
+      );
+
+      await allSettled(form.submit, { scope });
+
+      expect(scope.getState(form.$values)).not.toStrictEqual(
+        scope.getState(form.$snapshot),
+      );
+    });
+
+    test('snapshot can be updated force', async () => {
+      const scope = fork();
+      const form = createForm<{ a: string; b: number }>({
+        schema: { a: 'hello', b: 0 },
+        validation: () => ({ a: '123' }),
+      });
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 'world', b: 10 } },
+      });
+
+      expect(scope.getState(form.$values)).not.toStrictEqual(
+        scope.getState(form.$snapshot),
+      );
+
+      await allSettled(form.forceUpdateSnapshot, { scope });
+
+      expect(scope.getState(form.$values)).toStrictEqual(
+        scope.getState(form.$snapshot),
+      );
+    });
+
+    test('isChanged works correctly', async () => {
+      const scope = fork();
+      const form = createForm<{ a: string; b: number }>({
+        schema: { a: 'hello', b: 0 },
+      });
+
+      // case 1
+      expect(scope.getState(form.$isChanged)).toBe(false);
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 'a', b: 1 } },
+      });
+
+      expect(scope.getState(form.$isChanged)).toBe(true);
+
+      await allSettled(form.submit, { scope });
+
+      expect(scope.getState(form.$isChanged)).toBe(false);
+      // case 1
+
+      // case 2
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 'av', b: 2 } },
+      });
+
+      expect(scope.getState(form.$isChanged)).toBe(true);
+
+      await allSettled(form.forceUpdateSnapshot, { scope });
+
+      expect(scope.getState(form.$isChanged)).toBe(false);
+      // case 2
+    });
+  });
 });
