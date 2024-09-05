@@ -111,6 +111,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const clear = createEvent('<form full clear>');
   const clearOuterErrors = createEvent('<form clear outer errors>');
+  const clearInnerErrors = createEvent('<form clear inner errors>');
 
   const changed = createEvent<FormValues<Fields>>('<form changed>');
   const errorsChanged = createEvent<Errors>('<form errors changed>');
@@ -265,6 +266,11 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     target: clearOuterErrorsFx,
   });
 
+  sample({
+    clock: clearInnerErrors,
+    target: clearInnerErrorsFx,
+  });
+
   if (clearOuterErrorsOnSubmit) {
     sample({
       clock: submit,
@@ -331,6 +337,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     reset,
     clear,
     clearOuterErrors,
+    clearInnerErrors,
 
     validate,
     validated,
@@ -352,6 +359,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       reset,
       clear,
       clearOuterErrors,
+      clearInnerErrors,
 
       fill,
     }),

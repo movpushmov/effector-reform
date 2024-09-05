@@ -54,7 +54,6 @@ export interface PrimitiveField<
   focused: Event<void>;
 
   copyOnCreateForm: boolean;
-  clearOuterErrorOnChange: boolean;
 
   '@@unitShape': () => {
     value: Store<T>;
@@ -78,7 +77,6 @@ export interface PrimitiveField<
 export interface CreatePrimitiveFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
-  clearOuterErrorOnChange?: boolean;
   copyOnCreateForm?: boolean;
 }
 

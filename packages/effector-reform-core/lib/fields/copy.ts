@@ -14,7 +14,6 @@ export function copy<T extends PrimitiveField | ArrayField<any>>(field: T): T {
         error: field.$error.getState(),
         meta: field.$meta.getState(),
         copyOnCreateForm: field.copyOnCreateForm,
-        clearOuterErrorOnChange: field.clearOuterErrorOnChange,
       }) as unknown as T;
     }
     case primitiveFieldSymbol: {
@@ -22,7 +21,6 @@ export function copy<T extends PrimitiveField | ArrayField<any>>(field: T): T {
         error: field.$error.getState(),
         meta: field.$meta.getState(),
         copyOnCreateForm: field.copyOnCreateForm,
-        clearOuterErrorOnChange: field.clearOuterErrorOnChange,
       }) as unknown as T;
     }
   }

@@ -29,6 +29,7 @@ type ReactForm<
   onReset: () => void;
   onClear: () => void;
   onClearOuterErrors: () => void;
+  onClearInnerErrors: () => void;
 
   isValid: boolean;
   isDirty: boolean;
@@ -64,6 +65,7 @@ export function useForm<
     reset,
     clear,
     clearOuterErrors,
+    clearInnerErrors,
     validate,
     ...formParams
   } = useUnit(form);
@@ -104,6 +106,7 @@ export function useForm<
     onValidate: validate,
     onClear: clear,
     onClearOuterErrors: clearOuterErrors,
+    onClearInnerErrors: clearInnerErrors,
 
     ...formParams,
   };

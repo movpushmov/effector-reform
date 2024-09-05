@@ -9,7 +9,6 @@ __Type Signature:__
 interface CreatePrimitiveFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
-  clearOuterErrorOnChange?: boolean;
   copyOnCreateForm?: boolean;
 }
 
@@ -73,20 +72,20 @@ field.$meta.getState(); // { onlyPositive: true }
 
 ### API
 
-| name         | type                                                       | description                                                                   |
-|--------------|------------------------------------------------------------|-------------------------------------------------------------------------------|
-| $value       | `Store<T>`                                                 | value of field                                                                |
-| $meta        | `Store<Meta>`                                              | field meta                                                                    |
-| $error       | `Store<FieldError>`                                        | error of field                                                                |
-| $isDirty     | `Store<boolean>`                                           | is field changed after creating                                               |
-| $isValid     | `Store<boolean>`                                           | is field valid                                                                |
-| $isFocused   | `Store<boolean>`                                           | is user focused on field                                                      |
-| blurred      | `Event<void>`                                              | triggered when user blurred input (you must set focus/blur handlers in input) |
-| focused      | `Event<void>`                                              | triggered when user focused input (you must set focus/blur handlers in input) |
-| change       | `EventCallable<T>`                                         | change field value                                                            |
-| changed      | `Event<T>`                                                 | triggered when field value changed                                            |
-| reset        | `EventCallable<void>`                                      | reset field value                                                             |
-| changeError  | `EventCallable<FieldError>`                                | change outer field error                                                      |
-| changeMeta   | `EventCallable<Meta>`                                      | change field meta                                                             |
-| metaChanged  | `Event<Meta>`                                              | field meta changed                                                            |
-| errorChanged | `Event<FieldError>`                                        | triggered when error changed (inner or outer)                                 |
+| name         | type                          | description                                                                   |
+| ------------ | ----------------------------- | ----------------------------------------------------------------------------- |
+| $value       | `Store<T>`                  | value of field                                                                |
+| $meta        | `Store<Meta>`               | field meta                                                                    |
+| $error       | `Store<FieldError>`         | error of field                                                                |
+| $isDirty     | `Store<boolean>`            | is field changed after creating                                               |
+| $isValid     | `Store<boolean>`            | is field valid                                                                |
+| $isFocused   | `Store<boolean>`            | is user focused on field                                                      |
+| blurred      | `Event<void>`               | triggered when user blurred input (you must set focus/blur handlers in input) |
+| focused      | `Event<void>`               | triggered when user focused input (you must set focus/blur handlers in input) |
+| change       | `EventCallable<T>`          | change field value                                                            |
+| changed      | `Event<T>`                  | triggered when field value changed                                            |
+| reset        | `EventCallable<void>`       | reset field value                                                             |
+| changeError  | `EventCallable<FieldError>` | change outer field error                                                      |
+| changeMeta   | `EventCallable<Meta>`       | change field meta                                                             |
+| metaChanged  | `Event<Meta>`               | field meta changed                                                            |
+| errorChanged | `Event<FieldError>`         | triggered when error changed (inner or outer)                                 |

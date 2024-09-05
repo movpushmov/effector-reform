@@ -38,8 +38,9 @@ import { mapSchema, setFormErrors } from '../../form/mapper';
 import { isPrimitiveJsonValue } from '../primitive-field/utils';
 
 const defaultOptions: CreateArrayFieldOptions = {
-  copyOnCreateForm: true,
+  error: null,
   meta: {},
+  copyOnCreateForm: true,
 };
 
 export function createArrayField<
@@ -51,8 +52,6 @@ export function createArrayField<
   overrides?: CreateArrayFieldOptions<Meta>,
 ): ArrayField<T, Meta, Value> {
   type Values = Value[];
-
-  const clearOuterErrorOnChange = Boolean(overrides?.clearOuterErrorOnChange);
 
   function getDefaultValues() {
     return values.map(prepareFieldsSchema) as Values;
@@ -238,10 +237,6 @@ export function createArrayField<
     },
     name: 'syncFx',
   });
-
-  if (clearOuterErrorOnChange) {
-    sample({ clock: $values, fn: () => null, target: $outerError });
-  }
 
   sample({ clock: $values, fn: () => true, target: $isDirty });
   sample({ clock: syncFx.doneData, target: $values });
@@ -607,7 +602,6 @@ export function createArrayField<
     resetCompleted,
 
     copyOnCreateForm: options.copyOnCreateForm,
-    clearOuterErrorOnChange,
 
     '@@unitShape': () => ({
       values: $values,
@@ -633,8 +627,6 @@ export function createArrayField<
       remove,
       pop,
       replace,
-
-      clearOuterErrorOnChange,
     }),
   } as ArrayField<T, Meta, Value> & InnerArrayFieldApi;
 }

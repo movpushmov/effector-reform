@@ -468,4 +468,22 @@ describe('Form tests', () => {
 
     expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
   });
+
+  test('clearInnerErrors', async () => {
+    const scope = fork();
+    const form = createForm<{ a: string; b: string }>({
+      schema: { a: '', b: '' },
+      validation: () => ({ a: '123', b: '321' }),
+      validationStrategies: ['submit'],
+    });
+
+    await allSettled(form.submit, { scope });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({ a: '123', b: '321' });
+
+    await allSettled(form.clearInnerErrors, { scope });
+    await allSettled(form.fields.a.change, { scope, params: '123' });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
+  });
 });
