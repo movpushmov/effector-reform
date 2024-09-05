@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/movpushmov/effector-reform/compare/v0.11.0...v0.12.0) (2024-09-05)
+
+### Features
+
+- review old api & add clear inner errors ([2f40d18](https://github.com/movpushmov/effector-reform/commit/2f40d18d1f1c68d907b0ded603414c2d77177a0c))
+
 # [0.11.0](https://github.com/movpushmov/effector-reform/compare/v0.10.7...v0.11.0) (2024-09-04)
 
 ### Features
