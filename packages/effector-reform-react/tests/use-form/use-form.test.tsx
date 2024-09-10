@@ -1,10 +1,11 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DefaultFormComponent } from '../components/default';
 import { ValidatedFormComponent } from '../components/validated';
 import { ArrayFieldForm } from '../components/array-field';
 import { MetaForm } from '../components/meta';
+import { FormWithCallback } from '../components/form-with-callback';
 
 describe('useForm', () => {
   test('value change', async () => {
@@ -83,5 +84,18 @@ describe('useForm', () => {
     await userEvent.click(button);
 
     expect(text.textContent).toBe('is positive: true');
+  });
+
+  test('hook triggered only once after field change', async () => {
+    const mockedFn = vi.fn();
+    const { container } = render(<FormWithCallback onUpdate={mockedFn} />);
+
+    const field = container.querySelector('input')!;
+
+    expect(mockedFn).toBeCalledTimes(1);
+
+    await userEvent.type(field, '1');
+
+    expect(mockedFn).toBeCalledTimes(2);
   });
 });

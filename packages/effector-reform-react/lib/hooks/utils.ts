@@ -6,7 +6,16 @@ import {
   PrimitiveValue,
   ReadyFieldsGroupSchema,
 } from '@effector-reform/core';
-import { Scope, scopeBind, EventCallable, Store } from 'effector';
+import {
+  Scope,
+  scopeBind,
+  EventCallable,
+  Store,
+  Subscription,
+  Event,
+  StoreWritable,
+  createWatch,
+} from 'effector';
 import {
   ReactArrayFieldApi,
   ReactFields,
@@ -108,4 +117,32 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
   }
 
   return node;
+}
+
+export function subscribe(
+  units: (Event<any> | EventCallable<any> | Store<any> | StoreWritable<any>)[],
+  scope: Scope | null,
+  callback: () => void,
+) {
+  const subscriptions: Subscription[] = [];
+
+  for (const unit of units) {
+    subscriptions.push(
+      createWatch({
+        unit,
+        fn: callback,
+        scope: scope ?? undefined,
+        batch: true,
+      }),
+    );
+  }
+
+  return {
+    subscriptions,
+    unsubscribe: () => {
+      for (const subscription of subscriptions) {
+        subscription.unsubscribe();
+      }
+    },
+  };
 }
