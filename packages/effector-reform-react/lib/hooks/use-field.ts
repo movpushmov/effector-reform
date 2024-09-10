@@ -45,6 +45,7 @@ export function useArrayField<
     insert,
     ...params
   } = useUnit(field);
+
   const syncedValues = useMemo(
     () =>
       values.map((item) =>

@@ -8,7 +8,7 @@ import {
 } from '@effector-reform/core';
 import { useProvidedScope, useUnit } from 'effector-react';
 import { FormEvent, useEffect, useState } from 'react';
-import { getFields } from './utils';
+import { getFields, subscribe } from './utils';
 import { ReactFields } from '../types';
 
 interface UseFormProps {
@@ -80,16 +80,14 @@ export function useForm<
   );
 
   useEffect(() => {
-    setFields(getFields(form.fields, scope));
-  }, [values, errors]);
-
-  useEffect(() => {
-    const stop = form.metaChanged.watch(() =>
-      setFields(getFields(form.fields, scope)),
+    const { unsubscribe } = subscribe(
+      [form.$values, form.$errors, form.metaChanged],
+      scope,
+      () => setFields(getFields(form.fields, scope)),
     );
 
     return () => {
-      stop();
+      unsubscribe();
 
       if (props?.resetOnUnmount) {
         reset();
