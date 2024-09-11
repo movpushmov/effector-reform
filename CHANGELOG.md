@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.3](https://github.com/movpushmov/effector-reform/compare/v0.13.2...v0.13.3) (2024-09-11)
+
+### Bug Fixes
+
+- remove legacy & add some events ([e8e42e0](https://github.com/movpushmov/effector-reform/commit/e8e42e02606532915548c46ed07f7c1d5e685d6a))
+
 ## [0.13.2](https://github.com/movpushmov/effector-reform/compare/v0.13.1...v0.13.2) (2024-09-10)
 
 ### Bug Fixes
