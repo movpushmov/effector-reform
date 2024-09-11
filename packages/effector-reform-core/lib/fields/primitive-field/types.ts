@@ -40,7 +40,6 @@ export interface PrimitiveField<
   $value: Store<T>;
   $error: Store<FieldError>;
 
-  $isDirty: Store<boolean>;
   $isValid: Store<boolean>;
   $isFocused: Store<boolean>;
 
@@ -60,7 +59,6 @@ export interface PrimitiveField<
     error: Store<FieldError>;
     meta: Store<Meta>;
 
-    isDirty: Store<boolean>;
     isValid: Store<boolean>;
     isFocused: Store<boolean>;
 

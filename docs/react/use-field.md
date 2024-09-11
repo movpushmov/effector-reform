@@ -21,6 +21,7 @@ const form = createForm({ schema: { name: '' } });
 // in react component
 const { value, onChange } = useField(form.fields.name);
 ```
+
 :::
 
 ```tsx
@@ -47,13 +48,12 @@ const Field = () => {
 
 ## API
 
-| name          | type                             | description        |
-|---------------|----------------------------------|--------------------|
+| name          | type                               | description        |
+| ------------- | ---------------------------------- | ------------------ |
 | value         | `T`                              | field value        |
 | error         | `FieldError`                     | field outer error  |
 | meta          | `Meta`                           | field meta         |
 | isValid       | `boolean`                        | is field valid     |
-| isDirty       | `boolean`                        | is field changed   |
 | onChangeError | `(newError: FieldError) => void` | change field error |
 | onChange      | `(newValue: T) => void`          | change field value |
 | onFocus       | `() => void`                     | focus field        |

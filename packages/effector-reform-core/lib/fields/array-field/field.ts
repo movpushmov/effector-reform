@@ -148,7 +148,6 @@ export function createArrayField<
   }).map(({ innerError, outerError }) => outerError || innerError);
 
   const $isValid = $error.map((error) => error === null);
-  const $isDirty = createStore(false);
 
   const $meta = createStore<Meta>(options.meta);
 
@@ -238,7 +237,6 @@ export function createArrayField<
     name: 'syncFx',
   });
 
-  sample({ clock: $values, fn: () => true, target: $isDirty });
   sample({ clock: syncFx.doneData, target: $values });
 
   sample({
@@ -558,7 +556,6 @@ export function createArrayField<
     $outerError,
     $innerError,
 
-    $isDirty,
     $isValid,
 
     changeMeta,
@@ -608,7 +605,6 @@ export function createArrayField<
       error: $error,
       meta: $meta,
 
-      isDirty: $isDirty,
       isValid: $isValid,
 
       changeMeta,

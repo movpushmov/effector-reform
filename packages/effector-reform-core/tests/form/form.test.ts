@@ -391,49 +391,6 @@ describe('Form tests', () => {
     expect(scope.getState(form.fields.a.$value)).toBe('hello');
   });
 
-  test('if flag is not passed in "fill" event — isDirty doesn\'t changed', async () => {
-    const scope = fork();
-    const form = createForm<{ a: string }>({ schema: { a: '' } });
-
-    expect(scope.getState(form.$isDirty)).toBe(false);
-
-    await allSettled(form.fill, { scope, params: { values: { a: '123' } } });
-
-    expect(scope.getState(form.$isDirty)).toBe(false);
-
-    await allSettled(form.fields.a.change, { scope, params: '321' });
-
-    expect(scope.getState(form.$isDirty)).toBe(true);
-  });
-
-  test('if "true" is passed in "fill" event — isDirty changed', async () => {
-    const scope = fork();
-    const form = createForm<{ a: string }>({ schema: { a: '' } });
-
-    expect(scope.getState(form.$isDirty)).toBe(false);
-
-    await allSettled(form.fill, {
-      scope,
-      params: { values: { a: '123' }, triggerIsDirty: true },
-    });
-
-    expect(scope.getState(form.$isDirty)).toBe(true);
-  });
-
-  test('if "false" is passed in "fill" event — isDirty doesn\'t changed', async () => {
-    const scope = fork();
-    const form = createForm<{ a: string }>({ schema: { a: '' } });
-
-    expect(scope.getState(form.$isDirty)).toBe(false);
-
-    await allSettled(form.fill, {
-      scope,
-      params: { values: { a: '123' }, triggerIsDirty: false },
-    });
-
-    expect(scope.getState(form.$isDirty)).toBe(false);
-  });
-
   test('clearOuterErrors', async () => {
     const scope = fork();
     const form = createForm<{ a: string; b: string }>({
@@ -589,6 +546,92 @@ describe('Form tests', () => {
 
       expect(scope.getState(form.$isChanged)).toBe(false);
       // case 2
+    });
+
+    test('isChanged works with subfields in array field', async () => {
+      const scope = fork();
+      const form = createForm({
+        schema: {
+          field: '',
+          arrayField: createArrayField<{ key: string; value: string }>([]),
+        },
+      });
+
+      await allSettled(form.fill, {
+        scope,
+        params: {
+          values: {
+            field: 'hello',
+            arrayField: [
+              { key: '1', value: 'hello' },
+              { key: '2', value: 'world' },
+            ],
+          },
+        },
+      });
+
+      await allSettled(form.forceUpdateSnapshot, { scope });
+
+      expect(scope.getState(form.$isChanged)).toBe(false);
+    });
+
+    test('filled fires after fill values', async () => {
+      const scope = fork();
+      const form = createForm({ schema: { field: '' } });
+      const watchedEvent = watchCalls(form.filled);
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { field: 'hello world' } },
+      });
+
+      expect(watchedEvent).toBeCalledTimes(1);
+    });
+
+    test('filled fires after fill errors', async () => {
+      const scope = fork();
+      const form = createForm({ schema: { field: '' } });
+      const watchedEvent = watchCalls(form.filled);
+
+      await allSettled(form.fill, {
+        scope,
+        params: { errors: { field: 'hello world' } },
+      });
+
+      expect(watchedEvent).toBeCalledTimes(1);
+    });
+
+    test('filled fires after fill values & errors', async () => {
+      const scope = fork();
+      const form = createForm({ schema: { field: '' } });
+      const watchedEvent = watchCalls(form.filled);
+
+      await allSettled(form.fill, {
+        scope,
+        params: {
+          values: { field: 'hello world' },
+          errors: { field: 'hello world' },
+        },
+      });
+
+      expect(watchedEvent).toBeCalledTimes(1);
+    });
+
+    test('snapshot updated fires after snapshot update', async () => {
+      const scope = fork();
+      const form = createForm({ schema: { field: '' } });
+      const watchedEvent = watchCalls(form.snapshotUpdated);
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { field: 'hello world' } },
+      });
+
+      expect(watchedEvent).toBeCalledTimes(0);
+
+      await allSettled(form.forceUpdateSnapshot, { scope });
+
+      expect(watchedEvent).toBeCalledTimes(1);
     });
   });
 });

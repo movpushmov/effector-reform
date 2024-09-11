@@ -102,15 +102,14 @@ export type FormType<
 
   $isChanged: Store<boolean>;
   $isValid: Store<boolean>;
-  $isDirty: Store<boolean>;
 
   $isValidationPending: Store<boolean>;
 
   fill: EventCallable<{
     values?: PartialRecursive<Values>;
     errors?: ErrorsSchemaPayload;
-    triggerIsDirty?: boolean;
   }>;
+  filled: Event<void>;
 
   changed: EventCallable<Values>;
   errorsChanged: Event<Errors>;
@@ -129,6 +128,7 @@ export type FormType<
   clearInnerErrors: EventCallable<void>;
 
   forceUpdateSnapshot: EventCallable<void>;
+  snapshotUpdated: Event<void>;
 
   metaChanged: EventCallable<{ fieldPath: string; meta: any }>;
 
@@ -139,7 +139,6 @@ export type FormType<
 
     isChanged: Store<boolean>;
     isValid: Store<boolean>;
-    isDirty: Store<boolean>;
     isValidationPending: Store<boolean>;
 
     submit: EventCallable<void>;

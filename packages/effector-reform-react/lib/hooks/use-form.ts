@@ -35,13 +35,11 @@ type ReactForm<
 
   isChanged: boolean;
   isValid: boolean;
-  isDirty: boolean;
   isValidationPending: boolean;
 
   fill: (data: {
     values?: PartialRecursive<Values>;
     errors?: ErrorsSchemaPayload;
-    triggerIsDirty?: boolean;
   }) => void;
 };
 

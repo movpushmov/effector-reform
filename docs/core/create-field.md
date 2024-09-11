@@ -77,7 +77,6 @@ field.$meta.getState(); // { onlyPositive: true }
 | $value       | `Store<T>`                  | value of field                                                                |
 | $meta        | `Store<Meta>`               | field meta                                                                    |
 | $error       | `Store<FieldError>`         | error of field                                                                |
-| $isDirty     | `Store<boolean>`            | is field changed after creating                                               |
 | $isValid     | `Store<boolean>`            | is field valid                                                                |
 | $isFocused   | `Store<boolean>`            | is user focused on field                                                      |
 | blurred      | `Event<void>`               | triggered when user blurred input (you must set focus/blur handlers in input) |

@@ -25,6 +25,7 @@ const form = createForm({ schema: { friends: [] } });
 // in react component
 const { values, onChange } = useArrayField(form.fields.friends);
 ```
+
 :::
 
 ```tsx
@@ -70,22 +71,21 @@ const Field = () => {
 
 ## API
 
-| name          | type                                                        | description                                             |
-|---------------|-------------------------------------------------------------|---------------------------------------------------------|
-| values        | `(T extends ReadyFieldsGroupSchema ? ReactFields<T> : T)[]` | array field values                                      |
-| meta          | `Meta`                                                      | array field meta                                        |
-| error         | `FieldError`                                                | array field error                                       |
-| isValid       | `boolean`                                                   | is array field valid                                    |
-| isDirty       | `boolean`                                                   | is array field changed                                  |
-| onReset       | `() => void`                                                | reset array field values                                |
-| onChange      | `(values: Payload[]) => void`                               | change array field values                               |
-| onChangeError | `(error: FieldError) => void`                               | change array field outer error                          |
-| onChangeMeta  | `(meta: Meta) => void`                                      | change field meta                                       |
-| onPush        | `(payload: PushPayload<Payload>) => void`                   | push item [reference](../core/create-array-field)       |
-| onSwap        | `(payload: SwapPayload) => void`                            | swap items [reference](../core/create-array-field)      |
-| onMove        | `(payload: MovePayload) => void`                            | move item [reference](../core/create-array-field)       |
-| onInsert      | `(payload: InsertOrReplacePayload<Payload>) => void`        | insert item [reference](../core/create-array-field)     |
-| onUnshift     | `(payload: UnshiftPayload<Payload>) => void`                | unshift item(s) [reference](../core/create-array-field) |
-| onRemove      | `(payload: RemovePayload) => void`                          | remove item [reference](../core/create-array-field)     |
-| onPop         | `(payload: void) => void`                                   | pop item [reference](../core/create-array-field)        |
-| onReplace     | `(payload: InsertOrReplacePayload<Payload>) => void`        | replace item [reference](../core/create-array-field)    |
+| name          | type                                                          | description                                         |
+| ------------- | ------------------------------------------------------------- | --------------------------------------------------- |
+| values        | `(T extends ReadyFieldsGroupSchema ? ReactFields<T> : T)[]` | array field values                                  |
+| meta          | `Meta`                                                      | array field meta                                    |
+| error         | `FieldError`                                                | array field error                                   |
+| isValid       | `boolean`                                                   | is array field valid                                |
+| onReset       | `() => void`                                                | reset array field values                            |
+| onChange      | `(values: Payload[]) => void`                               | change array field values                           |
+| onChangeError | `(error: FieldError) => void`                               | change array field outer error                      |
+| onChangeMeta  | `(meta: Meta) => void`                                      | change field meta                                   |
+| onPush        | `(payload: PushPayload<Payload>) => void`                   | push item[reference](../core/create-array-field)       |
+| onSwap        | `(payload: SwapPayload) => void`                            | swap items[reference](../core/create-array-field)      |
+| onMove        | `(payload: MovePayload) => void`                            | move item[reference](../core/create-array-field)       |
+| onInsert      | `(payload: InsertOrReplacePayload<Payload>) => void`        | insert item[reference](../core/create-array-field)     |
+| onUnshift     | `(payload: UnshiftPayload<Payload>) => void`                | unshift item(s)[reference](../core/create-array-field) |
+| onRemove      | `(payload: RemovePayload) => void`                          | remove item[reference](../core/create-array-field)     |
+| onPop         | `(payload: void) => void`                                   | pop item[reference](../core/create-array-field)        |
+| onReplace     | `(payload: InsertOrReplacePayload<Payload>) => void`        | replace item[reference](../core/create-array-field)    |

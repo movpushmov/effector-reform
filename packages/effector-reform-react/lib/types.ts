@@ -24,7 +24,6 @@ export interface ReactPrimitiveFieldApi<
   error: FieldError;
 
   isValid: boolean;
-  isDirty: boolean;
   isFocused: boolean;
 
   onChangeError: (newError: FieldError) => void;
@@ -46,7 +45,6 @@ export interface ReactArrayFieldApi<
   error: FieldError;
 
   isValid: boolean;
-  isDirty: boolean;
 
   onChange: (values: Payload[]) => void;
   onChangeError: (error: FieldError) => void;

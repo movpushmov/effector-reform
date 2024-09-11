@@ -44,7 +44,6 @@ export function createField<
   }).map(({ innerError, outerError }) => outerError || innerError);
 
   const $isValid = $error.map((error) => error === null);
-  const $isDirty = createStore(false);
   const $isFocused = createStore(false);
 
   const $meta = createStore<Meta>(options.meta);
@@ -103,8 +102,6 @@ export function createField<
 
   sample({ clock: change, target: $value });
 
-  sample({ clock: $value, fn: () => true, target: $isDirty });
-
   sample({
     clock: batchedSetValue,
     fn: (payload) => payload.value,
@@ -134,9 +131,8 @@ export function createField<
     fn: () => ({
       value: defaultValue,
       error: overrides?.error ?? null,
-      isDirty: false,
     }),
-    target: spread({ value: $value, error: $outerError, isDirty: $isDirty }),
+    target: spread({ value: $value, error: $outerError }),
   });
 
   sample({
@@ -159,7 +155,6 @@ export function createField<
     $error,
 
     $isValid,
-    $isDirty,
     $isFocused,
 
     changeMeta,
@@ -191,7 +186,6 @@ export function createField<
       meta: $meta,
 
       isValid: $isValid,
-      isDirty: $isDirty,
       isFocused: $isFocused,
 
       changeMeta,

@@ -71,7 +71,6 @@ export interface ArrayField<
   $values: Store<U[]>;
   $error: Store<FieldError>;
 
-  $isDirty: Store<boolean>;
   $isValid: Store<boolean>;
 
   copyOnCreateForm: boolean;
@@ -81,7 +80,6 @@ export interface ArrayField<
     error: Store<FieldError>;
     meta: Store<Meta>;
 
-    isDirty: Store<boolean>;
     isValid: Store<boolean>;
 
     changeMeta: EventCallable<Meta>;

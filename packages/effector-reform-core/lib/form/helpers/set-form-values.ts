@@ -10,7 +10,7 @@ export function setFormValues<Values>(
 ) {
   const iteratedValues: Record<
     string,
-    { event: FormApi[string]['batchedSetValue']; value: any }
+    { setValue: FormApi[string]['batchedSetValue']; value: any }
   > = {};
 
   function iterate(node: Node, path: string[] = []) {
@@ -27,7 +27,7 @@ export function setFormValues<Values>(
         }
 
         iteratedValues[apiKey] = {
-          event: fieldApi.batchedSetValue,
+          setValue: fieldApi.batchedSetValue,
           value: subNode,
         };
         continue;
@@ -49,7 +49,7 @@ export function setFormValues<Values>(
   addBatchTask(task);
 
   for (const apiKey in iteratedValues) {
-    iteratedValues[apiKey].event({
+    iteratedValues[apiKey].setValue({
       value: iteratedValues[apiKey].value,
       '@@batchInfo': { id: task.id, fieldPath: apiKey },
     });

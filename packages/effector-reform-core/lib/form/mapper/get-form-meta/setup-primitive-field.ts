@@ -3,9 +3,8 @@ import { createEffect, sample } from 'effector';
 import { Node, PrimitiveFieldPathApi } from '../types';
 import { This } from './types';
 import { FieldInteractionEventPayload } from '../map-schema/types';
-import { combineEvents } from 'patronum';
 import { clearPrimitiveFieldMemory } from '../../../fields/primitive-field/utils';
-import { clearUnits } from '../../../utils';
+import { clearUnits, inOrder } from '../../../utils';
 
 interface Props {
   field: PrimitiveField;
@@ -102,19 +101,19 @@ export function setupPrimitiveField(
 
   // not batched changes flow
   sample({
-    clock: combineEvents([field.changeError, field.errorChanged]),
+    clock: inOrder([field.changeError, field.errorChanged]),
     fn: ([error]) => ({ error }),
     target: changeErrorFx,
   });
 
   sample({
-    clock: combineEvents([field.change, field.changed]),
+    clock: inOrder([field.change, field.changed]),
     fn: ([value]) => ({ value }),
     target: changeValueFx,
   });
 
   sample({
-    clock: combineEvents([field.reset, field.resetCompleted]),
+    clock: inOrder([field.reset, field.resetCompleted]),
     source: [field.$value, field.$error],
     fn: ([value, error]) => ({
       value,
@@ -186,7 +185,7 @@ export function setupPrimitiveField(
   });
 
   sample({
-    clock: combineEvents([field.batchedSetValue, field.changed]),
+    clock: inOrder([field.batchedSetValue, field.changed]),
     source: field.$value,
     fn: (value, [{ '@@batchInfo': batchInfo }]) => ({
       value,
@@ -196,7 +195,7 @@ export function setupPrimitiveField(
   });
 
   sample({
-    clock: combineEvents([field.batchedReset, field.resetCompleted]),
+    clock: inOrder([field.batchedReset, field.resetCompleted]),
     source: [field.$value, field.$error],
     fn: ([value, error], [{ '@@batchInfo': batchInfo }]) => ({
       value,

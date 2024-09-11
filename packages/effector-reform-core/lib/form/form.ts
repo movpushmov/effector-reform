@@ -33,13 +33,14 @@ import { resetForm } from './helpers/reset';
 import { contractAdapter, isContract } from './helpers';
 
 import isEqual from 'fast-deep-equal';
+import { inOrder } from '../utils';
+import { combineEvents } from 'patronum';
 
 interface FormInnerMeta {
   /**
    * need to call submittedAndValidatedEvent after "validated" event
    */
   needSav: boolean;
-  triggerIsDirty: boolean;
 }
 
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
@@ -66,7 +67,6 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const $snapshot = createStore({ ...$values.getState() });
 
-  const $isDirty = createStore(false);
   const $isChanged = combine(
     $values,
     $snapshot,
@@ -75,7 +75,6 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const $innerMeta = createStore<FormInnerMeta>({
     needSav: false,
-    triggerIsDirty: true,
   });
 
   type Fields = typeof fields;
@@ -117,8 +116,9 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const fill = createEvent<{
     values?: PartialRecursive<Values>;
     errors?: ErrorsSchemaPayload;
-    triggerIsDirty?: boolean;
   }>('<form fill>');
+
+  const filled = createEvent();
 
   const clear = createEvent('<form full clear>');
   const clearOuterErrors = createEvent('<form clear outer errors>');
@@ -139,6 +139,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const changeInnerMeta = createEvent<Partial<FormInnerMeta>>();
   const forceUpdateSnapshot = createEvent();
+  const snapshotUpdated = createEvent();
 
   const reset = createEvent('<form reset>');
 
@@ -252,26 +253,36 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     target: setOuterErrorsFx,
   });
 
-  sample({
-    clock: fill,
-    fn: (data) => ({
-      triggerIsDirty:
-        data.triggerIsDirty !== undefined ? data.triggerIsDirty : false,
+  const filledValues = inOrder([
+    fill.filter({
+      fn: (payload) => Boolean(payload.values) && !payload.errors,
     }),
-    target: changeInnerMeta,
+    changed,
+  ]);
+
+  const filledErrors = inOrder([
+    fill.filter({
+      fn: (payload) => Boolean(payload.errors) && !payload.values,
+    }),
+    errorsChanged,
+  ]);
+
+  const formFilled = inOrder([
+    fill.filter({
+      fn: (payload) => Boolean(payload.values) && Boolean(payload.errors),
+    }),
+    combineEvents([changed, errorsChanged]),
+  ]);
+
+  sample({
+    clock: [filledValues, filledErrors, formFilled],
+    fn: () => undefined,
+    target: filled,
   });
 
   sample({
-    clock: $values,
-    source: $innerMeta,
-    filter: (meta) => meta.triggerIsDirty,
-    fn: () => true,
-    target: $isDirty,
-  });
-
-  sample({
-    clock: $values,
-    target: changeInnerMeta.prepend(() => ({ triggerIsDirty: true })),
+    clock: $snapshot,
+    target: snapshotUpdated,
   });
 
   sample({
@@ -340,7 +351,6 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     $errors,
     $values,
     $snapshot,
-    $isDirty,
     $isValid,
     $isChanged,
 
@@ -366,7 +376,10 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     validatedAndSubmitted,
 
     forceUpdateSnapshot,
+    snapshotUpdated,
+
     fill,
+    filled,
 
     '@@unitShape': () => ({
       errors: $errors,
@@ -375,7 +388,6 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       isValidationPending: $isValidationPending,
 
       isChanged: $isChanged,
-      isDirty: $isDirty,
       isValid: $isValid,
 
       submit,
