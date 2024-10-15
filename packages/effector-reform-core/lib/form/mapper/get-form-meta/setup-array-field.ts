@@ -199,8 +199,7 @@ export function setupArrayField(
 
   sample({
     clock: inOrder([field.reset, field.resetCompleted]),
-    source: [field.$values, field.$error] as const,
-    fn: ([values, error]) => ({
+    fn: ([, { values, error }]) => ({
       values,
       error,
     }),

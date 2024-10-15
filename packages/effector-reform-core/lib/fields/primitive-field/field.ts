@@ -77,7 +77,9 @@ export function createField<
   const setOuterError = createEvent<FieldError>();
 
   const reset = createEvent('<field reset>');
-  const resetCompleted = createEvent('<field reset completed>');
+  const resetCompleted = createEvent<{ value: T; error: FieldError }>(
+    '<field reset completed>',
+  );
 
   const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
   const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
@@ -130,14 +132,16 @@ export function createField<
     clock: [reset, batchedReset],
     fn: () => ({
       value: defaultValue,
-      error: overrides?.error ?? null,
+      outerError: overrides?.error ?? null,
+      completed: { value: defaultValue, error: overrides?.error ?? null },
+      innerError: null,
     }),
-    target: spread({ value: $value, error: $outerError }),
-  });
-
-  sample({
-    clock: [reset, batchedReset],
-    target: resetCompleted,
+    target: spread({
+      value: $value,
+      completed: resetCompleted,
+      outerError: $outerError,
+      innerError: $innerError,
+    }),
   });
 
   return {

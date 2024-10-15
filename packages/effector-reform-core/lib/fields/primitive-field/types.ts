@@ -44,7 +44,7 @@ export interface PrimitiveField<
   $isFocused: Store<boolean>;
 
   reset: EventCallable<void>;
-  resetCompleted: Event<void>;
+  resetCompleted: Event<{ value: T; error: FieldError }>;
 
   blur: EventCallable<void>;
   blurred: Event<void>;

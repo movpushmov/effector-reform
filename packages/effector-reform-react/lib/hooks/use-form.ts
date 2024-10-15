@@ -28,7 +28,6 @@ type ReactForm<
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onValidate: () => void;
   onReset: () => void;
-  onClear: () => void;
   onClearOuterErrors: () => void;
   onClearInnerErrors: () => void;
   onForceUpdateSnapshot: () => void;
@@ -66,7 +65,6 @@ export function useForm<
     forceUpdateSnapshot,
     submit,
     reset,
-    clear,
     clearOuterErrors,
     clearInnerErrors,
     validate,
@@ -107,7 +105,6 @@ export function useForm<
     onForceUpdateSnapshot: forceUpdateSnapshot,
     onReset: reset,
     onValidate: validate,
-    onClear: clear,
     onClearOuterErrors: clearOuterErrors,
     onClearInnerErrors: clearInnerErrors,
 
