@@ -114,8 +114,7 @@ export function setupPrimitiveField(
 
   sample({
     clock: inOrder([field.reset, field.resetCompleted]),
-    source: [field.$value, field.$error],
-    fn: ([value, error]) => ({
+    fn: ([, { value, error }]) => ({
       value,
       error,
     }),
@@ -196,8 +195,7 @@ export function setupPrimitiveField(
 
   sample({
     clock: inOrder([field.batchedReset, field.resetCompleted]),
-    source: [field.$value, field.$error],
-    fn: ([value, error], [{ '@@batchInfo': batchInfo }]) => ({
+    fn: ([{ '@@batchInfo': batchInfo }, { value, error }]) => ({
       value,
       error,
       batchInfo,

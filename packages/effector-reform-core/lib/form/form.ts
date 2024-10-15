@@ -41,6 +41,10 @@ interface FormInnerMeta {
    * need to call submittedAndValidatedEvent after "validated" event
    */
   needSav: boolean;
+  /**
+   * need to skip validation after "reset" or "clear"
+   */
+  skipValidation: boolean;
 }
 
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
@@ -75,6 +79,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const $innerMeta = createStore<FormInnerMeta>({
     needSav: false,
+    skipValidation: false,
   });
 
   type Fields = typeof fields;
@@ -120,7 +125,6 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   const filled = createEvent();
 
-  const clear = createEvent('<form full clear>');
   const clearOuterErrors = createEvent('<form clear outer errors>');
   const clearInnerErrors = createEvent('<form clear inner errors>');
 
@@ -226,7 +230,10 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   sample({
     clock: reset,
-    target: resetFx,
+    target: [
+      resetFx,
+      changeInnerMeta.prepend(() => ({ skipValidation: true })),
+    ],
   });
 
   sample({
@@ -310,8 +317,18 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   sample({
     clock: validate,
-    source: $values,
+    source: { values: $values, meta: $innerMeta },
+    filter: ({ meta }) => !meta.skipValidation,
+    fn: ({ values }) => values,
     target: validateFx,
+  });
+
+  sample({
+    clock: validate,
+    source: $innerMeta,
+    filter: (meta) => meta.skipValidation,
+    fn: () => ({ skipValidation: false }),
+    target: changeInnerMeta,
   });
 
   sample({
@@ -366,7 +383,6 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     submitted,
 
     reset,
-    clear,
     clearOuterErrors,
     clearInnerErrors,
 
@@ -393,7 +409,6 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       submit,
       validate,
       reset,
-      clear,
       clearOuterErrors,
       clearInnerErrors,
       forceUpdateSnapshot,

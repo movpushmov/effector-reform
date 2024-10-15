@@ -252,18 +252,20 @@ export function createArrayField<
     clock: [reset, batchedReset],
     fn: () => {
       const values = getDefaultValues();
-      const error = overrides?.error ?? null;
+      const outerError = overrides?.error ?? null;
 
       return {
         sync: values,
-        completed: { values, error },
-        error,
+        completed: { values, error: outerError },
+        outerError,
+        innerError: null,
       };
     },
     target: spread({
       sync: syncFx,
       completed: resetCompleted,
       error: $outerError,
+      innerError: $innerError,
     }),
   });
 

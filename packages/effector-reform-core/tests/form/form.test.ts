@@ -338,9 +338,43 @@ describe('Form tests', () => {
     expect(scope.getState(form.$values)).toStrictEqual({ a: 0, b: '' });
   });
 
-  test.todo('Is dirty changed');
+  test('reset errors', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: { a: '', b: '' },
+      validation: (values) => {
+        if (values.a.length < 3 && values.b.length < 3) {
+          return { a: 'error', b: 'error' };
+        }
 
-  test.todo('Is valid changed');
+        if (values.a.length < 3) {
+          return { a: 'error', b: null };
+        }
+
+        if (values.b.length < 3) {
+          return { b: 'error', a: null };
+        }
+
+        return null;
+      },
+    });
+
+    await allSettled(form.fill, {
+      scope,
+      params: { values: { a: '12', b: '34' } },
+    });
+    await allSettled(form.validate, { scope });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      a: 'error',
+      b: 'error',
+    });
+
+    await allSettled(form.reset, { scope });
+
+    expect(scope.getState(form.$values)).toStrictEqual({ a: '', b: '' });
+    expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
+  });
 
   test('meta', async () => {
     const mockedFn = vi.fn();

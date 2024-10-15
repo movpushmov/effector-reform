@@ -123,7 +123,6 @@ export type FormType<
   submitted: Event<Values>;
 
   reset: EventCallable<void>;
-  clear: EventCallable<void>;
   clearOuterErrors: EventCallable<void>;
   clearInnerErrors: EventCallable<void>;
 
@@ -145,7 +144,6 @@ export type FormType<
     validate: EventCallable<void>;
 
     reset: EventCallable<void>;
-    clear: EventCallable<void>;
     clearOuterErrors: EventCallable<void>;
     clearInnerErrors: EventCallable<void>;
     forceUpdateSnapshot: EventCallable<void>;
