@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.4](https://github.com/movpushmov/effector-reform/compare/v0.13.3...v0.13.4) (2024-10-15)
+
+### Bug Fixes
+
+- reset don't clear inner errors & remove clear event ([71dd615](https://github.com/movpushmov/effector-reform/commit/71dd6159eb815f4c1d065fbef291fb1cc135dd05))
+
 ## [0.13.3](https://github.com/movpushmov/effector-reform/compare/v0.13.2...v0.13.3) (2024-09-11)
 
 ### Bug Fixes
