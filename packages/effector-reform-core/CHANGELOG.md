@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.5](https://github.com/movpushmov/effector-reform/compare/v0.13.4...v0.13.5) (2024-10-16)
+
+### Bug Fixes
+
+- validation doesn't work on reset with not change validation strategy ([c355984](https://github.com/movpushmov/effector-reform/commit/c35598430fa54372dbaf6e36ef8e4e20918fe6ae))
+
 ## [0.13.4](https://github.com/movpushmov/effector-reform/compare/v0.13.3...v0.13.4) (2024-10-15)
 
 ### Bug Fixes
