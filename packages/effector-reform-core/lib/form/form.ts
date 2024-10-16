@@ -202,6 +202,11 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
           target: validate,
         });
 
+        sample({
+          clock: reset,
+          target: changeInnerMeta.prepend(() => ({ skipValidation: true })),
+        });
+
         break;
       }
     }
@@ -230,10 +235,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
   sample({
     clock: reset,
-    target: [
-      resetFx,
-      changeInnerMeta.prepend(() => ({ skipValidation: true })),
-    ],
+    target: resetFx,
   });
 
   sample({

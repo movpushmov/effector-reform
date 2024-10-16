@@ -322,58 +322,108 @@ describe('Form tests', () => {
     expect(mockedFn).toBeCalledTimes(1);
   });
 
-  test('reset', async () => {
-    const scope = fork();
-    const form = createForm({ schema: { a: 0, b: '' } });
+  describe('reset', () => {
+    test('reset values to default', async () => {
+      const scope = fork();
+      const form = createForm({ schema: { a: 0, b: '' } });
 
-    await allSettled(form.fill, {
-      scope,
-      params: { values: { a: 10, b: 'hello' } },
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 10, b: 'hello' } },
+      });
+
+      expect(scope.getState(form.$values)).toStrictEqual({ a: 10, b: 'hello' });
+
+      await allSettled(form.reset, { scope });
+
+      expect(scope.getState(form.$values)).toStrictEqual({ a: 0, b: '' });
     });
 
-    expect(scope.getState(form.$values)).toStrictEqual({ a: 10, b: 'hello' });
+    test('reset errors to default', async () => {
+      const scope = fork();
+      const form = createForm({
+        schema: { a: '', b: '' },
+        validation: (values) => {
+          if (values.a.length < 3 && values.b.length < 3) {
+            return { a: 'error', b: 'error' };
+          }
 
-    await allSettled(form.reset, { scope });
+          if (values.a.length < 3) {
+            return { a: 'error', b: null };
+          }
 
-    expect(scope.getState(form.$values)).toStrictEqual({ a: 0, b: '' });
-  });
+          if (values.b.length < 3) {
+            return { b: 'error', a: null };
+          }
 
-  test('reset errors', async () => {
-    const scope = fork();
-    const form = createForm({
-      schema: { a: '', b: '' },
-      validation: (values) => {
-        if (values.a.length < 3 && values.b.length < 3) {
-          return { a: 'error', b: 'error' };
-        }
+          return null;
+        },
+      });
 
-        if (values.a.length < 3) {
-          return { a: 'error', b: null };
-        }
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: '12', b: '34' } },
+      });
+      await allSettled(form.validate, { scope });
 
-        if (values.b.length < 3) {
-          return { b: 'error', a: null };
-        }
+      expect(scope.getState(form.$errors)).toStrictEqual({
+        a: 'error',
+        b: 'error',
+      });
 
-        return null;
-      },
+      await allSettled(form.reset, { scope });
+
+      expect(scope.getState(form.$values)).toStrictEqual({ a: '', b: '' });
+      expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
     });
 
-    await allSettled(form.fill, {
-      scope,
-      params: { values: { a: '12', b: '34' } },
+    test('don\'t triggered validation with validation strategy "change"', async () => {
+      const scope = fork();
+      const form = createForm({
+        schema: { a: '' },
+        validation: (values) => (values.a.length < 5 ? { a: 'blabla' } : null),
+        validationStrategies: ['change'],
+      });
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 'hello' } },
+      });
+
+      const validationFailed = watchCalls(form.validationFailed);
+
+      await allSettled(form.reset, { scope });
+
+      expect(validationFailed).not.toHaveBeenCalled();
+
+      await allSettled(form.fields.a.change, { scope, params: '12' });
+
+      expect(validationFailed).toHaveBeenCalled();
     });
-    await allSettled(form.validate, { scope });
 
-    expect(scope.getState(form.$errors)).toStrictEqual({
-      a: 'error',
-      b: 'error',
+    test('triggered validation with other validation strategies except "change"', async () => {
+      const scope = fork();
+      const form = createForm({
+        schema: { a: '' },
+        validation: (values) => (values.a.length < 5 ? { a: 'blabla' } : null),
+        validationStrategies: ['blur', 'focus', 'submit'],
+      });
+
+      await allSettled(form.fill, {
+        scope,
+        params: { values: { a: 'hello' } },
+      });
+
+      const validationFailed = watchCalls(form.validationFailed);
+
+      await allSettled(form.reset, { scope });
+
+      expect(validationFailed).not.toHaveBeenCalled();
+
+      await allSettled(form.submit, { scope });
+
+      expect(validationFailed).toHaveBeenCalled();
     });
-
-    await allSettled(form.reset, { scope });
-
-    expect(scope.getState(form.$values)).toStrictEqual({ a: '', b: '' });
-    expect(scope.getState(form.$errors)).toStrictEqual({ a: null, b: null });
   });
 
   test('meta', async () => {
