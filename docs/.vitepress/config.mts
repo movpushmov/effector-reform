@@ -1,6 +1,14 @@
 import { defineConfig } from 'vitepress';
 
-const version = '0.10.2';
+import path from 'path';
+import fs from 'fs';
+
+const { version } = JSON.parse(
+  fs.readFileSync(
+    path.resolve(__dirname, '../../packages/effector-reform-core/package.json'),
+    { encoding: 'utf-8' },
+  ),
+);
 
 export default defineConfig({
   title: 'effector reform',
@@ -25,14 +33,6 @@ export default defineConfig({
               {
                 text: 'Releases Notes',
                 link: 'https://github.com/movpushmov/effector-reform/blob/main/CHANGELOG.md',
-              },
-            ],
-          },
-          {
-            items: [
-              {
-                text: 'v0.x',
-                link: 'https://movpushmov.dev/effector-reform/',
               },
             ],
           },
