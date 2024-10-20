@@ -47,20 +47,13 @@ jobs:
       - name: Build
         working-directory: ./docs
         run: npm run docs:build # or pnpm docs:build / yarn docs:build / bun run docs:build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: deploy
+        uses: pressidium/lftp-mirror-action@v1
         with:
-          path: docs/.vitepress/dist
-
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    name: Deploy
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          host: ${{ secrets.SERVER }}
+          port: 22
+          user: ${{ secrets.SERVER_LOGIN }}
+          pass: ${{ secrets.SERVER_PASSWORD }}
+          localDir: './docs/.vitepress/dist'
+          remoteDir: ${{ secrets.TARGET_DIR }}
+          reverse: true

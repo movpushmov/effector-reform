@@ -1,9 +1,6 @@
 {
   "private": true,
   "type": "module",
-  "workspaces": [
-    "./packages/*"
-  ],
   "devDependencies": {
     "@iconify-json/logos": "^1.1.44",
     "@unocss/preset-icons": "^0.61.9",
