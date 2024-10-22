@@ -33,6 +33,8 @@ import { resetForm } from './helpers/reset';
 import { contractAdapter, isContract } from './helpers';
 
 import isEqual from 'fast-deep-equal';
+import cloneDeep from 'lodash.clonedeep';
+
 import { inOrder } from '../utils';
 import { combineEvents } from 'patronum';
 
@@ -229,7 +231,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   sample({
     clock: [validatedAndSubmitted, forceUpdateSnapshot],
     source: $values,
-    fn: (values) => ({ ...values }),
+    fn: (values) => cloneDeep(values),
     target: $snapshot,
   });
 

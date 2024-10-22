@@ -717,5 +717,32 @@ describe('Form tests', () => {
 
       expect(watchedEvent).toBeCalledTimes(1);
     });
+
+    test('isChanged triggers when changed subfield in array field', async () => {
+      const scope = fork();
+      const form = createForm({
+        schema: {
+          arr: createArrayField<{ name: string }>([]),
+        },
+      });
+
+      await allSettled(form.fields.arr.push, { scope, params: { name: '' } });
+
+      expect(
+        scope.getState(form.$isChanged),
+        'After values changed isChanged must be true',
+      ).toBeTruthy();
+
+      await allSettled(form.forceUpdateSnapshot, { scope });
+
+      const item = scope.getState(form.fields.arr.$values)[0];
+
+      await allSettled(item.name.change, { scope, params: 'Edward' });
+
+      expect(
+        scope.getState(form.$isChanged),
+        'After item changed isChanged must be true',
+      ).toBeTruthy();
+    });
   });
 });
