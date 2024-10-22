@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.7](https://github.com/movpushmov/effector-reform/compare/v0.13.6...v0.13.7) (2024-10-22)
+
+### Bug Fixes
+
+- isChanged works bad ([9725335](https://github.com/movpushmov/effector-reform/commit/9725335c29da7ab5f9e73d6eecfaf9f11fbfffe5))
+
 ## [0.13.6](https://github.com/movpushmov/effector-reform/compare/v0.13.5...v0.13.6) (2024-10-20)
 
 **Note:** Version bump only for package effector-reform
