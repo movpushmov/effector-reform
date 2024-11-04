@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.8](https://github.com/movpushmov/effector-reform/compare/v0.13.7...v0.13.8) (2024-11-04)
+
+### Performance Improvements
+
+- **core:** remove lodash.cloneDeep ([d84ac22](https://github.com/movpushmov/effector-reform/commit/d84ac22f0791b25062dafdb54efd792b9d456099))
+
 ## [0.13.7](https://github.com/movpushmov/effector-reform/compare/v0.13.6...v0.13.7) (2024-10-22)
 
 ### Bug Fixes
