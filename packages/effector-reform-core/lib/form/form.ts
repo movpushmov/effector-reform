@@ -70,7 +70,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     metaChanged,
   } = mapSchema(fields);
 
-  const $snapshot = createStore({ ...$values.getState() });
+  const $snapshot = createStore(structuredClone($values.getState()));
 
   const $isChanged = combine(
     $values,

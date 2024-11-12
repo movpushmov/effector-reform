@@ -718,7 +718,7 @@ describe('Form tests', () => {
       expect(watchedEvent).toBeCalledTimes(1);
     });
 
-    test('isChanged triggers when changed subfield in array field', async () => {
+    test('isChanged triggers when changed subfield in empty array field', async () => {
       const scope = fork();
       const form = createForm({
         schema: {
@@ -734,6 +734,24 @@ describe('Form tests', () => {
       ).toBeTruthy();
 
       await allSettled(form.forceUpdateSnapshot, { scope });
+
+      const item = scope.getState(form.fields.arr.$values)[0];
+
+      await allSettled(item.name.change, { scope, params: 'Edward' });
+
+      expect(
+        scope.getState(form.$isChanged),
+        'After item changed isChanged must be true',
+      ).toBeTruthy();
+    });
+
+    test('isChanged triggers when changed subfield in filled array field', async () => {
+      const scope = fork();
+      const form = createForm({
+        schema: {
+          arr: createArrayField<{ name: string }>([{ name: '' }]),
+        },
+      });
 
       const item = scope.getState(form.fields.arr.$values)[0];
 
