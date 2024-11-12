@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.9](https://github.com/movpushmov/effector-reform/compare/v0.13.8...v0.13.9) (2024-11-12)
+
+**Note:** Version bump only for package @effector-reform/react
+
 ## [0.13.8](https://github.com/movpushmov/effector-reform/compare/v0.13.7...v0.13.8) (2024-11-04)
 
 **Note:** Version bump only for package @effector-reform/react
