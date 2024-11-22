@@ -63,7 +63,7 @@ export function getFields<T extends ReadyFieldsGroupSchema>(
   for (const fieldName in fields) {
     const field = fields[fieldName];
 
-    switch (field.type) {
+    switch (field['@@type']) {
       case arrayFieldSymbol: {
         node[fieldName] = {
           values: getStoreValue(field.$values).map((item) =>

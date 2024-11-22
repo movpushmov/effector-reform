@@ -18,7 +18,7 @@ export function map(
   for (const key in currentNode) {
     const subNode = currentNode[key];
 
-    switch (subNode.type) {
+    switch (subNode['@@type']) {
       case primitiveFieldSymbol: {
         setupPrimitiveField.call(this, {
           field: subNode,

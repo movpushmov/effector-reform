@@ -145,7 +145,7 @@ export function createField<
   });
 
   return {
-    type: primitiveFieldSymbol,
+    '@@type': primitiveFieldSymbol,
 
     batchedSetInnerError,
     batchedSetOuterError,

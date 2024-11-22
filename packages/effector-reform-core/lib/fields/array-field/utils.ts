@@ -78,7 +78,7 @@ export function clearArrayFieldValuesMemory(
   for (const key in schema) {
     const node = schema[key];
 
-    switch (node.type) {
+    switch (node['@@type']) {
       case arrayFieldSymbol: {
         const values = node.$values.getState();
 
@@ -110,5 +110,5 @@ export function clearArrayFieldValuesMemory(
 export function isArrayField(
   props: any,
 ): props is ArrayField<ReadyFieldsGroupSchema> {
-  return 'type' in props && props.type === arrayFieldSymbol;
+  return '@@type' in props && props['@@type'] === arrayFieldSymbol;
 }

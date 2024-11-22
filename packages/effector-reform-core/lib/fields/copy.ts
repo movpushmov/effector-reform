@@ -8,7 +8,7 @@ import {
 export function copy<T extends PrimitiveField>(field: T): T;
 export function copy<T extends ArrayField<any>>(field: T): T;
 export function copy<T extends PrimitiveField | ArrayField<any>>(field: T): T {
-  switch (field.type) {
+  switch (field['@@type']) {
     case arrayFieldSymbol: {
       return createArrayField(field.$values.getState(), {
         error: field.$error.getState(),

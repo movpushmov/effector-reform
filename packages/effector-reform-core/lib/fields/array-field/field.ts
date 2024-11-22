@@ -544,7 +544,7 @@ export function createArrayField<
   });
 
   return {
-    type: arrayFieldSymbol,
+    '@@type': arrayFieldSymbol,
 
     batchedSetInnerError,
     batchedSetOuterError,

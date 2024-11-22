@@ -65,7 +65,7 @@ export interface ArrayField<
   Meta extends object = any,
   U = UserFormSchema<T>,
 > extends ArrayFieldApi<T, U, Meta> {
-  type: ArrayFieldSymbolType;
+  '@@type': ArrayFieldSymbolType;
 
   $meta: Store<Meta>;
   $values: Store<U[]>;

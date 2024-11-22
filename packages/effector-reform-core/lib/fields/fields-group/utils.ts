@@ -59,7 +59,7 @@ export function copyGroup<T extends ReadyFieldsGroupSchema>(group: T): T {
   for (const key in group) {
     const element = group[key];
 
-    switch (element.type) {
+    switch (element['@@type']) {
       case arrayFieldSymbol: {
         result[key] = element.copyOnCreateForm ? copy(element) : element;
         break;

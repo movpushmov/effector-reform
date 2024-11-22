@@ -34,7 +34,7 @@ export interface PrimitiveField<
   T extends PrimitiveValue = any,
   Meta extends object = any,
 > extends PrimitiveFieldApi<T, Meta> {
-  type: PrimitiveFieldSymbolType;
+  '@@type': PrimitiveFieldSymbolType;
 
   $meta: Store<Meta>;
   $value: Store<T>;

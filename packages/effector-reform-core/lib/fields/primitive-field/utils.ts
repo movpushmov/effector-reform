@@ -4,7 +4,7 @@ import { InnerFieldApi } from '../types';
 import { clearUnits } from '../../utils';
 
 export function isPrimitiveField(props: any): props is PrimitiveField {
-  return 'type' in props && props.type === primitiveFieldSymbol;
+  return '@@type' in props && props['@@type'] === primitiveFieldSymbol;
 }
 
 export function isPrimitiveJsonValue(props: any): props is PrimitiveJsonValue {
