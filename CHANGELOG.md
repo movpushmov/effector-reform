@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.11](https://github.com/movpushmov/effector-reform/compare/v0.13.10...v0.13.11) (2024-11-28)
+
+### Bug Fixes
+
+- reset dont work if form has array field ([33e8212](https://github.com/movpushmov/effector-reform/commit/33e8212d5bc3b6150c407917bec1a38d1f807a9f))
+
 ## [0.13.10](https://github.com/movpushmov/effector-reform/compare/v0.13.9...v0.13.10) (2024-11-22)
 
 **Note:** Version bump only for package effector-reform
