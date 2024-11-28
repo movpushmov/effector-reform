@@ -424,6 +424,71 @@ describe('Form tests', () => {
 
       expect(validationFailed).toHaveBeenCalled();
     });
+
+    test('reset form values with array field', async () => {
+      type Block = {
+        uuid: string;
+        content: string;
+      };
+
+      type FormValues = {
+        uuid: string;
+        blocks: Block[];
+        block: {
+          uuid: string;
+          name: string;
+        };
+      };
+
+      const scope = fork();
+      const form = createForm<FormValues>({
+        schema: {
+          uuid: '',
+          blocks: [],
+          block: {
+            uuid: '',
+            name: '',
+          },
+        },
+      });
+
+      sample({
+        clock: form.validatedAndSubmitted,
+        target: form.reset,
+      });
+
+      await allSettled(form.fields.uuid.change, { scope, params: 'uuid' });
+      await allSettled(form.fields.block.name.change, {
+        scope,
+        params: 'name',
+      });
+
+      await allSettled(form.fields.blocks.push, {
+        scope,
+        params: { content: 'block 1', uuid: '1' },
+      });
+
+      await allSettled(form.fields.blocks.push, {
+        scope,
+        params: { content: 'block 2', uuid: '2' },
+      });
+
+      await allSettled(form.fields.blocks.push, {
+        scope,
+        params: { content: 'block 3', uuid: '3' },
+      });
+
+      await allSettled(form.submit, { scope });
+
+      expect(scope.getState(form.$values)).toStrictEqual({
+        uuid: '',
+        blocks: [],
+        block: {
+          uuid: '',
+          name: '',
+        },
+      });
+    });
   });
 
   test('meta', async () => {

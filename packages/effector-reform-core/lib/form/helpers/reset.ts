@@ -6,7 +6,7 @@ export function resetForm(
   formApi: FormApi,
   addBatchTask: EventCallable<BatchInfo>,
 ) {
-  const keys = Object.keys(formApi);
+  const keys = Object.keys(formApi).filter((key) => !/\.[0-9]\./.test(key));
   const task = createBatchTask(keys, 'reset');
 
   addBatchTask(task);

@@ -8,7 +8,7 @@ export function clearFormErrors(
   mode: 'inner' | 'outer',
 ) {
   const keys = Object.keys(formApi);
-  const task = createBatchTask(keys, 'errors', { skipValidation: true });
+  const task = createBatchTask(keys, 'errors');
 
   addBatchTask(task);
 
