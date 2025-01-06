@@ -13,13 +13,13 @@ type RawFieldsSchemaFieldType =
   | RawFieldsGroupSchema
   | ReadyFieldsSchemaFieldType;
 
-export type RawFieldsGroupSchema = {
-  [k: string]: RawFieldsSchemaFieldType;
-};
+export interface RawFieldsGroupSchema {
+  [key: string]: RawFieldsSchemaFieldType;
+}
 
-export type ReadyFieldsGroupSchema = {
-  [k: string]: ReadyFieldsSchemaFieldType;
-};
+export interface ReadyFieldsGroupSchema {
+  [key: string]: ReadyFieldsSchemaFieldType;
+}
 
 export interface AnySchema extends RawFieldsGroupSchema {}
 

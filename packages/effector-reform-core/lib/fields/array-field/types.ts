@@ -74,6 +74,7 @@ export interface ArrayField<
   $isValid: Store<boolean>;
 
   copyOnCreateForm: boolean;
+  sid?: string | null;
 
   '@@unitShape': () => {
     values: Store<U[]>;
@@ -102,6 +103,7 @@ export interface CreateArrayFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
   copyOnCreateForm?: boolean;
+  sid?: string | null;
 }
 
 export type ArrayFieldSymbolType = typeof arrayFieldSymbol;

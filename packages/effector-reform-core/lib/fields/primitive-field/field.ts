@@ -19,6 +19,12 @@ const defaultOptions: CreatePrimitiveFieldOptions = {
   copyOnCreateForm: true,
 };
 
+function createStoreWithSid<T>(name: string, defaultValue: T, sid?: string) {
+  return sid
+    ? createStore<T>(defaultValue, { name, sid })
+    : createStore<T>(defaultValue, { name });
+}
+
 export function createField<
   T extends PrimitiveValue,
   Meta extends object = any,
@@ -28,15 +34,23 @@ export function createField<
 ): PrimitiveField<T, Meta> {
   const options = { ...defaultOptions, ...overrides };
 
-  const $value = createStore(defaultValue, { name: '<field value>' });
+  const $value = createStoreWithSid<T>(
+    '<field value>',
+    defaultValue,
+    options.sid ? `${options.sid}|value` : undefined,
+  );
 
-  const $innerError = createStore<FieldError>(null, {
-    name: '<inner field error>',
-  });
+  const $innerError = createStoreWithSid<FieldError>(
+    '<inner field error>',
+    null,
+    options.sid ? `${options.sid}|innerError` : undefined,
+  );
 
-  const $outerError = createStore<FieldError>(overrides?.error ?? null, {
-    name: '<outer field error>',
-  });
+  const $outerError = createStoreWithSid<FieldError>(
+    '<outer field error>',
+    null,
+    options.sid ? `${options.sid}|outerError` : undefined,
+  );
 
   const $error = combine({
     innerError: $innerError,
@@ -183,6 +197,7 @@ export function createField<
     setOuterError,
 
     copyOnCreateForm: options.copyOnCreateForm,
+    sid: options.sid,
 
     '@@unitShape': () => ({
       value: $value,

@@ -53,6 +53,7 @@ export interface PrimitiveField<
   focused: Event<void>;
 
   copyOnCreateForm: boolean;
+  sid?: string | null;
 
   '@@unitShape': () => {
     value: Store<T>;
@@ -76,6 +77,7 @@ export interface CreatePrimitiveFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
   copyOnCreateForm?: boolean;
+  sid?: string | null;
 }
 
 export type PrimitiveFieldSymbolType = typeof primitiveFieldSymbol;

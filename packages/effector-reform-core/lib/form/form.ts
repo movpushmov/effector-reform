@@ -58,7 +58,12 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     clearOuterErrorsOnSubmit = validationStrategies.includes('submit'),
   } = options;
 
-  const fields = copyGroup(prepareFieldsSchema(schema));
+  const { sid } = createStore(null);
+
+  const fields = copyGroup(
+    prepareFieldsSchema(schema, { baseSid: sid, path: [] }),
+  );
+
   const {
     $errors,
     $values,
@@ -68,7 +73,7 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     blurred,
     addBatchTask,
     metaChanged,
-  } = mapSchema(fields);
+  } = mapSchema(fields, sid);
 
   const $snapshot = createStore(structuredClone($values.getState()));
 
