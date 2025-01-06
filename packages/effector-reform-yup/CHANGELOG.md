@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.1](https://github.com/movpushmov/effector-reform/compare/v0.14.0...v0.14.1) (2025-01-06)
+
+**Note:** Version bump only for package @effector-reform/yup
+
 # [0.14.0](https://github.com/movpushmov/effector-reform/compare/v0.13.11...v0.14.0) (2025-01-06)
 
 **Note:** Version bump only for package @effector-reform/yup
