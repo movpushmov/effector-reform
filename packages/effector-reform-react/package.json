@@ -52,19 +52,10 @@
   "dependencies": {
     "@effector-reform/core": "^0.14.0"
   },
-  "devDependencies": {
-    "@babel/preset-react": "^7.24.1",
-    "@testing-library/react": "^14.2.2",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/react": "^18.2.56",
-    "@vitejs/plugin-react": "^4.3.1",
-    "jsdom": "^24.1.1",
-    "react": "^18.2.0"
-  },
   "peerDependencies": {
-    "effector": "^23.2.2",
-    "effector-react": "^23.2.1",
-    "react": "^18.2.0"
+    "effector": ">=23.2.2 <24",
+    "effector-react": ">=23.2.1 <24",
+    "react": ">=18.2.0 <20"
   },
   "gitHead": "d35b5e5d94287cc6ba5b6568ef9e67c3a51312cc"
 }

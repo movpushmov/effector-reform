@@ -20,7 +20,6 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction/getting-started' },
-      { text: 'API', link: '/api/index' },
       {
         text: `v${version}`,
         items: [
