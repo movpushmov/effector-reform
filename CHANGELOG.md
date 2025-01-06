@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/movpushmov/effector-reform/compare/v0.13.11...v0.14.0) (2025-01-06)
+
+### Features
+
+- improve sids generation ([47ed9a8](https://github.com/movpushmov/effector-reform/commit/47ed9a8069716713f08e774b852bb370ccdeda41))
+- json objects in primitive field ([3d9babe](https://github.com/movpushmov/effector-reform/commit/3d9babeb491d959c62110e926e173bbaea4a6257))
+
 ## [0.13.11](https://github.com/movpushmov/effector-reform/compare/v0.13.10...v0.13.11) (2024-11-28)
 
 ### Bug Fixes
