@@ -1,8 +1,14 @@
-import { EventCallable, Store, Event } from 'effector';
+import { EventCallable, Store, Event, Json } from 'effector';
 import { FieldError } from '../types';
 import { primitiveFieldSymbol } from './symbol';
 
-export type PrimitiveJsonValue = string | number | boolean | Date | null;
+export type PrimitiveJsonValue =
+  | Date
+  | null
+  | undefined
+  | boolean
+  | string
+  | number;
 
 export type PrimitiveValue =
   | bigint
@@ -31,7 +37,7 @@ export interface PrimitiveFieldApi<
 }
 
 export interface PrimitiveField<
-  T extends PrimitiveValue = any,
+  T extends PrimitiveValue | Json = any,
   Meta extends object = any,
 > extends PrimitiveFieldApi<T, Meta> {
   '@@type': PrimitiveFieldSymbolType;
@@ -53,6 +59,7 @@ export interface PrimitiveField<
   focused: Event<void>;
 
   copyOnCreateForm: boolean;
+  sid?: string | null;
 
   '@@unitShape': () => {
     value: Store<T>;
@@ -76,6 +83,7 @@ export interface CreatePrimitiveFieldOptions<Meta extends object = any> {
   error?: FieldError;
   meta?: Meta;
   copyOnCreateForm?: boolean;
+  sid?: string | null;
 }
 
 export type PrimitiveFieldSymbolType = typeof primitiveFieldSymbol;

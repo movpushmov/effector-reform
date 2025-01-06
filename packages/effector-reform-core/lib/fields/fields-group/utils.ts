@@ -17,10 +17,15 @@ import type {
 } from './types';
 import { copy } from '../copy';
 
+interface Meta {
+  path: string[];
+  baseSid?: string | null;
+}
+
 export function prepareFieldsSchema<
   T extends AnySchema | PrimitiveValue,
   U = UserFormSchema<T>,
->(schema: T): U {
+>(schema: T, meta: Meta = { path: [] }): U {
   const result: UserFormSchema<any> = {};
 
   if (isPrimitiveValue(schema)) {
@@ -30,8 +35,13 @@ export function prepareFieldsSchema<
   for (const key in schema) {
     const element = schema[key];
 
+    const path = [...meta.path, key];
+
     if (isPrimitiveValue(element)) {
-      result[key] = createField(element);
+      result[key] = createField(
+        element,
+        meta.baseSid ? { sid: `${meta.baseSid}|${path.join('.')}` } : undefined,
+      );
       continue;
     }
 
@@ -41,12 +51,18 @@ export function prepareFieldsSchema<
     }
 
     if (Array.isArray(element)) {
-      result[key] = createArrayField(element as (PrimitiveValue | AnySchema)[]);
+      result[key] = createArrayField(
+        element as (PrimitiveValue | AnySchema)[],
+        meta.baseSid ? { sid: `${meta.baseSid}|${path.join('.')}` } : undefined,
+      );
       continue;
     }
 
     if (typeof element === 'object') {
-      result[key] = prepareFieldsSchema(element as ReadyFieldsGroupSchema);
+      result[key] = prepareFieldsSchema(element as ReadyFieldsGroupSchema, {
+        path,
+        baseSid: meta.baseSid,
+      });
     }
   }
 

@@ -6,7 +6,10 @@ import { createStore, sample } from 'effector';
 import { spread } from 'patronum';
 import { isFormValid } from '../../helpers';
 
-export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
+export function mapSchema<T extends ReadyFieldsGroupSchema>(
+  node: T,
+  sid?: string | null,
+) {
   const { schemaUpdated, focused, blurred, metaChanged } = setupUpdating();
   const { batchedSchemaUpdated, addBatchTask } = setupBatching(schemaUpdated);
 
@@ -19,10 +22,19 @@ export function mapSchema<T extends ReadyFieldsGroupSchema>(node: T) {
     blurred,
   );
 
-  const $api = createStore(meta.api);
-  const $values = createStore(meta.values);
-  const $errors = createStore(meta.errors);
-  const $isValid = createStore(true);
+  const $api = createStore(meta.api, { serialize: 'ignore' });
+
+  const $values = sid
+    ? createStore(meta.values, { sid: `${sid}|form|values` })
+    : createStore(meta.values);
+
+  const $errors = sid
+    ? createStore(meta.errors, { sid: `${sid}|form|errors` })
+    : createStore(meta.errors);
+
+  const $isValid = sid
+    ? createStore(meta.isValid, { sid: `${sid}|form|isValid` })
+    : createStore(meta.isValid);
 
   sample({
     clock: schemaUpdated,

@@ -16,6 +16,7 @@
         "factories": [
           "lib/fields/primitive-field/field",
           "lib/fields/array-field/field",
+          "lib/fields/fields-group/utils",
           "lib/form/form"
         ],
         "addNames": true

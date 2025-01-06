@@ -53,16 +53,20 @@ export function createArrayField<
 ): ArrayField<T, Meta, Value> {
   type Values = Value[];
 
+  const { sid } = createStore(null);
+
   function getDefaultValues() {
-    return values.map(prepareFieldsSchema) as Values;
+    return values.map((value) => prepareFieldsSchema(value)) as Values;
   }
 
   function preparePayload<T extends ArrayFieldItemType>(
     payload: T | T[],
   ): Values {
     return Array.isArray(payload)
-      ? (payload.map(prepareFieldsSchema) as Values)
-      : [prepareFieldsSchema(payload)];
+      ? (payload.map((value) =>
+          prepareFieldsSchema(value, { path: [], baseSid: sid }),
+        ) as Values)
+      : [prepareFieldsSchema(payload, { path: [], baseSid: sid })];
   }
 
   const options = { ...defaultOptions, ...overrides };
@@ -81,58 +85,75 @@ export function createArrayField<
     },
   );
 
-  const $values = createStore(getDefaultValues(), {
-    name: '<array field values>',
-    serialize: {
-      read(json) {
-        if (!json) {
-          throw new Error();
-        }
+  const defaultValues = getDefaultValues();
+  const valuesSerialize = {
+    read(json: Json) {
+      if (!json) {
+        throw new Error();
+      }
 
-        if (!Array.isArray(json)) {
-          throw new Error();
-        }
+      if (!Array.isArray(json)) {
+        throw new Error();
+      }
 
-        return json.map((schema: any) => {
-          const values = prepareFieldsSchema(schema.values);
-          const errors = schema.errors;
-
-          const prepared = prepareFieldsSchema(values);
-          const { $api, addBatchTask } = mapSchema(prepared);
-          const api = $api.getState();
-
-          setFormErrors(errors, api, addBatchTask, 'outer');
-
-          return prepared;
+      return json.map((schema: any) => {
+        const values = prepareFieldsSchema(schema.values, {
+          path: [],
+          baseSid: sid,
         });
-      },
 
-      write(state) {
-        const readySchemas = state.map((value) =>
-          isPrimitiveJsonValue(value)
-            ? value
-            : mapSchema(value as ReadyFieldsGroupSchema),
-        );
+        const errors = schema.errors;
 
-        return readySchemas
-          .map((payload) => {
-            if (isPrimitiveJsonValue(payload)) {
-              return payload;
-            }
+        const prepared = prepareFieldsSchema(values, {
+          path: [],
+          baseSid: sid,
+        });
 
-            if (isPrimitiveValue(payload)) {
-              return null;
-            }
+        const { $api, addBatchTask } = mapSchema(prepared);
+        const api = $api.getState();
 
-            return {
-              values: payload.$values.getState(),
-              errors: payload.$errors.getState(),
-            };
-          })
-          .filter(Boolean) as Json[];
-      },
+        setFormErrors(errors, api, addBatchTask, 'outer');
+
+        return prepared;
+      });
     },
-  });
+
+    write(state: Values) {
+      const readySchemas = state.map((value) =>
+        isPrimitiveJsonValue(value)
+          ? value
+          : mapSchema(value as ReadyFieldsGroupSchema),
+      );
+
+      return readySchemas
+        .map((payload) => {
+          if (isPrimitiveJsonValue(payload)) {
+            return payload;
+          }
+
+          if (isPrimitiveValue(payload)) {
+            return null;
+          }
+
+          return {
+            values: payload.$values.getState(),
+            errors: payload.$errors.getState(),
+          };
+        })
+        .filter(Boolean) as Json[];
+    },
+  };
+
+  const $values = options.sid
+    ? createStore(defaultValues, {
+        name: '<array field values>',
+        serialize: valuesSerialize,
+        sid: `${options.sid}|values`,
+      })
+    : createStore(defaultValues, {
+        name: '<array field values>',
+        serialize: valuesSerialize,
+      });
 
   const $innerError = createStore<FieldError>(null, {
     name: '<inner field error>',
@@ -601,6 +622,7 @@ export function createArrayField<
     resetCompleted,
 
     copyOnCreateForm: options.copyOnCreateForm,
+    sid: options.sid,
 
     '@@unitShape': () => ({
       values: $values,
