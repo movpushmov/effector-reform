@@ -1,4 +1,4 @@
-import { combine, createEvent, createStore, sample } from 'effector';
+import { combine, createEvent, createStore, Json, sample } from 'effector';
 import type {
   CreatePrimitiveFieldOptions,
   PrimitiveField,
@@ -26,7 +26,7 @@ function createStoreWithSid<T>(name: string, defaultValue: T, sid?: string) {
 }
 
 export function createField<
-  T extends PrimitiveValue,
+  T extends PrimitiveValue | Json,
   Meta extends object = any,
 >(
   defaultValue: T,

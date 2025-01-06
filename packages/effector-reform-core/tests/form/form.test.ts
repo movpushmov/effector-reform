@@ -828,4 +828,31 @@ describe('Form tests', () => {
       ).toBeTruthy();
     });
   });
+
+  test('json field works correctly', async () => {
+    const scope = fork();
+    const form = createForm({
+      schema: {
+        a: createField({ b: 0, c: '' }),
+        b: createField<number[]>([]),
+      },
+    });
+
+    await allSettled(form.fields.a.change, {
+      scope,
+      params: { b: 12, c: 'hello world' },
+    });
+
+    await allSettled(form.fields.b.change, {
+      scope,
+      params: [1, 2, 3],
+    });
+
+    const calls = watchCalls(form.changed);
+
+    scope.getState(form.fields.a.$value).b = 50;
+    scope.getState(form.fields.b.$value).push(50);
+
+    expect(calls).not.toBeCalled();
+  });
 });
