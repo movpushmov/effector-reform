@@ -7,6 +7,7 @@ import {
   sample,
   EventCallable,
   combine,
+  Store,
 } from 'effector';
 import {
   AnySchema,
@@ -22,6 +23,7 @@ import type {
   FormType,
   FormValues,
   SyncValidationFn,
+  ValidationStrategy,
 } from './types';
 import {
   setFormValues,
@@ -48,6 +50,16 @@ interface FormInnerMeta {
   skipValidation: boolean;
 }
 
+function getValidationStrategies(
+  strategies: ValidationStrategy[] | Store<ValidationStrategy[]>,
+) {
+  const $strategies = Array.isArray(strategies)
+    ? createStore(strategies)
+    : strategies;
+
+  return $strategies.map((strategies) => [...new Set(strategies)]);
+}
+
 export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const {
     schema,
@@ -55,13 +67,18 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
       UserFormSchema<UserFormSchema<T>>
     >,
     validationStrategies = ['submit', 'change', 'blur', 'focus'],
-    clearOuterErrorsOnSubmit = validationStrategies.includes('submit'),
+    clearOuterErrorsOnSubmit,
   } = options;
 
   const { sid } = createStore(null);
 
   const fields = copyGroup(
     prepareFieldsSchema(schema, { baseSid: sid, path: [] }),
+  );
+
+  const $validationStrategies = getValidationStrategies(validationStrategies);
+  const $clearOuterErrorsOnSubmit = $validationStrategies.map(
+    (strategies) => clearOuterErrorsOnSubmit ?? strategies.includes('submit'),
   );
 
   const {
@@ -172,65 +189,58 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     target: $innerMeta,
   });
 
-  const uniqueValidationStrategies = [...new Set(validationStrategies)];
-  for (const strategy of uniqueValidationStrategies) {
-    switch (strategy) {
-      case 'submit': {
-        sample({
-          clock: submitted,
-          target: [
-            validate,
-            changeInnerMeta.prepend(() => ({ needSav: true })),
-          ],
-        });
+  sample({
+    clock: submitted,
+    source: $validationStrategies,
+    filter: (strategires) => strategires.includes('submit'),
+    fn: (_, payload) => payload,
+    target: [validate, changeInnerMeta.prepend(() => ({ needSav: true }))],
+  });
 
-        break;
-      }
-      case 'focus': {
-        sample({
-          clock: focused,
-          target: validate,
-        });
+  sample({
+    clock: focused,
+    source: $validationStrategies,
+    filter: (strategires) => strategires.includes('focus'),
+    fn: (_, payload) => payload,
+    target: validate,
+  });
 
-        break;
-      }
-      case 'blur': {
-        sample({
-          clock: blurred,
-          target: validate,
-        });
+  sample({
+    clock: blurred,
+    source: $validationStrategies,
+    filter: (strategires) => strategires.includes('blur'),
+    fn: (_, payload) => payload,
+    target: validate,
+  });
 
-        break;
-      }
-      case 'change': {
-        sample({
-          clock: changed,
-          target: validate,
-        });
+  sample({
+    clock: changed,
+    source: $validationStrategies,
+    filter: (strategires) => strategires.includes('change'),
+    fn: (_, payload) => payload,
+    target: validate,
+  });
 
-        sample({
-          clock: reset,
-          target: changeInnerMeta.prepend(() => ({ skipValidation: true })),
-        });
+  sample({
+    clock: reset,
+    source: $validationStrategies,
+    filter: (strategires) => strategires.includes('change'),
+    fn: (_, payload) => payload,
+    target: changeInnerMeta.prepend(() => ({ skipValidation: true })),
+  });
 
-        break;
-      }
-    }
-  }
-
-  if (!uniqueValidationStrategies.includes('submit')) {
-    sample({
-      clock: submitted,
-      source: {
-        isValid: $isValid,
-        isValidationPending: $isValidationPending,
-      },
-      filter: ({ isValid, isValidationPending }) =>
-        isValid && !isValidationPending,
-      fn: (_, values) => values,
-      target: validatedAndSubmitted,
-    });
-  }
+  sample({
+    clock: submitted,
+    source: {
+      isValid: $isValid,
+      isValidationPending: $isValidationPending,
+      strategies: $validationStrategies,
+    },
+    filter: ({ strategies, isValid, isValidationPending }) =>
+      isValid && !isValidationPending && !strategies.includes('submit'),
+    fn: (_, values) => values,
+    target: validatedAndSubmitted,
+  });
 
   sample({
     clock: [validatedAndSubmitted, forceUpdateSnapshot],
@@ -316,12 +326,12 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     target: clearInnerErrorsFx,
   });
 
-  if (clearOuterErrorsOnSubmit) {
-    sample({
-      clock: submit,
-      target: clearOuterErrors,
-    });
-  }
+  sample({
+    clock: submit,
+    source: $clearOuterErrorsOnSubmit,
+    fn: (clearOuterErrorsOnSubmit) => clearOuterErrorsOnSubmit,
+    target: clearOuterErrors,
+  });
 
   sample({
     clock: validate,

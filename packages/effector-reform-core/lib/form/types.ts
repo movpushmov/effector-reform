@@ -25,7 +25,7 @@ export type AsyncValidationFn<Schema extends AnySchema> = (
   values: FormValues<UserFormSchema<Schema>>,
 ) => Promise<ErrorsSchemaPayload | null>;
 
-type ValidationStrategy = 'blur' | 'focus' | 'change' | 'submit';
+export type ValidationStrategy = 'blur' | 'focus' | 'change' | 'submit';
 
 export interface CreateFormOptions<T extends AnySchema> {
   schema: T;
@@ -33,7 +33,7 @@ export interface CreateFormOptions<T extends AnySchema> {
     | SyncValidationFn<T>
     | AsyncValidationFn<T>
     | Contract<unknown, FormValues<UserFormSchema<T>>>;
-  validationStrategies?: ValidationStrategy[];
+  validationStrategies?: ValidationStrategy[] | Store<ValidationStrategy[]>;
   clearOuterErrorsOnSubmit?: boolean;
 }
 
