@@ -8,7 +8,7 @@ But in `effector-reform` it's not. In `effector-reform` you can define field out
 ```ts
 // field example
 
-import { createField } from "@effector-reform/core";
+import { createField } from '@effector-reform/core';
 
 const field = createField(0);
 
@@ -20,8 +20,8 @@ console.log(field.$value); // 20
 ```tsx
 // usage in react example
 
-import { createField } from "@effector-reform/core";
-import { useField } from "@effector-reform/react";
+import { createField } from '@effector-reform/core';
+import { useField } from '@effector-reform/react';
 
 const nameField = createField('');
 
@@ -30,13 +30,10 @@ const Component = () => {
 
   return (
     <>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.currentTarget.value)}
-      />
+      <input value={value} onChange={(e) => onChange(e.currentTarget.value)} />
     </>
-  )
-}
+  );
+};
 ```
 
 ## Forms are composable
@@ -46,7 +43,7 @@ you don't want to copy field on create form, you can
 set `copyOnCreateForm` flag to `false` (default `true`)
 
 ```ts
-import { createField, createForm } from "@effector-reform/core";
+import { createField, createForm } from '@effector-reform/core';
 
 const nameField = createField('', { copyOnCreateForm: false });
 const copiedAgeField = createField(0);
@@ -58,7 +55,9 @@ const form = createForm({
   },
 });
 
-form.setValues({ name: 'Edward', age: 20 });
+form.fill({
+  values: { name: 'Edward', age: 20 },
+});
 
 console.log(nameField.$value.getState()); // Edward
 console.log(copiedAgeField.$value.getState()); // 0

@@ -13,7 +13,7 @@ interface CreateFormOptions<T extends AnySchema> {
     | SyncValidationFn<T>
     | AsyncValidationFn<T>
     | Contract<unknown, FormValues<UserFormSchema<T>>>;
-  validationStrategies?: ValidationStrategy[];
+  validationStrategies?: ValidationStrategy[] | Store<ValidationStrategy[]>;
   clearOuterErrorsOnSubmit?: boolean;
 }
 
