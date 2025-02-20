@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/movpushmov/effector-reform/compare/v0.14.1...v0.15.0) (2025-02-20)
+
+### Features
+
+- dynamic strategies ([ed0c274](https://github.com/movpushmov/effector-reform/commit/ed0c274320fe45aefa06345098b0852946182547))
+
 ## [0.14.1](https://github.com/movpushmov/effector-reform/compare/v0.14.0...v0.14.1) (2025-01-06)
 
 **Note:** Version bump only for package effector-reform
