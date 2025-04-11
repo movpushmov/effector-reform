@@ -3,10 +3,10 @@ import type {
   AsyncValidationFn,
   ErrorsSchemaPayload,
 } from '@effector-reform/core';
-import type { ZodRawShape, ZodError, ZodObject, ZodEffects } from 'zod';
+import { ZodError, ZodType } from 'zod';
 
 export function zodAdapter<Schema extends AnySchema>(
-  schema: ZodObject<ZodRawShape> | ZodEffects<ZodObject<ZodRawShape>>,
+  schema: ZodType<any, any, any>,
 ): AsyncValidationFn<Schema> {
   return async (values): Promise<ErrorsSchemaPayload | null> => {
     try {

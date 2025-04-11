@@ -109,6 +109,58 @@ describe('Zod adapter', () => {
     });
   });
 
+  test('works with discriminated union', async () => {
+    const scope = fork();
+
+    const commonSchema = z.object({ name: z.string().nonempty() });
+
+    const form = createForm({
+      schema: {
+        name: '',
+        contractType: '',
+        contractId: '',
+      },
+      validation: zodAdapter(
+        z.discriminatedUnion('contractType', [
+          commonSchema.extend({
+            contractType: z.literal('a'),
+            contractId: z.literal('', {
+              errorMap: () => ({ message: 'should be empty' }),
+            }),
+          }),
+          commonSchema.extend({
+            contractType: z.literal('b'),
+            contractId: z.string().nonempty(),
+          }),
+        ]),
+      ),
+    });
+
+    await allSettled(form.fill, {
+      scope,
+      params: {
+        values: { name: 'Test', contractType: 'a', contractId: '123' },
+      },
+    });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      name: null,
+      contractType: null,
+      contractId: 'should be empty',
+    });
+
+    await allSettled(form.fields.contractType.change, {
+      scope,
+      params: 'b',
+    });
+
+    expect(scope.getState(form.$errors)).toStrictEqual({
+      name: null,
+      contractType: null,
+      contractId: null,
+    });
+  });
+
   test('errors has right order', async () => {
     const scope = fork();
     const form = createForm({
