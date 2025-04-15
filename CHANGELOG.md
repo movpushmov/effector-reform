@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.1](https://github.com/movpushmov/effector-reform/compare/v0.15.0...v0.15.1) (2025-04-15)
+
+### Bug Fixes
+
+- **zod:** zodAdapter should accept ZodType ([bd97975](https://github.com/movpushmov/effector-reform/commit/bd9797559e243286fb3c162574006bc8bffd8949))
+
 # [0.15.0](https://github.com/movpushmov/effector-reform/compare/v0.14.1...v0.15.0) (2025-02-20)
 
 ### Features
