@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0](https://github.com/movpushmov/effector-reform/compare/v0.15.1...v0.16.0) (2025-05-01)
+
+### Features
+
+- form persisting ([86b004e](https://github.com/movpushmov/effector-reform/commit/86b004e76efa7f11fbd03896d52b96c03fb1e6f3))
+
 ## [0.15.1](https://github.com/movpushmov/effector-reform/compare/v0.15.0...v0.15.1) (2025-04-15)
 
 ### Bug Fixes
