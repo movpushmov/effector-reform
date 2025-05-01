@@ -1,4 +1,4 @@
-import { Event, EventCallable, Store } from 'effector';
+import { Event, EventCallable, Node, Store } from 'effector';
 import { FieldError } from '../types';
 import { AnySchema, UserFormSchema } from '../fields-group';
 import { PrimitiveValue } from '../primitive-field';
@@ -66,6 +66,8 @@ export interface ArrayField<
   U = UserFormSchema<T>,
 > extends ArrayFieldApi<T, U, Meta> {
   '@@type': ArrayFieldSymbolType;
+
+  region: Node;
 
   $meta: Store<Meta>;
   $values: Store<U[]>;
