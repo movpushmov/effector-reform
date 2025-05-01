@@ -7,6 +7,9 @@ import {
 export type Node = any;
 
 export type BasePathApi = {
+  value: any;
+  error: FieldError;
+
   reset: () => void;
 
   clearInnerError: () => void;

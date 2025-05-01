@@ -8,6 +8,7 @@ import {
   EventCallable,
   combine,
   Store,
+  Event,
 } from 'effector';
 import {
   AnySchema,
@@ -48,6 +49,11 @@ interface FormInnerMeta {
    * need to skip validation after "reset" or "clear"
    */
   skipValidation: boolean;
+  /**
+   * need to ignore all "changed" events, like form is not changed
+   * used in "persist" event to prevent changing loop
+   */
+  ignoreChanges: boolean;
 }
 
 function getValidationStrategies(
@@ -103,6 +109,21 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const $innerMeta = createStore<FormInnerMeta>({
     needSav: false,
     skipValidation: false,
+    ignoreChanges: false,
+  });
+
+  const $persistInfo = combine($values, $api, (values, api) => {
+    const plainErrors: ErrorsSchemaPayload = {};
+
+    for (const key in api) {
+      const fieldApi = api[key];
+      plainErrors[key] = fieldApi.error;
+    }
+
+    return {
+      values,
+      errors: plainErrors,
+    };
   });
 
   type Fields = typeof fields;
@@ -169,6 +190,12 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   const snapshotUpdated = createEvent();
 
   const reset = createEvent('<form reset>');
+  const persist = createEvent<{
+    values: Values;
+    errors: ErrorsSchemaPayload;
+  }>('<form persist>');
+
+  const persisted = createEvent('<form persisted>');
 
   const preparedValidationFn = isContract(validation)
     ? contractAdapter(validation)
@@ -181,6 +208,9 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   >;
 
   const $isValidationPending = validateFx.pending;
+
+  const innerChanged = createEvent<FormValues<Fields>>();
+  const innerErrorsChanged = createEvent<Errors>();
 
   sample({
     clock: changeInnerMeta,
@@ -255,12 +285,18 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
   });
 
   sample({
-    clock: $values,
+    clock: innerChanged,
+    source: $innerMeta,
+    filter: (meta) => !meta.ignoreChanges,
+    fn: (_, payload) => payload,
     target: changed,
   });
 
   sample({
-    clock: $errors,
+    clock: innerErrorsChanged as Event<any>,
+    source: $innerMeta,
+    filter: (meta) => !meta.ignoreChanges,
+    fn: (_, payload) => payload,
     target: errorsChanged,
   });
 
@@ -278,25 +314,35 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     target: setOuterErrorsFx,
   });
 
+  sample({
+    clock: $values,
+    target: innerChanged,
+  });
+
+  sample({
+    clock: $errors,
+    target: innerErrorsChanged,
+  });
+
   const filledValues = inOrder([
     fill.filter({
       fn: (payload) => Boolean(payload.values) && !payload.errors,
     }),
-    changed,
+    innerChanged,
   ]);
 
   const filledErrors = inOrder([
     fill.filter({
       fn: (payload) => Boolean(payload.errors) && !payload.values,
     }),
-    errorsChanged,
+    innerErrorsChanged,
   ]);
 
   const formFilled = inOrder([
     fill.filter({
       fn: (payload) => Boolean(payload.values) && Boolean(payload.errors),
     }),
-    combineEvents([changed, errorsChanged]),
+    combineEvents([innerChanged, innerErrorsChanged]),
   ]);
 
   sample({
@@ -382,6 +428,21 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
     ],
   });
 
+  // @ts-expect-error what the fuck?
+  sample({
+    clock: persist,
+    target: [changeInnerMeta.prepend(() => ({ ignoreChanges: true })), fill],
+  });
+
+  sample({
+    clock: inOrder([persist, filled]),
+    target: [
+      persisted,
+      forceUpdateSnapshot,
+      changeInnerMeta.prepend(() => ({ ignoreChanges: false })),
+    ],
+  });
+
   return {
     $errors,
     $values,
@@ -414,6 +475,11 @@ export function createForm<T extends AnySchema>(options: CreateFormOptions<T>) {
 
     fill,
     filled,
+
+    $persistInfo,
+
+    persist,
+    persisted,
 
     '@@unitShape': () => ({
       errors: $errors,

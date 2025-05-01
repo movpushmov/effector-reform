@@ -46,6 +46,9 @@ export function setupArrayField(
   };
 
   const fieldApi: ArrayFieldPathApi = {
+    value: [],
+    error: field.$error.getState(),
+
     type: 'array-field',
     isValid: !Boolean(resultErrorsNode[key].error),
 
@@ -108,6 +111,8 @@ export function setupArrayField(
         resultValuesNode[key].push(item);
       }
     });
+
+    fieldApi.value = values;
   };
 
   mapValues(fieldValues);
@@ -126,6 +131,7 @@ export function setupArrayField(
   const changeErrorFx = createEffect(
     ({ error }: { error: FieldError; batchInfo?: { id: string } }) => {
       resultErrorsNode[key].error = error;
+      fieldApi.error = error;
 
       fieldApi.isValid = !Boolean(resultErrorsNode[key].error);
 
@@ -143,6 +149,9 @@ export function setupArrayField(
       error: null,
       errors: [],
     };
+
+    fieldApi.value = [];
+    fieldApi.error = null;
 
     fieldApi.isValid = !Boolean(resultErrorsNode[key].error);
   });
@@ -165,6 +174,9 @@ export function setupArrayField(
       };
 
       fieldApi.isValid = !Boolean(resultErrorsNode[key].error);
+
+      fieldApi.value = [];
+      fieldApi.error = error;
 
       mapValues(values);
     },

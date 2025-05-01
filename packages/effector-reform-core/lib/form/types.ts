@@ -100,6 +100,8 @@ export type FormType<
   $errors: Store<Errors>;
   $snapshot: Store<Values>;
 
+  $persistInfo: Store<{ values: Values; errors: ErrorsSchemaPayload }>;
+
   $isChanged: Store<boolean>;
   $isValid: Store<boolean>;
 
@@ -128,6 +130,13 @@ export type FormType<
 
   forceUpdateSnapshot: EventCallable<void>;
   snapshotUpdated: Event<void>;
+
+  persist: EventCallable<{
+    values: Values;
+    errors: ErrorsSchemaPayload;
+  }>;
+
+  persisted: Event<void>;
 
   metaChanged: EventCallable<{ fieldPath: string; meta: any }>;
 

@@ -21,14 +21,20 @@ export function setupPrimitiveField(
 ) {
   const field = rawField as PrimitiveField & InnerFieldApi;
 
-  resultValuesNode[key] = field.$value.getState();
-  resultErrorsNode[key] = field.$error.getState();
+  const value = field.$value.getState();
+  const error = field.$error.getState();
+
+  resultValuesNode[key] = value;
+  resultErrorsNode[key] = error;
 
   const apiKey = [...path, key].join('.');
 
   const fieldApi: PrimitiveFieldPathApi = {
     type: 'primitive-field',
     isValid: !Boolean(resultErrorsNode[key]),
+
+    value,
+    error,
 
     reset: field.reset,
 
@@ -64,12 +70,14 @@ export function setupPrimitiveField(
   const changeValueFx = createEffect(
     ({ value }: { value: any; batchInfo?: { id: string } }) => {
       resultValuesNode[key] = value;
+      fieldApi.value = value;
     },
   );
 
   const changeErrorFx = createEffect(
     ({ error }: { error: FieldError; batchInfo?: { id: string } }) => {
       resultErrorsNode[key] = error;
+      fieldApi.value = error;
 
       fieldApi.isValid = !Boolean(resultErrorsNode[key]);
 
@@ -90,6 +98,9 @@ export function setupPrimitiveField(
     }) => {
       resultValuesNode[key] = value;
       resultErrorsNode[key] = error;
+
+      fieldApi.value = value;
+      fieldApi.value = error;
 
       fieldApi.isValid = !Boolean(resultErrorsNode[key]);
 

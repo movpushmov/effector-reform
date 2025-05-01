@@ -8,6 +8,7 @@ import {
   FieldInteractionEventPayloadBase,
   MetaChangedEventPayload,
 } from '../map-schema/types';
+import { ErrorsSchemaPayload } from '../../types';
 
 export function getFormMeta(
   node: ReadyFieldsGroupSchema,
@@ -19,10 +20,13 @@ export function getFormMeta(
 ) {
   const values: Node = {};
   const errors: Node = {};
+  const plainErrors: ErrorsSchemaPayload = {};
   const api: FormApi = {};
 
   const thisArg = {
     api,
+    plainErrors,
+
     isValid: true,
 
     metaChanged,
