@@ -74,6 +74,10 @@ export default defineConfig({
           { text: 'Zod', link: '/validation/zod' },
         ],
       },
+      {
+        text: 'Examples',
+        items: [{ text: 'Persist forms', link: 'examples/persisting' }],
+      },
     ],
 
     footer: {

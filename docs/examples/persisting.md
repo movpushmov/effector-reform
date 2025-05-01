@@ -1,4 +1,4 @@
-# Persisting forms
+# Persist forms
 
 You can easily persist form with `effector-storage` library. For this just use `form.persist` and `form.$persistInfo`:
 
