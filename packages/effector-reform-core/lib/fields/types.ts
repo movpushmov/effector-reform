@@ -1,4 +1,4 @@
-import { EventCallable, Store } from 'effector';
+import { EventCallable, Node, Store } from 'effector';
 import { FormErrors, FormValues } from '../form';
 import { PrimitiveValue } from './primitive-field';
 
@@ -20,6 +20,8 @@ export type InnerFieldApi<T = any> = FieldInnerBatchSetters<T> & {
   $outerError: Store<string>;
   $innerError: Store<string>;
   setInnerError: EventCallable<FieldError>;
+
+  region: Node;
 };
 
 export type InnerArrayFieldApi<T = any> = FieldInnerBatchSetters<T> & {

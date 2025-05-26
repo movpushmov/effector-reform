@@ -1,4 +1,12 @@
-import { combine, createEvent, createStore, Json, sample } from 'effector';
+import {
+  combine,
+  createEvent,
+  createNode,
+  createStore,
+  Json,
+  sample,
+  withRegion,
+} from 'effector';
 import type {
   CreatePrimitiveFieldOptions,
   PrimitiveField,
@@ -33,181 +41,162 @@ export function createField<
   overrides?: CreatePrimitiveFieldOptions<Meta>,
 ): PrimitiveField<T, Meta> {
   const options = { ...defaultOptions, ...overrides };
+  const region = createNode({ regional: true });
 
-  const $value = createStoreWithSid<T>(
-    '<field value>',
-    defaultValue,
-    options.sid ? `${options.sid}|value` : undefined,
-  );
+  return withRegion(region, () => {
+    const $value = createStoreWithSid<T>(
+      '<field value>',
+      defaultValue,
+      options.sid ? `${options.sid}|value` : undefined,
+    );
 
-  const $innerError = createStoreWithSid<FieldError>(
-    '<inner field error>',
-    null,
-    options.sid ? `${options.sid}|innerError` : undefined,
-  );
+    const $innerError = createStoreWithSid<FieldError>(
+      '<inner field error>',
+      null,
+      options.sid ? `${options.sid}|innerError` : undefined,
+    );
 
-  const $outerError = createStoreWithSid<FieldError>(
-    '<outer field error>',
-    null,
-    options.sid ? `${options.sid}|outerError` : undefined,
-  );
+    const $outerError = createStoreWithSid<FieldError>(
+      '<outer field error>',
+      null,
+      options.sid ? `${options.sid}|outerError` : undefined,
+    );
 
-  const $error = combine({
-    innerError: $innerError,
-    outerError: $outerError,
-  }).map(({ innerError, outerError }) => outerError || innerError);
-
-  const $isValid = $error.map((error) => error === null);
-  const $isFocused = createStore(false);
-
-  const $meta = createStore<Meta>(options.meta);
-
-  const changeMeta = createEvent<Meta>();
-  const metaChanged = createEvent<Meta>();
-
-  sample({
-    clock: changeMeta,
-    target: $meta,
-  });
-
-  sample({
-    clock: $meta,
-    target: metaChanged,
-  });
-
-  const change = createEvent<T>('<field change>');
-  const changed = createEvent<T>('<field changed>');
-
-  const blur = createEvent();
-  const blurred = createEvent();
-
-  const focus = createEvent();
-  const focused = createEvent();
-
-  const changeError = createEvent<FieldError>('<field setError>');
-  const errorChanged = createEvent<FieldError>('<field error changed>');
-
-  const setInnerError = createEvent<FieldError>();
-  const setOuterError = createEvent<FieldError>();
-
-  const reset = createEvent('<field reset>');
-  const resetCompleted = createEvent<{ value: T; error: FieldError }>(
-    '<field reset completed>',
-  );
-
-  const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
-  const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
-  const batchedSetValue = createEvent<FieldBatchedSetter<T>>();
-  const batchedReset = createEvent<FieldBatchedPayload>();
-
-  sample({ clock: blur, fn: () => false, target: $isFocused });
-  sample({ clock: focus, fn: () => true, target: $isFocused });
-
-  sample({ clock: $isFocused, filter: (focused) => focused, target: focused });
-  sample({ clock: $isFocused, filter: (focused) => !focused, target: blurred });
-
-  sample({
-    clock: setInnerError,
-    target: $innerError,
-  });
-
-  sample({
-    clock: changeError,
-    target: $outerError,
-  });
-
-  sample({ clock: change, target: $value });
-
-  sample({
-    clock: batchedSetValue,
-    fn: (payload) => payload.value,
-    target: $value,
-  });
-
-  sample({
-    clock: batchedSetInnerError,
-    fn: (payload) => payload.value,
-    target: $innerError,
-  });
-
-  sample({
-    clock: batchedSetOuterError,
-    fn: (payload) => payload.value,
-    target: $outerError,
-  });
-
-  sample({ clock: $value, target: changed });
-  sample({ clock: changeError, target: $outerError });
-
-  sample({ clock: $error, target: errorChanged });
-  sample({ clock: setInnerError, target: $innerError });
-
-  sample({
-    clock: [reset, batchedReset],
-    fn: () => ({
-      value: defaultValue,
-      outerError: overrides?.error ?? null,
-      completed: { value: defaultValue, error: overrides?.error ?? null },
-      innerError: null,
-    }),
-    target: spread({
-      value: $value,
-      completed: resetCompleted,
-      outerError: $outerError,
+    const $error = combine({
       innerError: $innerError,
-    }),
-  });
+      outerError: $outerError,
+    }).map(({ innerError, outerError }) => outerError || innerError);
 
-  return {
-    '@@type': primitiveFieldSymbol,
+    const $isValid = $error.map((error) => error === null);
+    const $isFocused = createStore(false);
 
-    batchedSetInnerError,
-    batchedSetOuterError,
-    batchedSetValue,
-    batchedReset,
+    const $meta = createStore<Meta>(options.meta);
 
-    $meta,
-    $value,
-    $outerError,
-    $innerError,
-    $error,
+    const changeMeta = createEvent<Meta>();
+    const metaChanged = createEvent<Meta>();
 
-    $isValid,
-    $isFocused,
+    sample({
+      clock: changeMeta,
+      target: $meta,
+    });
 
-    changeMeta,
-    metaChanged,
+    sample({
+      clock: $meta,
+      target: metaChanged,
+    });
 
-    blur,
-    blurred,
+    const change = createEvent<T>('<field change>');
+    const changed = createEvent<T>('<field changed>');
 
-    focus,
-    focused,
+    const blur = createEvent();
+    const blurred = createEvent();
 
-    change,
-    changed,
+    const focus = createEvent();
+    const focused = createEvent();
 
-    changeError,
-    errorChanged,
+    const changeError = createEvent<FieldError>('<field setError>');
+    const errorChanged = createEvent<FieldError>('<field error changed>');
 
-    reset,
-    resetCompleted,
+    const setInnerError = createEvent<FieldError>();
+    const setOuterError = createEvent<FieldError>();
 
-    setInnerError,
-    setOuterError,
+    const reset = createEvent('<field reset>');
+    const resetCompleted = createEvent<{ value: T; error: FieldError }>(
+      '<field reset completed>',
+    );
 
-    copyOnCreateForm: options.copyOnCreateForm,
-    sid: options.sid,
+    const batchedSetInnerError = createEvent<FieldBatchedSetter<FieldError>>();
+    const batchedSetOuterError = createEvent<FieldBatchedSetter<FieldError>>();
+    const batchedSetValue = createEvent<FieldBatchedSetter<T>>();
+    const batchedReset = createEvent<FieldBatchedPayload>();
 
-    '@@unitShape': () => ({
-      value: $value,
-      error: $error,
-      meta: $meta,
+    sample({ clock: blur, fn: () => false, target: $isFocused });
+    sample({ clock: focus, fn: () => true, target: $isFocused });
 
-      isValid: $isValid,
-      isFocused: $isFocused,
+    sample({
+      clock: $isFocused,
+      filter: (focused) => focused,
+      target: focused,
+    });
+    sample({
+      clock: $isFocused,
+      filter: (focused) => !focused,
+      target: blurred,
+    });
+
+    sample({
+      clock: setInnerError,
+      target: $innerError,
+    });
+
+    sample({
+      clock: changeError,
+      target: $outerError,
+    });
+
+    sample({ clock: change, target: $value });
+
+    sample({
+      clock: batchedSetValue,
+      fn: (payload) => payload.value,
+      target: $value,
+    });
+
+    sample({
+      clock: batchedSetInnerError,
+      fn: (payload) => payload.value,
+      target: $innerError,
+    });
+
+    sample({
+      clock: batchedSetOuterError,
+      fn: (payload) => payload.value,
+      target: $outerError,
+    });
+
+    sample({ clock: $value, target: changed });
+    sample({ clock: changeError, target: $outerError });
+
+    sample({ clock: $error, target: errorChanged });
+    sample({ clock: setInnerError, target: $innerError });
+
+    sample({
+      clock: [reset, batchedReset],
+      fn: () => ({
+        value: defaultValue,
+        outerError: overrides?.error ?? null,
+        completed: { value: defaultValue, error: overrides?.error ?? null },
+        innerError: null,
+      }),
+      target: spread({
+        value: $value,
+        completed: resetCompleted,
+        outerError: $outerError,
+        innerError: $innerError,
+      }),
+    });
+
+    return {
+      '@@type': primitiveFieldSymbol,
+
+      region,
+
+      batchedSetInnerError,
+      batchedSetOuterError,
+      batchedSetValue,
+      batchedReset,
+
+      $meta,
+      $value,
+      $outerError,
+      $innerError,
+      $error,
+
+      $isValid,
+      $isFocused,
 
       changeMeta,
+      metaChanged,
 
       blur,
       blurred,
@@ -215,9 +204,41 @@ export function createField<
       focus,
       focused,
 
-      changeError,
       change,
+      changed,
+
+      changeError,
+      errorChanged,
+
       reset,
-    }),
-  } as PrimitiveField<T> & InnerFieldApi<T>;
+      resetCompleted,
+
+      setInnerError,
+      setOuterError,
+
+      copyOnCreateForm: options.copyOnCreateForm,
+      sid: options.sid,
+
+      '@@unitShape': () => ({
+        value: $value,
+        error: $error,
+        meta: $meta,
+
+        isValid: $isValid,
+        isFocused: $isFocused,
+
+        changeMeta,
+
+        blur,
+        blurred,
+
+        focus,
+        focused,
+
+        changeError,
+        change,
+        reset,
+      }),
+    } as PrimitiveField<T> & InnerFieldApi<T>;
+  });
 }

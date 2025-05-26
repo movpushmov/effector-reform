@@ -15,11 +15,10 @@ export type PrimitiveValue =
   | PrimitiveJsonValue
   | Blob
   | ArrayBuffer
-  | File
-  | FileList;
+  | File;
 
 export interface PrimitiveFieldApi<
-  T extends PrimitiveValue,
+  T extends PrimitiveValue | Json,
   Meta extends object = any,
 > {
   change: EventCallable<T>;

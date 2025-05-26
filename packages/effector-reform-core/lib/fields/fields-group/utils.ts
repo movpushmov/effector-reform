@@ -16,6 +16,7 @@ import type {
   UserFormSchema,
 } from './types';
 import { copy } from '../copy';
+import { createNode, withRegion } from 'effector';
 
 interface Meta {
   path: string[];
@@ -26,47 +27,69 @@ export function prepareFieldsSchema<
   T extends AnySchema | PrimitiveValue,
   U = UserFormSchema<T>,
 >(schema: T, meta: Meta = { path: [] }): U {
+  const region = createNode({ regional: true });
   const result: UserFormSchema<any> = {};
 
-  if (isPrimitiveValue(schema)) {
-    return schema as U;
+  Object.defineProperty(result, 'region', {
+    enumerable: false,
+    value: region,
+  });
+
+  function prepare(
+    node: T,
+    resultNode: any,
+    currentMeta: Meta = { path: [] },
+  ): U {
+    if (isPrimitiveValue(node)) {
+      return node as U;
+    }
+
+    for (const key in node) {
+      const element = node[key];
+
+      const path = [...currentMeta.path, key];
+
+      if (isPrimitiveValue(element)) {
+        resultNode[key] = createField(
+          element,
+          currentMeta.baseSid
+            ? { sid: `${currentMeta.baseSid}|${path.join('.')}` }
+            : undefined,
+        );
+        continue;
+      }
+
+      if (isPrimitiveField(element) || isArrayField(element)) {
+        resultNode[key] = element;
+        continue;
+      }
+
+      if (Array.isArray(element)) {
+        resultNode[key] = createArrayField(
+          element as (PrimitiveValue | AnySchema)[],
+          currentMeta.baseSid
+            ? { sid: `${currentMeta.baseSid}|${path.join('.')}` }
+            : undefined,
+        );
+        continue;
+      }
+
+      if (typeof element === 'object') {
+        resultNode[key] = prepare(
+          element as any,
+          {},
+          {
+            path,
+            baseSid: currentMeta.baseSid,
+          },
+        );
+      }
+    }
+
+    return resultNode;
   }
 
-  for (const key in schema) {
-    const element = schema[key];
-
-    const path = [...meta.path, key];
-
-    if (isPrimitiveValue(element)) {
-      result[key] = createField(
-        element,
-        meta.baseSid ? { sid: `${meta.baseSid}|${path.join('.')}` } : undefined,
-      );
-      continue;
-    }
-
-    if (isPrimitiveField(element) || isArrayField(element)) {
-      result[key] = element;
-      continue;
-    }
-
-    if (Array.isArray(element)) {
-      result[key] = createArrayField(
-        element as (PrimitiveValue | AnySchema)[],
-        meta.baseSid ? { sid: `${meta.baseSid}|${path.join('.')}` } : undefined,
-      );
-      continue;
-    }
-
-    if (typeof element === 'object') {
-      result[key] = prepareFieldsSchema(element as ReadyFieldsGroupSchema, {
-        path,
-        baseSid: meta.baseSid,
-      });
-    }
-  }
-
-  return result;
+  return withRegion(region, () => prepare(schema, result, meta));
 }
 
 export function copyGroup<T extends ReadyFieldsGroupSchema>(group: T): T {
