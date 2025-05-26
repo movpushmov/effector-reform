@@ -35,53 +35,61 @@ export function prepareFieldsSchema<
     value: region,
   });
 
-  function prepare(schema: T, meta: Meta = { path: [] }): U {
-    if (isPrimitiveValue(schema)) {
-      return schema as U;
+  function prepare(
+    node: T,
+    resultNode: any,
+    currentMeta: Meta = { path: [] },
+  ): U {
+    if (isPrimitiveValue(node)) {
+      return node as U;
     }
 
-    for (const key in schema) {
-      const element = schema[key];
+    for (const key in node) {
+      const element = node[key];
 
-      const path = [...meta.path, key];
+      const path = [...currentMeta.path, key];
 
       if (isPrimitiveValue(element)) {
-        result[key] = createField(
+        resultNode[key] = createField(
           element,
-          meta.baseSid
-            ? { sid: `${meta.baseSid}|${path.join('.')}` }
+          currentMeta.baseSid
+            ? { sid: `${currentMeta.baseSid}|${path.join('.')}` }
             : undefined,
         );
         continue;
       }
 
       if (isPrimitiveField(element) || isArrayField(element)) {
-        result[key] = element;
+        resultNode[key] = element;
         continue;
       }
 
       if (Array.isArray(element)) {
-        result[key] = createArrayField(
+        resultNode[key] = createArrayField(
           element as (PrimitiveValue | AnySchema)[],
-          meta.baseSid
-            ? { sid: `${meta.baseSid}|${path.join('.')}` }
+          currentMeta.baseSid
+            ? { sid: `${currentMeta.baseSid}|${path.join('.')}` }
             : undefined,
         );
         continue;
       }
 
       if (typeof element === 'object') {
-        result[key] = prepare(element as any, {
-          path,
-          baseSid: meta.baseSid,
-        });
+        resultNode[key] = prepare(
+          element as any,
+          {},
+          {
+            path,
+            baseSid: currentMeta.baseSid,
+          },
+        );
       }
     }
 
-    return result;
+    return resultNode;
   }
 
-  return withRegion(region, () => prepare(schema, meta));
+  return withRegion(region, () => prepare(schema, result, meta));
 }
 
 export function copyGroup<T extends ReadyFieldsGroupSchema>(group: T): T {

@@ -84,6 +84,8 @@ export function createArrayField<
 
         if ('region' in node) {
           clearNode(node.region);
+        } else {
+          throw new Error('no "region" in node');
         }
       }
     });
