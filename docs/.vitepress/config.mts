@@ -1,33 +1,23 @@
 import { defineConfig } from 'vitepress';
 
-import path from 'path';
-import fs from 'fs';
-
-const { version } = JSON.parse(
-  fs.readFileSync(
-    path.resolve(__dirname, '../../packages/effector-reform-core/package.json'),
-    { encoding: 'utf-8' },
-  ),
-);
-
 export default defineConfig({
-  title: 'effector reform',
+  title: 'effector reform β',
   description: 'effector reform documentation',
   base: '/effector-reform',
   head: [['link', { rel: 'icon', href: '/effector-reform/favicon.ico' }]],
   themeConfig: {
-    logo: './logo.svg',
+    logo: '/logo.svg',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction/getting-started' },
       {
-        text: `v${version}`,
+        text: `next`,
         items: [
           {
             items: [
               {
-                text: `v${version}`,
-                link: `https://github.com/movpushmov/effector-reform/releases/tag/v${version}`,
+                text: `next`,
+                link: `https://github.com/movpushmov/effector-reform/releases/tag/next`,
               },
               {
                 text: 'Releases Notes',
@@ -53,9 +43,11 @@ export default defineConfig({
       {
         text: 'Core',
         items: [
-          { text: 'createField', link: '/core/create-field' },
-          { text: 'createArrayField', link: '/core/create-array-field' },
-          { text: 'createForm', link: '/core/create-form' },
+          { text: 'Primitive fields', link: '/core/primitive-fields' },
+          { text: 'Array fields', link: '/core/array-fields' },
+          { text: 'Shape fields', link: '/core/shape-fields' },
+          { text: 'Forms', link: '/core/forms' },
+          { text: 'Validation', link: '/core/validation' },
         ],
       },
       {
@@ -66,23 +58,11 @@ export default defineConfig({
           { text: 'useArrayField', link: '/react/use-array-field' },
         ],
       },
-      {
-        text: 'Validation',
-        items: [
-          { text: 'Contracts', link: '/validation/contracts' },
-          { text: 'Yup', link: '/validation/yup' },
-          { text: 'Zod', link: '/validation/zod' },
-        ],
-      },
-      {
-        text: 'Examples',
-        items: [{ text: 'Persist forms', link: 'examples/persisting' }],
-      },
     ],
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2021-PRESENT movpushmov',
+      copyright: 'Copyright © 2024-PRESENT movpushmov',
     },
 
     socialLinks: [

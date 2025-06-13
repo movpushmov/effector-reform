@@ -3,9 +3,8 @@
 layout: home
 
 hero:
-  name: "effector reform"
-  text: "make & use forms without a headache"
-  tagline: with power of effector
+  name: effector reform β
+  text: next generation of powerful forms
   image:
     src: ./logo.svg
   actions:

@@ -2,12 +2,12 @@ import { StoreValue } from 'effector';
 import { ArrayField } from '../array-field';
 import { PrimitiveField, PrimitiveValue } from '../primitive-field';
 
-type ReadyFieldsSchemaFieldType =
+export type ReadyFieldsSchemaFieldType =
   | PrimitiveField
   | ArrayField<any>
   | ReadyFieldsGroupSchema;
 
-type RawFieldsSchemaFieldType =
+export type RawFieldsSchemaFieldType =
   | PrimitiveValue
   | RawFieldsSchemaFieldType[]
   | RawFieldsGroupSchema

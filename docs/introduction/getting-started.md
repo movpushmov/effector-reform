@@ -7,20 +7,19 @@ title: Getting started
 ## Installation
 
 ::: warning
-effector-reform is not production ready yet and still
-may have bugs and unstable API. If you found bug —
-please report it on GitHub.
+This is documentation for **next** version of effector-reform, which
+is not production ready yet and based on experimental `@effector/model` library.
 :::
 
 ::: code-group
 ```bash [npm]
-npm install @effector-reform/core
+npm install @effector-reform/core@latest
 ```
 ```bash [yarn]
-yarn add @effector-reform/core
+yarn add @effector-reform/core@latest
 ```
 ```bash [pnpm]
-pnpm add @effector-reform/core
+pnpm add @effector-reform/core@latest
 ```
 :::
 

@@ -54,6 +54,7 @@
   },
   "gitHead": "8f8b0f3700f1306db8f95f7aa5744356f8960d66",
   "dependencies": {
+    "@effector/model": "^0.0.7",
     "fast-deep-equal": "^3.1.3"
   }
 }
