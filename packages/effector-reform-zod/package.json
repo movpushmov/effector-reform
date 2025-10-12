@@ -55,5 +55,8 @@
   },
   "dependencies": {
     "@effector-reform/core": "^0.16.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
   }
 }
