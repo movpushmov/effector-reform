@@ -3,20 +3,22 @@ import type {
   AsyncValidationFn,
   ErrorsSchemaPayload,
 } from '@effector-reform/core';
-import { ZodError, ZodType } from 'zod';
+import { parseAsync } from 'zod/v4/core';
+import { isZodV4Schema, ZodAnyError, ZodAnyType } from './utils';
 
 export function zodAdapter<Schema extends AnySchema>(
-  schema: ZodType<any, any, any>,
+  schema: ZodAnyType,
 ): AsyncValidationFn<Schema> {
   return async (values): Promise<ErrorsSchemaPayload | null> => {
     try {
-      await schema.parseAsync(values);
+      if (isZodV4Schema(schema)) await parseAsync(schema, values);
+      else await schema.parseAsync(values);
 
       return null;
     } catch (e) {
-      const { errors } = e as ZodError;
+      const { issues } = e as ZodAnyError;
 
-      return errors.reduce((acc: ErrorsSchemaPayload, error) => {
+      return issues.reduce((acc: ErrorsSchemaPayload, error) => {
         if (acc[error.path.join('.')]) {
           return acc;
         }
