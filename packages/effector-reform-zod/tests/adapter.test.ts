@@ -4,6 +4,8 @@ import { zodAdapter } from '../lib';
 import { z } from 'zod';
 import { allSettled, fork } from 'effector';
 
+const isZod4 = 'globalRegistry' in z;
+
 describe('Zod adapter', () => {
   test('zod', async () => {
     const scope = fork();
@@ -31,10 +33,16 @@ describe('Zod adapter', () => {
     expect(errors).toStrictEqual({
       a: null,
       b: {
-        error: 'Array must contain at least 5 element(s)',
+        error: isZod4
+          ? 'Too small: expected array to have >=5 items'
+          : 'Array must contain at least 5 element(s)',
         errors: [],
       },
-      c: { d: 'String must contain at least 2 character(s)' },
+      c: {
+        d: isZod4
+          ? 'Too small: expected string to have >=2 characters'
+          : 'String must contain at least 2 character(s)',
+      },
     });
   });
 
@@ -146,7 +154,7 @@ describe('Zod adapter', () => {
     expect(scope.getState(form.$errors)).toStrictEqual({
       name: null,
       contractType: null,
-      contractId: 'should be empty',
+      contractId: isZod4 ? 'Invalid input: expected ""' : 'should be empty',
     });
 
     await allSettled(form.fields.contractType.change, {
