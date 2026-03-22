@@ -14,14 +14,14 @@ export function zodAdapter<Schema extends AnySchema>(
 
       return null;
     } catch (e) {
-      const { errors } = e as ZodError;
+      const { issues } = e as ZodError;
 
-      return errors.reduce((acc: ErrorsSchemaPayload, error) => {
-        if (acc[error.path.join('.')]) {
+      return issues.reduce((acc: ErrorsSchemaPayload, issue) => {
+        if (acc[issue.path.join('.')]) {
           return acc;
         }
 
-        acc[error.path.join('.')] = error.message;
+        acc[issue.path.join('.')] = issue.message;
 
         return acc;
       }, {});

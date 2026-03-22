@@ -6,15 +6,19 @@ you should install adapter.
 ## Installation
 
 ::: code-group
+
 ```bash [npm]
 npm install @effector-reform/zod
 ```
+
 ```bash [yarn]
 yarn add @effector-reform/zod
 ```
+
 ```bash [pnpm]
 pnpm add @effector-reform/zod
 ```
+
 :::
 
 ## Example

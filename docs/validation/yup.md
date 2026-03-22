@@ -1,20 +1,28 @@
-#  Yup validation
+# Yup validation
 
 You can validate your form with yup library, for this
 you should install adapter.
 
+::: danger
+Yup validation is no longer supported in `effector-reform`, the package has been removed from the main repository and will no longer receive updates. Please use `zod` instead of `yup`.
+:::
+
 ## Installation
 
 ::: code-group
+
 ```bash [npm]
 npm install @effector-reform/yup
 ```
+
 ```bash [yarn]
 yarn add @effector-reform/yup
 ```
+
 ```bash [pnpm]
 pnpm add @effector-reform/yup
 ```
+
 :::
 
 ## Example

@@ -16,8 +16,16 @@ describe('Zod adapter', () => {
       validation: zodAdapter(
         z.object({
           a: z.number().max(20),
-          b: z.array(z.number()).min(5).max(10),
-          c: z.object({ d: z.string().min(2).max(10) }),
+          b: z
+            .array(z.number())
+            .min(5, 'too small, min: 5 items')
+            .max(10, 'too large, max: 10 items'),
+          c: z.object({
+            d: z
+              .string()
+              .min(2, 'too small, min: 2 items')
+              .max(10, 'too large, max: 10 items'),
+          }),
         }),
       ),
     });
@@ -31,10 +39,10 @@ describe('Zod adapter', () => {
     expect(errors).toStrictEqual({
       a: null,
       b: {
-        error: 'Array must contain at least 5 element(s)',
+        error: 'too small, min: 5 items',
         errors: [],
       },
-      c: { d: 'String must contain at least 2 character(s)' },
+      c: { d: 'too small, min: 2 items' },
     });
   });
 
@@ -125,7 +133,7 @@ describe('Zod adapter', () => {
           commonSchema.extend({
             contractType: z.literal('a'),
             contractId: z.literal('', {
-              errorMap: () => ({ message: 'should be empty' }),
+              error: () => ({ message: 'should be empty' }),
             }),
           }),
           commonSchema.extend({
