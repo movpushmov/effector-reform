@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.17.0](https://github.com/movpushmov/effector-reform/compare/v0.16.0...v0.17.0) (2026-03-22)
+
+### Bug Fixes
+
+- regions schema preparing ([8324874](https://github.com/movpushmov/effector-reform/commit/8324874d97abd6000548436b92a875e50d4d1f33))
+
+### Features
+
+- regions memory control ([dc0d7e2](https://github.com/movpushmov/effector-reform/commit/dc0d7e26f8841f79dca16225e9b4fed5c397a3d5))
+
 # [0.16.0](https://github.com/movpushmov/effector-reform/compare/v0.15.1...v0.16.0) (2025-05-01)
 
 ### Features
